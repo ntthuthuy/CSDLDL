@@ -1,0 +1,324 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"];;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common;
+@model X.PagedList.IPagedList<TechLife.App.Areas.HueCIT.Models.TyGia>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css"/>
+}
+
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Dữ liệu chuyên ngành liên thông</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                    @if (User.IsInRole("create_tygia") || User.IsInRole("root"))
+                                    {
+                                        <a href="javascript:void(0)" class="btn btn-xs btn-success addBtn">
+                                            <i class="fas fa-plus-circle"></i> Thêm mới
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngày</label>
+                                            <input onchange="this.form.submit()" type="date" id="ngay" name="ngay" value="@ViewBag.Ngay" class="form-control m-custom-input" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th>Tên ngoại tệ</th>
+                                                    <th width="10%">Ngày</th>
+                                                    <th width="10%" class="text-center">Mã ngoại tệ</th>
+                                                    <th width="15%" class="text-center">Giá mua</th>
+                                                    <th width="15%" class="text-center">Giá bán</th>
+                                                    <th width="15%" class="text-center">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null)
+                                                    {
+                                                        int stt = 0;
+                                                        foreach (var d in Model)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-blue text-center" colspan="7">Danh sách hiển thị <strong>@Model.Count</strong> trên tổng số <strong>@Model.TotalItemCount</strong> dòng </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td>@d.TenNgoaiTe</td>
+                                                                <td>@d.Ngay.ToString("dd/MM/yyyy")</td>
+                                                                <td class="text-center">
+                                                                    <strong>@d.KyHieu</strong>
+                                                                </td>
+                                                                <td class="text-right">
+                                                                    @d.GiaMua
+                                                                </td>
+                                                                <td class="text-right">
+                                                                    @d.GiaBan
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (User.IsInRole("edit_tygia") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Sửa tỷ giá" href="javascript:void(0)" data-id="@d.ID" class="btn btn-warning btn-xs editBtn"><i class="fas fa-edit"></i> Sửa</a>
+
+                                                                    }
+                                                                    @if (User.IsInRole("delete_tygia") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Xóa tỷ giá" data-title="Bạn muốn xóa tỷ giá @d.TenNgoaiTe ?" data-url="/HueCIT/TyGia/Delete?id=@HashUtil.EncodeID(d.ID.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                                    }
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @{
+                                if (Model.PageCount > 1)
+                                {
+                                    <!-- Phân trang -->
+                                    <div class="card-footer">
+                                        <div class="m-paging">
+                                            @Html.PagedListPager(Model, trang => Url.Action("Index", new { trang, loai = ViewBag.Loai, diadiem = ViewBag.DiaDiem }),
+                                                new PagedListRenderOptions{
+                                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                                    LinkToNextPageFormat = "<i class='fas fa-angle-right'></i>",
+                                                    LinkToPreviousPageFormat = "<i class='fas fa-angle-left'></i>",
+                                                    LinkToLastPageFormat = "<i class='fas fa-angle-double-right'></i>",
+                                                    LinkToFirstPageFormat = "<i class='fas fa-angle-double-left'></i>",
+                                                    MaximumPageNumbersToDisplay = 3,
+                                                    EllipsesElementClass = "d-none"
+                                                }
+                                            )
+                                        </div>
+                                    </div>
+                                    <!-- Kết thúc -->
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<div class="modal fade" id="modalAdd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div>
+                <form asp-action="Add" method="post">
+                    <div class="card-header">
+                        <h6 class="m-title">Thêm mới tỷ giá</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Tên ngoại tệ <span class="text-red">*</span></label>
+                                    <input class="form-control" name="TenNgoaiTe" data-val="true" data-val-required="Vui lòng nhập tên ngoại tệ."/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Mã ngoại tệ <span class="text-red">*</span></label>
+                                    <input class="form-control" name="KyHieu" data-val="true" data-val-required="Vui lòng nhập mã ngoại tệ."/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Ngày <span class="text-red">*</span></label>
+                                    <input class="form-control" type="date" name="Ngay" data-val="true" data-val-required="Vui lòng chọn ngày."/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Giá mua:</label>
+                                    <input class="form-control" name="GiaMua" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Giá bán:</label>
+                                    <input class="form-control" name="GiaBan" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <button type="submit" data-dismiss="modal" aria-label="Close" class="btn btn-outline-secondary">Hủy</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div>
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" name="ID" id="editId"/>
+                    <div class="card-header">
+                        <h6 class="m-title">Cập nhật tỷ giá</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Tên ngoại tệ <span class="text-red">*</span></label>
+                                    <input class="form-control" id="editTen" name="TenNgoaiTe" data-val="true" data-val-required="Vui lòng nhập tên ngoại tệ."/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Mã ngoại tệ <span class="text-red">*</span></label>
+                                    <input class="form-control" id="editKyHieu" name="KyHieu" data-val="true" data-val-required="Vui lòng nhập mã ngoại tệ."/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Ngày:</label>
+                                    <input class="form-control" disabled id="editNgay" type="date" name="Ngay" data-val="true" data-val-required="Vui lòng chọn ngày."/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Giá mua:</label>
+                                    <input class="form-control" id="editGiaMua" name="GiaMua" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Giá bán:</label>
+                                    <input class="form-control" id="editGiaBan" name="GiaBan" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <button type="submit" data-dismiss="modal" aria-label="Close" class="btn btn-outline-secondary">Hủy</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $( document ).ready(function() {
+            $('.addBtn').on('click', function() {
+                $('#modalAdd').modal('show');
+            });
+
+            function formatDate(date) {
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear()
+
+                if (month.length < 2) month = '0' + month
+                if (day.length < 2) day = '0' + day
+
+                return [year, month, day].join('-')
+            }
+
+            $('.editBtn').on('click', function() {
+                const id = $(this).data("id");
+                if(id) {
+                    $('#editId').val(id);
+                    $.ajax({
+                        url: '/HueCIT/TyGia/Get?id=' + id,
+                        type: "GET",
+                        async: false,
+                        success: function(data) {
+                            $('#editTen').val(data.tenNgoaiTe);
+                            $("#editKyHieu").val(data.kyHieu);
+                            $('#editNgay').val(formatDate(data.ngay));
+                            $("#editGiaMua").val(data.giaMua);
+                            $('#editGiaBan').val(data.giaBan);
+                            $('#modalEdit').modal('show');
+                        },
+                        error: function(xhr) {
+                            console.log('error');
+                        }
+                    });
+                }
+                
+            });
+        });
+    </script>
+}

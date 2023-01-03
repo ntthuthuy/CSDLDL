@@ -1,0 +1,120 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.PhongBan;
+@model PagedResult<PhongBanVm>
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">@ViewData["Title"]</h3>
+                            <div class="card-tools">
+                                <a class="btn btn-xs btn-success btn-form-dongbo">
+                                    <i class="fas fa-sync"></i> Đồng bộ
+                                </a>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table class="table table-hover table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" class="text-center">STT</th>
+                                        <th width="15%" class="text-center">Mã định danh</th>
+                                        <th width="30%" class="text-center">Tên phòng ban, trung tâm</th>
+                                        <th width="15%" class="text-center">Số điện thoại</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int count = 0;
+                                        foreach (var d in Model.Items)
+                                        {
+                                            count++;
+                                            <tr>
+                                                <td class="tcenter">@count</td>
+                                                <td class="tcenter">@d.MaDinhDanh</td>
+                                                <td>@d.Ten</td>
+                                                <th>@d.SoDienThoai</th>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<div class="modal fade" id="modal-dongbo">
+    <div class="modal-dialog">
+        <form method="post" action="/User/Dongbo_phongban">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Đồng bộ phòng ban</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="position-relative form-group">
+                                <label class="control-label">Hệ thống</label>
+                                <select onchange="this.form.submit()" class="form-control" id="service_sso" name="service_sso">
+                                    <option value="2">Hệ thống xác thực tập trung SSO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="submit" class="btn btn-primary">Đồng bộ</button>
+                </div>
+            </div>
+        </form>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".btn-form-dongbo").on("click", function () {
+                $("#modal-dongbo").modal("show");
+            })
+        });
+    </script>
+}
+
+
+
+

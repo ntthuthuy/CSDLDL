@@ -1,0 +1,174 @@
+﻿@model TechLife.Model.ThongKe.LoaiThongKeRequest
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var listLuuTru = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LuuTru;
+    var listKhachSan = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.KhachSan;
+    var listNhaHang = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.NhaHang;
+    var listMuaSam = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.MuaSam;
+    var listHDV = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.HDV;
+    var listTour = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.Tour;
+    var listDiemDuLich = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.DiemDuLich;
+    var listLuHanh = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LuHanh;
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <form id="form" method="get" asp-action="Index">
+                        <div class="position-relative form-group">
+                            <select class="form-control" asp-for="Id" asp-items="ViewBag.ListLoaiThongKe">
+                                <option value="">Chọn loại thống kê</option>
+                            </select>
+                            <span asp-validation-for="Id" class="text-danger"></span>
+                        </div>
+                    </form>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        @*<li class="breadcrumb-item active">@ViewData["Title_parent"]</li>*@
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!--<div class="row">-->
+                <!-- ./col -->
+                <!--<div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-fuchsia">
+                        <div class="inner">
+                            <h3>@listLuuTru.Sum(v => v.SoLuong)</h3>
+
+                            <p>Cơ sở lưu trú</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-hotel"></i>
+                        </div>
+                        <a href="/Hoso/Cosoluutru/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@listMuaSam.Sum(v => v.SoLuong)</h3>
+
+                            <p>Cơ sở mua sắm</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <a href="/Hoso/Cosomuasam/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>-->
+                <!-- ./col -->
+                <!--<div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@listNhaHang.Sum(v => v.SoLuong)</h3>
+                            <p>Nhà hàng</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <a href="/Hoso/Nhahang/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>-->
+                <!-- ./col -->
+                <!--<div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>@listHDV.Sum(v => v.SoLuong)</h3>
+
+                            <p>Hướng dẫn viên</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <a href="/Hoso/Huongdanvien/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-gradient-indigo">
+                        <div class="inner">
+                            <h3>@listLuHanh.Sum(v => v.SoLuong)</h3>
+                            <p>Công ty lữ hành</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-umbrella-beach"></i>
+                        </div>
+                        <a href="/Hoso/Congtyluhanh/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>-->
+                <!-- ./col -->
+                <!--<div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-blue">
+                        <div class="inner">
+                            <h3>@listTour.Sum(v => v.SoLuong)</h3>
+                            <p>Tour du lịch</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                        <a href="/Dichvu/Tour/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>-->
+                <!-- ./col -->
+                <!-- ./col -->
+                <!--<div class="col-lg-3 col-6">-->
+                    <!-- small card -->
+                    <!--<div class="small-box bg-gradient-maroon">
+                        <div class="inner">
+                            <h3>@listDiemDuLich.Sum(v => v.SoLuong)</h3>
+                            <p>Điểm du lịch</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <a href="/Hoso/Diemdulich/" class="small-box-footer">
+                            Xem thêm <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>-->
+
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Id").off("change").on("change", function () {
+                document.getElementById('form').submit();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,40 @@
+﻿@model TechLife.Model.DuLieuDuLich.DuLieuDuLichNhaHangSearchRequest
+<div style="max-width:1000px;">
+    <div class="modal-content">
+        <form method="get" action="/Thongke">
+            <div class="modal-header">
+                <h4 class="modal-title">Tìm kiếm nâng cao</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Keyword" class="control-label"></label>
+                            <input asp-for="Keyword" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label class="control-label">Nhà hàng món ăn</label>
+                            <select asp-for="LoaiId" class="form-control" id="LoaiId" name="LoaiId" asp-items="ViewBag.listLoaiNhaHang">
+                                <option value="0">tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input hidden name="Id" value="thongkenhahang" />
+                <button type="button" data-dismiss="modal" class="btn btn-danger">Hủy</button>
+                <button type="submit" name="type_submit" value="search" class="btn btn-success">Tìm kiếm</button>
+                <button type="submit" name="type_submit" value="download" class="btn btn-primary"><i class="fa fa-download"></i> Xuất file excel</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

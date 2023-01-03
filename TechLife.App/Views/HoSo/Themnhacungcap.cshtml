@@ -1,0 +1,134 @@
+﻿@model TechLife.Model.NhaCungCap.NhaCungCapCreateRequets
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="Themnhacungcap">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="Ten" class="control-label"></label>
+                                            <input asp-for="Ten" class="form-control" />
+                                            <span asp-validation-for="Ten" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="MaSoDoanhNghiep" class="control-label"></label>
+                                            <input asp-for="MaSoDoanhNghiep" class="form-control" />
+                                            <span asp-validation-for="MaSoDoanhNghiep" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="NgayDangKy" class="control-label"></label>
+                                            <input asp-for="NgayDangKy" class="form-control" />
+                                            <span asp-validation-for="NgayDangKy" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="SDTDoanhNghiep" class="control-label"></label>
+                                            <input asp-for="SDTDoanhNghiep" class="form-control" />
+                                            <span asp-validation-for="SDTDoanhNghiep" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="EmailDoanhNghiep" class="control-label"></label>
+                                            <input asp-for="EmailDoanhNghiep" class="form-control" />
+                                            <span asp-validation-for="EmailDoanhNghiep" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="TenNguoiDaiDien" class="control-label"></label>
+                                            <input asp-for="TenNguoiDaiDien" class="form-control" />
+                                            <span asp-validation-for="TenNguoiDaiDien" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="ChucVu" class="control-label"></label>
+                                            <input asp-for="ChucVu" class="form-control" />
+                                            <span asp-validation-for="ChucVu" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="SDTNguoiDaiDien" class="control-label"></label>
+                                            <input asp-for="SDTNguoiDaiDien" class="form-control" />
+                                            <span asp-validation-for="SDTNguoiDaiDien" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="EmailNguoiDaiDien" class="control-label"></label>
+                                            <input asp-for="EmailNguoiDaiDien" class="form-control" />
+                                            <span asp-validation-for="EmailNguoiDaiDien" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="MoTa" class="control-label"></label>
+                                            <input asp-for="MoTa" class="form-control" />
+                                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="submit" name="type_sumit" value="save" class="btn btn-primary">Lưu</button>
+                                    <button type="submit" name="type_sumit" value="save_create" class="btn btn-primary">Lưu và thêm mới</button>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+

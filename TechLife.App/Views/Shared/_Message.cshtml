@@ -1,0 +1,24 @@
+﻿@using TechLife.Common
+@{
+    var obj = Model;
+    var result = TempData.GetAlert();
+    if (result != null)
+    {
+        <div id="toast-container" class="toasts-bottom-right">
+
+            @if (result.IsSuccessed)
+            {
+                <div class="toast toast-success" aria-live="polite">
+                    <div class="toast-message">@result.Message</div>
+                </div>
+            }
+            else
+            {
+                <div class="toast toast-error" aria-live="assertive">
+                    <div class="toast-message">@result.Message</div>
+                </div>
+            }
+
+        </div>
+    }
+}

@@ -1,0 +1,226 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"]; ;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model X.PagedList.IPagedList<TechLife.App.Areas.HueCIT.Models.ThoiTietTrinhDien>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@using TechLife.Common;
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css" />
+}
+
+    <div class="content-wrapper" style="min-height: 1363.2px;">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                            <li class="breadcrumb-item active">Dữ liệu dịch vụ du lịch</li>
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <form method="get" style="width:100%">
+                                <div class="card-header">
+                                    <h3 class="card-title">@ViewData["Title"]</h3>
+                                    <div class="card-tools">
+                                        <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                            <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                        </a>
+                                        <a id="dongBoBtn" asp-controller="ThoiTiet" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                            <i class="fas fa-sync"></i> Đồng bộ
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Thời gian</label>
+                                                <div class="m-custom-input-wrapper">
+                                                    <input onchange="this.form.submit()" type="date" id="tungay" name="tungay" value="@ViewBag.TuNgay" class="form-control m-custom-input" />
+                                                    <input onchange="this.form.submit()" type="date" id="denngay" name="denngay" value="@ViewBag.DenNgay" class="form-control m-custom-input" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%" class="text-center">Stt</th>
+                                                        <th width="15%" class="text-center">Thời gian</th>
+                                                        <th class="text-center">Tiêu đề</th>
+                                                        <th width="15%" class="text-center">Ảnh biểu tượng</th>
+                                                        <th width="10%" class="text-center">Nhiệt độ</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                    if (Model != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Count</strong> trên tổng số <strong>@Model.TotalItemCount</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">Ngày @((d.ThoiGian).ToString("dd/MM/yyyy"))</td>
+                                                                <td class="text-center">
+                                                                    <strong>
+                                                                        <a href="#" data-toggle="modal" data-target=".thoitiet-@d.ThoiTietID">
+                                                                            @d.TieuDe
+                                                                        </a>
+                                                                    </strong>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <img src="@d.AnhBieuTuong" alt="Biểu tượng thời tiết trống" width="50" height="50">
+                                                                </td>
+                                                                <td class="text-center">@d.NhietDo</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @{
+                                if (Model.PageCount > 1)
+                                {
+                                    <!-- Phân trang -->
+                                    <div class="card-footer">
+                                        <div class="m-paging">
+                                            @Html.PagedListPager(Model, trang => Url.Action("Index", new { trang, tungay = ViewBag.TuNgay, denngay = ViewBag.DenNgay }),
+                                    new PagedListRenderOptions{
+                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                    LinkToNextPageFormat = "<i class='fas fa-angle-right'></i>",
+                                    LinkToPreviousPageFormat = "<i class='fas fa-angle-left'></i>",
+                                    LinkToLastPageFormat = "<i class='fas fa-angle-double-right'></i>",
+                                    LinkToFirstPageFormat = "<i class='fas fa-angle-double-left'></i>",
+                                    MaximumPageNumbersToDisplay = 3,
+                                    EllipsesElementClass = "d-none"
+                                    }
+                                    )
+                                        </div>
+                                    </div>
+                                    <!-- Kết thúc -->
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+@{
+    //
+    foreach (var item in Model)
+    {
+        <div class="modal fade thoitiet-@item.ThoiTietID" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div>
+                        <div class="card-header">
+                            <h6 class="m-title">@item.TieuDe</h6>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <img class="col-md-2" src="@item.AnhBieuTuong" alt="Biểu tượng thời tiết trống">
+                                    <div class="col-md-10">
+                                        <p class="mb-1">
+                                            Nhiệt độ từ <span class="m-text-bold">@item.NhietDo</span>
+                                        </p>
+                                        <p class="m-text-bold">
+                                            @item.TenSymbol
+                                        </p>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-1">
+                                <p>
+                                    @item.VungDongBang
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    @item.VungNui
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    @item.ThanhPhoHue
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    @item.ThoiTietTrenBien
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    @item.DuBaoCapChayRung
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    @item.DuBao
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    
+}
+
+@section scripts
+    {
+
+}
+

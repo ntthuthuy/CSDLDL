@@ -1,0 +1,130 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.NhaCungCap;
+@model PagedResult<NhaCungCapVm>
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                    @if (User.IsInRole("create_donviquanly") || User.IsInRole("root"))
+                                    {
+                                        <a href="/Hoso/Themnhacungcap/" class="btn btn-xs btn-success">
+                                            <i class="fas fa-plus-circle"></i> Thêm mới
+                                        </a>
+                                    }
+
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th>Thông tin nhà cung cấp dịch vụ</th>
+                                                    <th width="15%" class="text-center">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null && Model.Items != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model.Items)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td>
+                                                                    <strong>
+                                                                        <a href="/Hoso/Chitiet_nhacungcap/?id=@HashUtil.EncodeID(d.Id.ToString())">
+                                                                            @d.Ten
+                                                                        </a>
+                                                                    </strong>
+                                                                    <br /><strong>Số điện thoại:</strong> @d.SDTDoanhNghiep
+                                                                    <br /><strong>Email:</strong> @d.EmailDoanhNghiep
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (User.IsInRole("edit_donviquanly") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Sửa cơ sở lưu trú" href="/Hoso/Suanhacungcap/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+
+                                                                    }
+                                                                    @if (User.IsInRole("delete_donviquanly") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Xóa hồ sơ cơ sở lưu trú" data-title="Bạn muốn xóa hồ sơ nhà cung cấp @d.Ten ?" data-url="/Hoso/Xoanhacungcap/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+
+                                                                    }
+
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @{
+                                if (Model.TotalRecords > Model.PageSize)
+                                {
+                                    <div class="card-footer">
+                                        @await Component.InvokeAsync("Paging", new { page = Model })
+                                    </div>
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+

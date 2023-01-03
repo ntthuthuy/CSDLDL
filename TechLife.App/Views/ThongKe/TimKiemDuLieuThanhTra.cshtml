@@ -1,0 +1,151 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.HoSoThanhTra;
+
+@model PagedResult<HoSoThanhTraVm>
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <form id="form" method="get" asp-action="Index">
+                        <div class="position-relative form-group">
+                            <select class="form-control" name="Id" id="Id" asp-items="ViewBag.ListLoaiThongKe">
+                                <option value="">Chọn loại thống kê</option>
+                            </select>
+                        </div>
+                    </form>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="float-right" style="padding:3px;">
+                                    <button type="button" title="Tìm kiếm"  data-url="@Context.Request.GetRawUrl("/ThongKe/SearchThanhTra/")"  data-toggle="modal" data-target="#modal" class="btn btn-success popup"><i class="fas fa-search"></i> Nhiều hơn</button>
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+
+                                    </div>
+                                    <div class="col-md-3">
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th width="15%" class="text-center">Thời gian</th>
+                                                    <th>Thông tin cơ sở đã thanh, kiểm tra</th>
+                                                    <th width="40%" class="text-center">Nội dung/Kết quả</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null && Model.Items != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model.Items)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">
+                                                                    @Functions.GetDatetimeToVn(d.ThoiGian) <br />
+                                                                </td>
+                                                                <td>
+                                                                    <strong>
+                                                                        @d.HoSo.Ten
+                                                                    </strong>
+                                                                    <br /><strong>Số điện thoại:</strong> @d.HoSo.SoDienThoai
+                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.HoSo.SoNha, d.HoSo.DuongPho, d.HoSo.PhuongXa, d.HoSo.QuanHuyen)
+                                                                </td>
+                                                                <td>
+                                                                    <strong>Nội dung:</strong> @d.NoiDung
+                                                                    <br />
+                                                                    @if (d.KetQua > 0)
+                                                                    {
+                                                                        <strong class="text-danger">[@d.KetQuaThanhTra]</strong>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <strong class="text-success">[@d.KetQuaThanhTra]</strong>
+                                                                    }
+                                                                    <br />
+                                                                    @d.KetLuan
+                                                                    <br />
+
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @{
+                                if (Model.TotalRecords > Model.PageSize)
+                                {
+                                    <div class="card-footer">
+                                        @await Component.InvokeAsync("Paging", new { page = Model })
+                                    </div>
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#Id").off("change").on("change", function () {
+                document.getElementById('form').submit();
+            });
+        })
+    </script>
+}
+

@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@using TechLife.Common;
+@model NavigationViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@{
+    string action = Context.Request.GetRawUrl();
+    if (ViewData["searchUrl"] != null)
+    {
+        action = ViewData["searchUrl"].ToString();
+    }
+}
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav" id="nav_show_hidd">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+    </ul>
+    <!-- SEARCH FORM -->
+    <form class="form-inline ml-3" method="get" action="@action">
+        <div class="input-group input-group-sm">
+            <input name="search" class="form-control form-control-navbar" type="search" value="@Context.Request.Query["search"].ToString()" placeholder="Từ khóa tìm kiếm..." aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-navbar" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <form id="frmChangeLanguage" action="/Home/Language" method="post"
+                  class="d-none d-md-inline-block form-inline ml-0 mr-0 mr-md-3 my-2 my-md-0">
+                <input type="hidden" name="ReturnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                <select class="form-control" onchange="this.form.submit()" asp-for="CurrentLanguageId" asp-items="Model.Languages">
+                    @*<option value="vn">Tiếng Việt</option>
+                        <option value="en">Tiếng Anh</option>
+                        <option value="ja">Tiếng Nhật</option>*@
+                </select>
+            </form>
+        </li>
+        <!-- Messages Dropdown Menu -->
+        <li class="nav-item">
+            <a href="/Sso/Home/Logout/?ReturnUrl=@Model.ReturnUrl" class="nav-link">
+                <span id="user_info"><i class="fas fa-sign-out-alt"></i> Thoát</span>
+            </a>
+        </li>
+    </ul>
+</nav>

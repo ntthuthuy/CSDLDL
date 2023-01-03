@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>da3f9125-a865-4306-87fa-82beedd3f677</UserSecretsId>
+    <OutputType>WinExe</OutputType>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\user-content\0f88ecd0-4377-45ed-b12c-75ad4910397b.jpg" />
+    <Content Remove="wwwroot\user-content\1a2d6a79-59f0-4269-b090-60c8057e12d6.jpg" />
+    <Content Remove="wwwroot\user-content\6903b4ae-f8be-4972-833a-d59c429a6ee4.jpg" />
+    <Content Remove="wwwroot\user-content\a70a0464-a1f6-4377-8e3a-0a91bc984c5f.jpg" />
+    <Content Remove="wwwroot\user-content\fbbada5d-7461-4ae4-84c0-b7082e2a213d.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\user-content\0f88ecd0-4377-45ed-b12c-75ad4910397b.jpg" />
+    <None Include="wwwroot\user-content\1a2d6a79-59f0-4269-b090-60c8057e12d6.jpg" />
+    <None Include="wwwroot\user-content\6903b4ae-f8be-4972-833a-d59c429a6ee4.jpg" />
+    <None Include="wwwroot\user-content\a70a0464-a1f6-4377-8e3a-0a91bc984c5f.jpg" />
+    <None Include="wwwroot\user-content\fbbada5d-7461-4ae4-84c0-b7082e2a213d.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechLife.Common\TechLife.Common.csproj" />
+    <ProjectReference Include="..\TechLife.Data\TechLife.Data.csproj" />
+    <ProjectReference Include="..\TechLife.Service\TechLife.Service.csproj" />
+  </ItemGroup>
+</Project>

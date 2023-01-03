@@ -1,0 +1,205 @@
+﻿@model TechLife.Model.ThongKe.LoaiThongKeRequest
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <form id="form" method="get" asp-action="Index">
+                        <div class="position-relative form-group">
+                            <select class="form-control" asp-for="Id" asp-items="ViewBag.ListLoaiThongKe">
+                                <option value="">Chọn loại thống kê</option>
+                            </select>
+                            <span asp-validation-for="Id" class="text-danger"></span>
+                        </div>
+                    </form>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-gray">
+                        <div class="card-header">
+                            <h3 class="card-title">Số lượng nhà hàng theo loại</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th>Loại nhà hàng</th>
+                                        <th class="tcenter" style="width: 40%">Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int total = 0;
+                                        var loaihinh = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LoaiHinhRpt;
+                                        if (loaihinh != null && loaihinh.Count > 0)
+                                        {
+                                            int count = 0;
+                                            foreach (var x in loaihinh)
+                                            {
+                                                count++;
+                                                total += x.SoLuong;
+                                                <tr>
+                                                    <td>@count</td>
+                                                    <td>@x.Ten</td>
+                                                    <td class="tcenter"><span class="badge bg-success">@x.SoLuong</span></td>
+                                                </tr>
+                                            }
+
+                                        }
+                                        <tr><td colspan="2"><strong>Tổng số </strong></td><td class="tcenter"><strong class="badge bg-danger">@total</strong></td></tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card card-outline card-danger">
+                        <div class="card-header">
+                            <h3 class="card-title">Biểu đồ số lượng nhà hàng theo loại</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <canvas id="loaihinh" style="min-height: 300px;height: 300px;max-height: 300px;max-width: 100%;"></canvas>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <div class="col-md-12">
+                    <div class="card card-outline card-danger">
+                        <div class="card-header">
+                            <h3 class="card-title">Biểu đồ số lượng nhà hàng theo địa bàn</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <canvas id="diaban" style="min-height: 300px;height: 300px;max-height: 300px;max-width: 100%;"></canvas>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+            </div>
+
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts{
+    @{
+        var listLoaiHinh = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LoaiHinhRpt;
+        var listDiaBan = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.DiaBanRpt;
+    }
+    <script>
+        $(document).ready(function () {
+            loadCharLoaiHinh();
+            loadCharDiaBan();
+            $(document).ready(function () {
+                $("#Id").off("change").on("change", function () {
+                    document.getElementById('form').submit();
+                });
+            });
+        })
+        function loadCharLoaiHinh() {
+            var content =@Html.Raw(Json.Serialize(listLoaiHinh.Select(v => v.Ten).ToList()));
+            var soluong =@Html.Raw(Json.Serialize(listLoaiHinh.Select(v => v.SoLuong).ToList()));
+            var donutChartCanvas = $('#loaihinh').get(0).getContext('2d')
+            var donutData = {
+                labels: content,
+                datasets: [
+                    {
+                        data: soluong,
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#3e2767', '#c5d809', '#8bc34a'],
+                    }
+                ]
+            }
+            var donutOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var donutChart = new Chart(donutChartCanvas, {
+                type: 'doughnut',
+                data: donutData,
+                options: donutOptions
+            })
+        }
+        function loadCharDiaBan() {
+            var content =@Html.Raw(Json.Serialize(listDiaBan.Select(v => v.Ten).ToList()));
+            var soluong =@Html.Raw(Json.Serialize(listDiaBan.Select(v => v.SoLuong).ToList()));
+            var donutChartCanvas = $('#diaban').get(0).getContext('2d')
+            var donutData = {
+                labels: content,
+                datasets: [
+                    {
+                        data: soluong,
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#3e2767', '#c5d809', '#8bc34a'],
+                    }
+                ]
+            }
+            var donutOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var donutChart = new Chart(donutChartCanvas, {
+                type: 'doughnut',
+                data: donutData,
+                options: donutOptions
+            })
+        }
+    </script>
+}
+
+
+

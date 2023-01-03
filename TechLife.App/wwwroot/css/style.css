@@ -1,0 +1,134 @@
+﻿.m-paging ul li {
+    padding: 0.25rem 0.5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+    color: #007bff;
+    background-color: #fff;
+    margin-left: -1px;
+}
+
+    .m-paging ul li.disabled {
+        color: #000;
+    }
+
+    .m-paging ul li.active {
+        color: red;
+        background-color: azure;
+    }
+
+.upload-remove {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    z-index: 99;
+    cursor: pointer;
+    color: #007bff;
+}
+
+#map {
+    width: 100%;
+    height: 500px;
+}
+
+.m-custom-input-wrapper {
+    width: 100%;
+    display: flex;
+}
+
+.m-custom-input {
+    width: calc(50% - 4px);
+    display: flex;
+}
+
+.m-custom-input-wrapper .m-custom-input:first-child {
+    margin-right: 8px;
+}
+
+.group-2-wrapper > div {
+    width: calc(50% - 4px);
+}
+    .group-2-wrapper > div:not(:last-child) {
+        padding-right: 8px;
+    }
+
+.group-3-wrapper > div {
+    width: calc(33% - 5px);
+}
+
+    .group-3-wrapper > div:not(:last-child) {
+        padding-right: 8px;
+    }
+
+.tab-content-title {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.m-img-full {
+    width: 100%;
+    height: 100%;
+}
+
+.m-tag {
+    cursor: default !important;
+}
+
+.m-text-bold {
+    font-weight: 700;
+}
+
+.m-icon-pa {
+    font-size: 18px;
+    margin-right: 6px;
+}
+
+.m-icon-text-pa {
+    font-size: 18px;
+    margin-right: 6px;
+}
+
+.pa-nd-body {
+    background-color: #dfeff7;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.m-img-carousel {
+    height: 600px !important;
+    width: 100%;
+}
+
+.m-side-panel-title {
+    display: inline-block;
+}
+
+.m-title {
+    color: #007bff;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.modal-detail-title {
+    display: inline-block;
+    font-weight: 600;
+}
+
+.modal-detail-content {
+    padding-left: 6px;
+}
+
+.m-add-images > div {
+    display: inline-block;
+}
+
+.m-add-images > .add-images {
+    width: 200px;
+    margin-right: 8px;
+}
+
+.mt-file {
+    vertical-align: top;
+    width: calc(100% - 225px);
+}

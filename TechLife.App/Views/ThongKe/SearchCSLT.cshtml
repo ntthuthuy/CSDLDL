@@ -1,0 +1,53 @@
+﻿@model TechLife.Model.DuLieuDuLich.DuLieuDuLichCSLTSearchRequest
+<div style="max-width:1000px;">
+    <div class="modal-content">
+        <form method="get" action="/Thongke">
+            <div class="modal-header">
+                <h4 class="modal-title">Tìm kiếm nâng cao</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Keyword" class="control-label"></label>
+                            <input asp-for="Keyword" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LoaiHinhId" class="control-label">Loại hình</label>
+                            <select asp-for="LoaiHinhId" asp-items="Model.LoaiHinhItems" class="form-control select2" style="width:100%">
+                                <option value="0">Tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Hạng Sao</label>
+                            <select asp-for="HangSao" class="form-control select2" style="width:100%">
+                                <option value="">Chọn</option>
+                                <option value="0">0 Sao</option>
+                                <option value="1">1 Sao</option>
+                                <option value="2">2 Sao</option>
+                                <option value="3">3 Sao</option>
+                                <option value="4">4 Sao</option>
+                                <option value="5">5 Sao</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input hidden name="Id" value="thongkecosoluutru" />
+                <button type="button" data-dismiss="modal" class="btn btn-danger">Hủy</button>
+                <button type="submit" name="type_submit" value="search" class="btn btn-success">Tìm kiếm</button>
+                <button type="submit" name="type_submit" value="download" class="btn btn-primary"><i class="fa fa-download"></i> Xuất file excel</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

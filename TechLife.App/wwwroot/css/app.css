@@ -1,0 +1,34 @@
+﻿@media only screen and (max-width: 600px) {
+    #user_info {
+        display: none;
+    }
+}
+
+.page-item .active {
+    color: red;
+    background-color: azure;
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.card-header > .card-tools {
+    margin-right: 0 !important;
+}
+
+[class*=sidebar-dark-] .nav-treeview > .nav-item > .nav-link.active, [class*=sidebar-dark-] .nav-treeview > .nav-item > .nav-link.active:focus, [class*=sidebar-dark-] .nav-treeview > .nav-item > .nav-link.active {
+    background-color: #eaebeb3d !important;
+    color: #e70e0e !important;
+}
+.tcenter{
+    text-align:center;
+}
+.brand-link .brand-image {
+    width: 35px !important;
+    height: 35px !important;
+}

@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"];;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common;
+@model X.PagedList.IPagedList<TechLife.App.Areas.HueCIT.Models.LeHoiTrinhDien>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using TechLife.Common;
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css"/>
+}
+
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Dữ liệu chuyên ngành liên thông</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                    @if (User.IsInRole("create_lienthonglehoi") || User.IsInRole("root"))
+                                    {
+                                        <a href="/HueCIT/LeHoi/Add" class="btn btn-xs btn-success">
+                                            <i class="fas fa-plus-circle"></i> Thêm mới
+                                        </a>
+                                    }
+                                    <a asp-controller="LeHoi" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                        <i class="fas fa-sync"></i> Đồng bộ thông tin
+                                    </a>
+                                    <a asp-controller="LeHoi" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                        <i class="fas fa-sync"></i> Đồng bộ không gian
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Loại lễ hội</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="loaihinh" name="loaihinh" asp-items="ViewBag.listLoaiLeHoi">
+                                                <option value="-1">Tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Cấp quản lý</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="cap" name="cap" asp-items="ViewBag.listCapQuanLyLeHoi">
+                                                <option value="-1">Tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Địa điểm</label>
+                                            <input id="diadiem" name="diadiem" class="form-control" />
+                                        </div>
+                                    </div>*@
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Quận, huyện, thành phố</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
+                                                <option value="-1">Tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Đồng bộ</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="nguon" name="nguon" asp-items="ViewBag.listNguonDongBo">
+                                                <option value="-1">tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Thời gian</label>
+                                            <div class="m-custom-input-wrapper">
+                                                <input onchange="this.form.submit()" type="date" id="tungay" name="tungay" value="@ViewBag.TuNgay" class="form-control m-custom-input" />
+                                                <input onchange="this.form.submit()" type="date" id="denngay" name="denngay" value="@ViewBag.DenNgay" class="form-control m-custom-input" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th width="15%" class="text-center">Loại lễ hôi</th>
+                                                    @*<th width="15%" class="text-center">Ảnh đại diện</th>*@
+                                                    <th class="text-center">Tên lễ hội</th>
+                                                    <th width="15%" class="text-center">Cấp quản lý</th>
+                                                    <th width="5%" class="text-center">Bản đồ</th>
+                                                    <th width="15%" class="text-center">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="6">Danh sách hiển thị <strong>@Model.Count</strong> trên tổng số <strong>@Model.TotalItemCount</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">@d.LoaiLeHoi</td>
+                                                                @*<td class="text-center">@d.Loai</td>*@
+                                                                <td class="text-center">
+                                                                    <strong>
+                                                                        <a href="/HueCIT/LeHoi/Detail?id=@HashUtil.EncodeID(d.ID.ToString())">
+                                                                            @d.TenLeHoi
+                                                                        </a>
+                                                                    </strong></td>
+                                                                <td class="text-center">@d.CapQuanLy</td>
+                                                                <td class="text-center">
+                                                                    @if (d.X != null && d.X != 0 && d.Y != null && d.Y != 0)
+                                                                    {
+                                                                        <input type="checkbox" checked onclick="return false;" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="checkbox" onclick="return false;" />
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (User.IsInRole("edit_lehoi") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Sửa lễ hội" href="/HueCIT/LeHoi/Edit?id=@HashUtil.EncodeID(d.ID.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+
+                                                                    }
+                                                                    @if (User.IsInRole("delete_lehoi") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Xóa lễ hội" data-title="Bạn muốn xóa lễ hội @d.TenLeHoi ?" data-url="/HueCIT/LeHoi/Delete?id=@HashUtil.EncodeID(d.ID.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="6">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @{
+                                if (Model.PageCount > 1)
+                                {
+                                    <!-- Phân trang -->
+                                    <div class="card-footer">
+                                        <div class="m-paging">
+                                            @Html.PagedListPager(Model, trang => Url.Action("Index", new { trang, loaihinh = ViewBag.LoaiHinh, cap = ViewBag.Cap, diadiem = ViewBag.DiaDiem, tungay = ViewBag.TuNgay, denngay = ViewBag.DenNgay, nguon = ViewBag.Nguon }),
+                                                new PagedListRenderOptions{
+                                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                                    LinkToNextPageFormat = "<i class='fas fa-angle-right'></i>",
+                                                    LinkToPreviousPageFormat = "<i class='fas fa-angle-left'></i>",
+                                                    LinkToLastPageFormat = "<i class='fas fa-angle-double-right'></i>",
+                                                    LinkToFirstPageFormat = "<i class='fas fa-angle-double-left'></i>",
+                                                    MaximumPageNumbersToDisplay = 3,
+                                                    EllipsesElementClass = "d-none"
+                                                }
+                                            )
+                                        </div>
+                                    </div>
+                                    <!-- Kết thúc -->
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+@section scripts{
+}

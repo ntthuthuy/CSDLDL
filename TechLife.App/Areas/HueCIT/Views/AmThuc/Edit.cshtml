@@ -1,0 +1,253 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"];;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common;
+@using TechLife.Common.Enums;
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@model TechLife.App.Areas.HueCIT.Models.AmThucRequestMod
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css"/>
+}
+<style>
+    #mapgg {
+        margin: 0 auto;
+        width: 100%;
+        height: 300px;
+    }
+
+    .custom-file-input {
+        height: 100% !important
+    }
+
+    .add-images:hover {
+        box-shadow: 5px 5px rgba(0, 0, 0, 0.05) !important;
+    }
+</style>
+
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Dữ liệu chuyên ngành liên thông</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="Edit" enctype="multipart/form-data">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" asp-for="DuLieuAmThuc.ID" />
+                                <div class="col-sm-12">
+                                    <div class="card card-primary card-outline card-outline-tabs">
+                                        <div class="card-header p-0 border-bottom-0">
+                                            <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Thông tin chung</a>
+                                                </li>
+                                               <li class="nav-item">
+                                                    <a class="nav-link" id="custom-tabs-four-image-tab" data-toggle="pill" href="#custom-tabs-four-image" role="tab" aria-controls="custom-tabs-four-image" aria-selected="true">Thông tin hình ảnh, video</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="tab-content" id="custom-tabs-four-tabContent">
+                                                <!-- Thông tin hồ sơ -->
+                                                <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    <div class="form-row">
+                                                        <div class="col-12 col-md=6">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tên món ăn thức uống <span class="text-red">*</span></label>
+                                                                <input asp-for="DuLieuAmThuc.TenMon" class="form-control" data-val-required="Vui lòng nhập tên món ăn thức uống."/>
+                                                                <span asp-validation-for="DuLieuAmThuc.TenMon" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-9 col-md-4">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Loại món ăn thức uống:</label>
+                                                                <select class="form-control" asp-for="DuLieuAmThuc.MaLoai" asp-items="ViewBag.listLoai">
+                                                                    <option value="0">Chọn</option>
+                                                                </select>
+                                                                <span asp-validation-for="DuLieuAmThuc.MaLoai" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3 col-md-2">
+                                                            <div class="position-relative form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" asp-for="DuLieuAmThuc.ThucUong">
+                                                                    <label class="form-check-label">Thức uống</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Mô tả:</label>
+                                                                <textarea asp-for="DuLieuAmThuc.MoTa" class="form-control" rows="10"></textarea>
+                                                                <span asp-validation-for="DuLieuAmThuc.MoTa" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Thông tin hình ảnh -->
+                                                <div class="tab-pane fade show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    @{
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <table class="table table-hover table-striped table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="5%" class="text-center">STT</th>
+                                                                            <th width="15%" class="text-center">Hình ảnh</th>
+                                                                            <th width="70%" class="text-center">Tên file</th>
+                                                                            <th width="10%" class="text-center">Xóa</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @{
+                                                                            if (Model.DuLieuAmThuc.Files != null && Model.DuLieuAmThuc.Files.Count() > 0)
+                                                                            {
+                                                                                int count = 0;
+                                                                                foreach (var img in Model.DuLieuAmThuc.Files)
+                                                                                {
+                                                                                    string ck = "";
+                                                                                    count++;
+                                                                                    <tr>
+                                                                                        <th class="text-center">@count</th>
+                                                                                        <td class="tcenter">
+                                                                                            @if(img.LoaiFile == 1)
+                                                                                            {
+                                                                                                <a href="@(Configuration["BaseAddress"] + img.DuongDan)" data-toggle="lightbox" data-title="@img.TenFile" data-gallery="gallery">
+                                                                                                    @if (img.DuongDan.StartsWith("https://sohoa.thuathienhue.gov.vn/uploadfiles"))
+                                                                                                    {
+                                                                                                        <img src="@(img.DuongDan)" class="img-fluid mb-2" alt="@img.TenFile" />
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <img src="@(Configuration["BaseAddress"] + img.DuongDan)" class="img-fluid mb-2" alt="@img.TenFile" />
+                                                                                                    }
+                                                                                                    
+                                                                                                </a>
+                                                                                            }
+                                                                                            else if(img.LoaiFile == 2)
+                                                                                            {
+                                                                                                <video class="m-img-full mb-2" controls>
+                                                                                                    <source src="@(Configuration["BaseAddress"] + img.DuongDan)" type="video/mp4" alt="@img.TenFile" />
+                                                                                                </video>
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <p>@img.TenFile</p>
+                                                                                        </td>
+                                                                                        <td class="tcenter">
+                                                                                            <a title="Xóa hình ảnh" href="javasctipt:void(0)" data-title="Bạn muốn xóa hình ảnh này" data-url="/HueCIT/AmThuc/DeleteFiles?id=@img.ID" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    <div class="row" id="images">
+                                                        <div class="col-sm-2">
+                                                            <div class="position-relative form-group add-images" id="img_1" style="background-image: url('https://i.stack.imgur.com/mwFzF.png');background-size: cover;height: 175px ">
+                                                                <input asp-for="Files.Images" type="file" data-id="1" class="form-control custom-file-input upload-image btn" />
+                                                                <i data-parent="img_1" class="fas fa-times upload-remove d-none"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.card -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="submit" name="type_sumit" value="save" class="btn btn-primary">Lưu</button>
+                                    <button type="submit" name="type_sumit" value="save_create" class="btn btn-primary">Lưu và thêm mới</button>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function imageIsLoadedCustom(num, e) {
+                var id = "img_" + num;
+                document.getElementById(id).style.backgroundImage = "url('" + e.target.result + "')";
+                var next = num + 1;
+                var html = '<div class="col-sm-2"><div class="position-relative form-group add-images" id="img_' + next + '" style="background-image: url(\'https://i.stack.imgur.com/mwFzF.png\');height: 175px;background-size: cover "><label class="control-label"></label><input name="Files.Images" id="Files.Images" type="file" data-id="' + next + '" class="form-control custom-file-input upload-image" /><i data-parent="img_' + next + '" class="fas fa-times upload-remove d-none"></i></div></div>';
+                $("#images").append(html);
+                $(".upload-image").off("change").on("change", (function () {
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        var number = $(this).data("id");
+                        reader.onload = imageIsLoadedCustom.bind(reader, number);
+                        reader.readAsDataURL(this.files[0]);
+                        $('.upload-remove[data-parent="img_' + number + '"]').removeClass('d-none');
+                    }
+                }));
+
+            };
+
+            $(".upload-image").off("change").on("change", (function () {
+                if (this.files && this.files[0]) 
+                {
+                    var reader = new FileReader();
+                    var number = $(this).data("id");
+                    reader.onload = imageIsLoadedCustom.bind(reader, number);
+                    reader.readAsDataURL(this.files[0]);
+                    $('.upload-remove[data-parent="img_' + number + '"]').removeClass('d-none');
+                }
+            }));
+
+            $(document).on( "click", ".upload-remove", function() {
+                let pa = $(this).attr('data-parent');
+                if(pa) {
+                    $('#' + pa + '').parent().remove();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,43 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.HoSoThanhTra;
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@model PagedResult<HoSoThanhTraVm>
+<div style="max-width:1000px;">
+    <div class="modal-content">
+        <form method="get" action="/Thongke">
+            <div class="modal-header">
+                <h4 class="modal-title">Tìm kiếm nâng cao</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">                  
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label class="control-label">Cơ sở thanh / kiểm tra</label>
+                            <select  class="form-control" id="hoso" name="hoso" asp-items="ViewBag.listHoSo">
+                                <option value="-1">tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label class="control-label">Kết luận</label>
+                            <select class="form-control" id="loaihinh" name="loaihinh" asp-items="ViewBag.listKetQua">
+                                <option value="-1">tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input hidden name="Id" value="thongkedulieuthanhtra" />
+                <button type="button" data-dismiss="modal" class="btn btn-danger">Hủy</button>
+                <button type="submit" name="type_submit" value="search" class="btn btn-success">Tìm kiếm</button>
+                <button type="submit" name="type_submit" value="download" class="btn btn-primary"><i class="fa fa-download"></i> Xuất file excel</button>
+            </div>
+        </form>
+    </div>
+</div>

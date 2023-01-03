@@ -1,0 +1,792 @@
+﻿@using TechLife.Common;
+@using TechLife.Common.Enums;
+@using TechLife.Model.DuLieuDuLich;
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@model DuLieuDuLichCreateRequest
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<style>
+    #mapgg {
+        margin: 0 auto;
+        width: 100%;
+        height: 200px;
+    }
+
+    .custom-file-input {
+        height: 100% !important
+    }
+
+    .add-images:hover {
+        box-shadow: 5px 5px rgba(0, 0, 0, 0.05) !important;
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="Themmoikhuvcgt" enctype="multipart/form-data">
+
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" asp-for="DuLieuDuLich.LinhVucKinhDoanhId" value="@Convert.ToInt32(LinhVucKinhDoanh.KhuVuiChoi)" />
+                                <div class="col-sm-12">
+                                    <div class="card card-primary card-outline card-outline-tabs">
+                                        <div class="card-header p-0 border-bottom-0">
+                                            <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Thông tin chung</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Dịch vụ</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">Thông tin lao động</a>
+                                                </li>
+                                               
+                                            </ul>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="tab-content" id="custom-tabs-four-tabContent">
+                                                <!-- Thông tin hồ sơ -->
+                                                <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    <div class="form-row">
+
+                                                        <div class="col-md-6">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tên  <span class="text-red">*</span></label>
+                                                                <input asp-for="DuLieuDuLich.Ten" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.Ten" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tên viết tắt</label>
+                                                                <input asp-for="DuLieuDuLich.TenVietTat" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.TenVietTat" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Loại hình <span class="text-red">*</span></label>
+                                                                <select class="form-control" asp-for="DuLieuDuLich.LoaiHinhId" asp-items="ViewBag.listLoaiKhuVuiChoi">
+                                                                    <option value="0">Chọn</option>
+                                                                </select>
+                                                                <span asp-validation-for="DuLieuDuLich.LoaiHinhId" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-2">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số nhà</label>
+                                                                <input asp-for="DuLieuDuLich.SoNha" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoNha" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Đường phố</label>
+                                                                <input asp-for="DuLieuDuLich.DuongPho" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.DuongPho" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Quận/ huyện/ thị xã <span class="text-red">*</span></label>
+
+                                                                <select class="form-control option-huyen" asp-for="DuLieuDuLich.QuanHuyenId" asp-items="ViewBag.listHuyen">
+                                                                    <option value="0">Chọn</option>
+                                                                </select>
+                                                                <span asp-validation-for="DuLieuDuLich.QuanHuyenId" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Xã/ phường/ thị trấn </label>
+                                                                <select class="form-control option-xa" asp-for="DuLieuDuLich.PhuongXaId" asp-items="ViewBag.listXa">
+                                                                    <option value="0">Chọn</option>
+                                                                </select>
+                                                                <span asp-validation-for="DuLieuDuLich.PhuongXaId" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số điện thoại</label>
+                                                                <input asp-for="DuLieuDuLich.SoDienThoai" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoDienThoai" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Fax</label>
+                                                                <input asp-for="DuLieuDuLich.Fax" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.Fax" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Email</label>
+                                                                <input asp-for="DuLieuDuLich.Email" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.Email" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Website</label>
+                                                                <input asp-for="DuLieuDuLich.Website" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.Website" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-6">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Công ty, đơn vị chủ quản </label>
+                                                                <select asp-for="DuLieuDuLich.NhaCungCapId" asp-items="ViewBag.listNhaCungCap" class="form-control ">
+                                                                    <option value="0">Chọn</option>
+                                                                </select>
+                                                                <span asp-validation-for="DuLieuDuLich.NhaCungCapId" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-6">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Họ và tên (Người đại diện)</label>
+                                                                <input asp-for="DuLieuDuLich.HoTenNguoiDaiDien" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.HoTenNguoiDaiDien" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Chức vụ</label>
+                                                                <input asp-for="DuLieuDuLich.ChucVuNguoiDaiDien" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.ChucVuNguoiDaiDien" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số điện thoại</label>
+                                                                <input asp-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số GPDK kinh doanh</label>
+                                                                <input asp-for="DuLieuDuLich.SoGiayPhep" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoGiayPhep" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Thời điểm bắt đầu kinh doanh</label>
+                                                                <input asp-for="DuLieuDuLich.ThoiDiemBatDauKinhDoanh" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.ThoiDiemBatDauKinhDoanh" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số lần chuyển chủ</label>
+                                                                <input asp-for="DuLieuDuLich.SoLanChuyenChu" type="number" value="0" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLanChuyenChu" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <label class="control-label"></label>
+                                                            <div class="form-check">
+                                                                <input input asp-for="DuLieuDuLich.IsDatChuan" type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1"><strong>Cơ sở đạt chuẩn</strong></label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số VB đạt chuẩn</label>
+                                                                <input asp-for="DuLieuDuLich.SoCVDatChuan" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoCVDatChuan" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Ngày công nhận</label>
+                                                                <input asp-for="DuLieuDuLich.NgayCVDatChuan" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.NgayCVDatChuan" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tổng số vốn đầu tư ban đầu (1000 VNĐ)</label>
+                                                                <input asp-for="DuLieuDuLich.TongVonDauTuBanDau" type="number" value="0" class="form-control text-right" />
+                                                                <span asp-validation-for="DuLieuDuLich.TongVonDauTuBanDau" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tổng số vốn đầu tư bổ sung</label>
+                                                                <input asp-for="DuLieuDuLich.TongVonDauTuBanDau" type="number" value="0" class="form-control text-right" />
+                                                                <span asp-validation-for="DuLieuDuLich.TongVonDauTuBanDau" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Diện tích mặt bằng (m2)</label>
+                                                                <input asp-for="DuLieuDuLich.DienTichMatBang" type="number" value="0" class="form-control text-right" />
+                                                                <span asp-validation-for="DuLieuDuLich.DienTichMatBang" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Diện tích mặt bằng xây dựng (m2)</label>
+                                                                <input asp-for="DuLieuDuLich.DienTichMatBangXayDung" type="number" value="0" class="form-control text-right" />
+                                                                <span asp-validation-for="DuLieuDuLich.DienTichMatBangXayDung" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Số tầng</label>
+                                                                <input asp-for="DuLieuDuLich.SoTang" type="number" value="0" class="form-control text-right" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoTang" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tổng diện tích xây dựng (m2)</label>
+                                                                <input asp-for="DuLieuDuLich.DienTichXayDung" type="number" value="0" class="form-control text-right" />
+                                                                <span asp-validation-for="DuLieuDuLich.DienTichXayDung" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @if (Model.DuLieuDuLich.DSVanBan != null && Model.DuLieuDuLich.DSVanBan.Count > 0)
+                                                    {
+                                                        <label class="control-label">Danh sách chứng chỉ, giấy phép</label>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <table class="table table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="40%">Tên gọi</th>
+                                                                            <th class="tcenter" width="15%">Đã được cấp</th>
+                                                                            <th width="30%">Nơi cấp</th>
+                                                                            <th class="tcenter">File</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @for (int i = 0; i < Model.DuLieuDuLich.DSVanBan.Count; i++)
+                                                                        {
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <input hidden class="form-control" type="text" asp-for="@Model.DuLieuDuLich.DSVanBan[i].TenGoi" />
+                                                                                    <input hidden class="form-control" type="text" asp-for="@Model.DuLieuDuLich.DSVanBan[i].GiayPhepId" />
+                                                                                    @Model.DuLieuDuLich.DSVanBan[i].TenGoi
+                                                                                </td>
+                                                                                <td class="tcenter">
+                                                                                    <input type="checkbox" asp-for="@Model.DuLieuDuLich.DSVanBan[i].IsStatus" />
+                                                                                </td>
+                                                                                <td class="tcenter">
+                                                                                    <input class="form-control" type="text" asp-for="@Model.DuLieuDuLich.DSVanBan[i].NoiCap" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    @if (!String.IsNullOrEmpty(Model.DuLieuDuLich.DSVanBan[i].FilePath))
+                                                                                    {
+                                                                                        <span class="text-red"><i class="fa fa-trash-alt"></i></span> <a href="@(Configuration["BaseAddress"] + Model.DuLieuDuLich.DSVanBan[i].FilePath)">@Model.DuLieuDuLich.DSVanBan[i].FileName</a>
+                                                                                        <br />
+                                                                                    }
+                                                                                    <div class="input-group">
+                                                                                        <div class="custom-file">
+                                                                                            <input asp-for="@Model.DuLieuDuLich.DSVanBan[i].Files">
+                                                                                            <input hidden class="form-control" type="text" asp-for="@Model.DuLieuDuLich.DSVanBan[i].FileName" />
+                                                                                            <input hidden class="form-control" type="text" asp-for="@Model.DuLieuDuLich.DSVanBan[i].FilePath" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <!-- /.col -->
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                <!-- Thông tin giá vé -->
+                                                <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                                                    @{
+                                                        if (Model.DuLieuDuLich.DSVeDichVu != null)
+                                                        {
+                                                            <table class="table table-condensed table-bordered table-responsive">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Dịch vụ</th>
+                                                                        <th width="15%">Giá vé</th>
+                                                                        <th width="45%">Mô tả</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="new-row">
+                                                                    @{
+                                                                        for (int i = 0; i < Model.DuLieuDuLich.DSVeDichVu.Count(); i++)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="vertical-align: middle;">
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSVeDichVu[i].Id" class="form-control text-right" />
+                                                                                    <input asp-for="@Model.DuLieuDuLich.DSVeDichVu[i].TenVe" class="form-control" />
+                                                                                </td>
+                                                                                <td style="vertical-align: middle;">
+                                                                                    <input asp-for="@Model.DuLieuDuLich.DSVeDichVu[i].GiaVe" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <textarea rows="3" asp-for="@Model.DuLieuDuLich.DSVeDichVu[i].MoTa" class="form-control"></textarea>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+                                                                </tbody>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-right">
+                                                                            <input type="hidden" id="rownum" value="0" />
+                                                                            <button type="button" class="btn btn-success add-rows">Thêm dòng</button>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        }
+                                                    }
+                                                </div>
+                                                <!-- Thông tin lao động -->
+                                                <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                                                    <div class="form-row">
+                                                        <div class="col-md-6">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Tổng số</label>
+                                                                <input asp-for="DuLieuDuLich.SoLuongLaoDong" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLuongLaoDong" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Độ tuổi trung bình Nam</label>
+                                                                <input asp-for="DuLieuDuLich.DoTuoiTBNam" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.DoTuoiTBNam" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Độ tuổi trung bình Nữ</label>
+                                                                <input asp-for="DuLieuDuLich.DoTuoiTBNu" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.DoTuoiTBNu" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ Việt Nam có giới tính Nam</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDNamTrongNuoc" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDNamTrongNuoc" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ Việt Nam có giới tính Nữ</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDNuTrongNuoc" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDNuTrongNuoc" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ Nước ngoài có giới tính Nam</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDNamNgoaiNuoc" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDNamNgoaiNuoc" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ Nước ngoài có giới tính Nữ</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDNuNgoaiNuoc" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDNuNgoaiNuoc" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ trực tiếp</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDTrucTiep" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDTrucTiep" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ gián tiếp</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDGianTiep" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDGianTiep" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ Thường xuyên</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDThuongXuyen" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDThuongXuyen" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">LĐ Thời vụ</label>
+                                                                <input asp-for="DuLieuDuLich.SoLDThoiVu" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.SoLDThoiVu" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    @{
+                                                        if (Model.DuLieuDuLich.DSBoPhan != null)
+                                                        {
+                                                            <strong>Số lượng lao động ở các bộ phận</strong>
+                                                            <hr />
+                                                            <table class="table table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th width="5%">#</th>
+                                                                        <th>Bộ phận</th>
+                                                                        <th width="25%">Số lượng</th>
+                                                                        <th width="25%">Đơn vị tính</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        int count = 0;
+                                                                        for (int i = 0; i < Model.DuLieuDuLich.DSBoPhan.Count(); i++)
+                                                                        {
+                                                                            count++;
+                                                                            <tr>
+                                                                                <td class="text-center">@count</td>
+                                                                                <td>
+                                                                                    @Model.DuLieuDuLich.DSBoPhan[i].BoPhan.TenBoPhan
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSBoPhan[i].BoPhan.Id" class="form-control text-right" />
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSBoPhan[i].BoPhan.TenBoPhan" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input asp-for="@Model.DuLieuDuLich.DSBoPhan[i].SoLuong" type="number" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <select class="form-control select2" asp-for="@Model.DuLieuDuLich.DSBoPhan[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
+                                                                                        <option value="0">---</option>
+                                                                                    </select>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+
+                                                        }
+                                                    }
+
+                                                    @{
+                                                        if (Model.DuLieuDuLich.DSTrinhDo != null)
+                                                        {
+                                                            <strong> Trình độ của lao động</strong>
+                                                            <hr />
+                                                            <table class="table table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th width="5%">#</th>
+                                                                        <th>Trình độ</th>
+                                                                        <th width="25%">Số lượng</th>
+                                                                        <th width="25%">Đơn vị tính</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        int count = 0;
+                                                                        for (int i = 0; i < Model.DuLieuDuLich.DSTrinhDo.Count(); i++)
+                                                                        {
+                                                                            count++;
+                                                                            <tr>
+                                                                                <td class="text-center">@count</td>
+                                                                                <td>
+                                                                                    @Model.DuLieuDuLich.DSTrinhDo[i].TrinhDo.TenTrinhDo
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSTrinhDo[i].TrinhDo.Id" class="form-control text-right" />
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSTrinhDo[i].TrinhDo.TenTrinhDo" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input asp-for="@Model.DuLieuDuLich.DSTrinhDo[i].SoLuong" type="number" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <select class="form-control select2" asp-for="@Model.DuLieuDuLich.DSTrinhDo[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
+                                                                                        <option value="0">---</option>
+                                                                                    </select>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+
+                                                        }
+                                                    }
+
+                                                    @{
+                                                        if (Model.DuLieuDuLich.DSNgoaiNgu != null)
+                                                        {
+                                                            <strong> Số lượng lao động sử dụng được các ngôn ngữ</strong>
+                                                            <hr />
+                                                            <table class="table table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th width="5%">#</th>
+                                                                        <th>Ngoại ngữ</th>
+                                                                        <th width="25%">Số lượng</th>
+                                                                        <th width="25%">Đơn vị tính</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        int count = 0;
+                                                                        for (int i = 0; i < Model.DuLieuDuLich.DSNgoaiNgu.Count(); i++)
+                                                                        {
+                                                                            count++;
+                                                                            <tr>
+                                                                                <td class="text-center">@count</td>
+                                                                                <td>
+                                                                                    @Model.DuLieuDuLich.DSNgoaiNgu[i].NgoaiNgu.TenNgoaiNgu
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSNgoaiNgu[i].NgoaiNgu.Id" class="form-control text-right" />
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSNgoaiNgu[i].NgoaiNgu.TenNgoaiNgu" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input asp-for="DuLieuDuLich.@Model.DuLieuDuLich.DSNgoaiNgu[i].SoLuong" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <select class="form-control select2" asp-for="@Model.DuLieuDuLich.DSNgoaiNgu[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
+                                                                                        <option value="0">---</option>
+                                                                                    </select>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+
+                                                        }
+                                                    }
+
+                                                    @{
+                                                        if (Model.DuLieuDuLich.DSMucDoTTNN != null)
+                                                        {
+                                                            <strong> Mức độ thành thạo ngôn ngữ của lao động</strong>
+                                                            <hr />
+                                                            <table class="table table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th width="5%">#</th>
+                                                                        <th>Mức độ thành thạo các ngôn ngữ</th>
+                                                                        <th width="25%">Số lượng</th>
+                                                                        <th width="25%">Đơn vị tính</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        int count = 0;
+                                                                        for (int i = 0; i < Model.DuLieuDuLich.DSMucDoTTNN.Count(); i++)
+                                                                        {
+                                                                            count++;
+                                                                            <tr>
+                                                                                <td class="text-center">@count</td>
+                                                                                <td>
+                                                                                    @Model.DuLieuDuLich.DSMucDoTTNN[i].MucDoThongThao.MucDo
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSMucDoTTNN[i].MucDoThongThao.Id" class="form-control text-right" />
+                                                                                    <input type="hidden" asp-for="@Model.DuLieuDuLich.DSMucDoTTNN[i].MucDoThongThao.MucDo" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input asp-for="@Model.DuLieuDuLich.DSMucDoTTNN[i].SoLuong" class="form-control text-right" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <select class="form-control select2" asp-for="@Model.DuLieuDuLich.DSMucDoTTNN[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
+                                                                                        <option value="0">---</option>
+                                                                                    </select>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+
+                                                        }
+                                                    }
+                                                </div>
+                                                <!-- Thông tin hình ảnh -->
+                                                <div class="tab-pane fade  show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    <div class="row" id="images">
+                                                        <div class="col-sm-2">
+                                                            <a title="Chọn ảnh" href="javascript:void(0)">
+                                                                <div class="position-relative form-group add-images" id="img_1" style="background-image: url('https://i.stack.imgur.com/mwFzF.png');background-size:100px;height:100px ">
+                                                                    <input asp-for="Images.Images" type="file" data-id="1" class="form-control custom-file-input upload-image btn" />
+                                                                </div>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Thông tin map -->
+                                                <div class="tab-pane fade  show" id="custom-tabs-four-map" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    <div class="form-row">
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Giờ mở cửa</label>
+                                                                <input asp-for="DuLieuDuLich.GioMoCua" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.GioMoCua" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Giờ đóng cửa</label>
+                                                                <input asp-for="DuLieuDuLich.GioDongCua" class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.GioDongCua" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Giới thiệu</label>
+                                                                <textarea asp-for="DuLieuDuLich.GioiThieu" class="form-control"> </textarea>
+                                                                <span asp-validation-for="DuLieuDuLich.GioiThieu" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="position-relative form-group">
+                                                                <label class="control-label">Vị trí trên bản đồ</label>
+                                                                <div id="mapgg"></div>
+                                                                <input type="hidden" class="position-mapp" asp-for="DuLieuDuLich.ViTriTrenBanDo" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.card -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="submit" name="type_sumit" value="save" class="btn btn-primary">Lưu</button>
+                                    <button type="submit" name="type_sumit" value="save_create" class="btn btn-primary">Lưu và thêm mới</button>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts
+{
+    <script src="http://maps.googleapis.com/maps/api/js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDY3SQvC3UrYllXWmCvvjL3xzHON8_delI&callback=initMap"></script>
+    <script src="~/js/map.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".upload-image").off("change").on("change", (function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    var number = $(this).data("id");
+                    reader.onload = imageIsLoaded.bind(reader, number);
+                    reader.readAsDataURL(this.files[0]);
+                }
+            }));
+            $(".option-huyen").on("change", (function () {
+                $.ajax({
+                    url: '/Home/ListDiaPhuongByParent/?id=' + $(this).val(),
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        var html = "<option data-id='Chọn' value='0'>Chọn</option>";
+                        for (let i = 0; i < data.length; i++) {
+                            var obj = data[i];
+                            html += "<option data-id='" + obj.tenDiaPhuong + "' value=" + obj.id + ">" + obj.tenDiaPhuong + "</option>"
+                        }
+                        $(".option-xa").html(html);
+                    }
+                });
+            }));
+
+            $(".add-rows").off("click").on("click", function () {
+                var numCurent = parseInt($("#rownum").val()) + 1;
+
+                var html = '<tr><td style="vertical-align: middle;"><input type="hidden" class="form-control text-right" data-val="true" data-val-required="The Id field is required." id="DuLieuDuLich_DSVeDichVu_0__Id" name="DuLieuDuLich.DSVeDichVu[' + numCurent
+                    + '].Id" value="0"><input class="form-control" type="text" id="DuLieuDuLich_DSVeDichVu_0__TenVe" name="DuLieuDuLich.DSVeDichVu[' + numCurent
+                    + '].TenVe" value=""></td><td style="vertical-align: middle;"><input class="form-control text-right" type="text" data-val="true" data-val-number="The field GiaVe must be a number." data-val-required="The GiaVe field is required." id="DuLieuDuLich_DSVeDichVu_' + numCurent
+                    + '__GiaVe" name="DuLieuDuLich.DSVeDichVu[' + numCurent
+                    + '].GiaVe" value="0.00"></td><td><textarea rows="3" class="form-control" id="DuLieuDuLich_DSVeDichVu_' + numCurent
+                    + '__MoTa" name="DuLieuDuLich.DSVeDichVu[' + numCurent + '].MoTa"></textarea></td></tr>';
+
+                $("#new-row").append(html);
+                $("#rownum").val(numCurent);
+            });
+        });
+        function updateMarkerPosition(latLng) {
+            document.getElementById('DuLieuDuLich_ViTriTrenBanDo').value = [
+                latLng.lat(),
+                latLng.lng()
+            ].join(', ');
+        }
+    </script>
+
+}
+

@@ -1,0 +1,142 @@
+﻿@using TechLife.Common;
+@using TechLife.Model;
+@model PagedResult<DiemVeSinhModel>
+
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    @if (User.IsInRole("create_vesinhcongcong") || User.IsInRole("root"))
+                                    {
+
+                                        <a href="/Hoso/Themdiemvesinh/" class="btn btn-xs btn-success">
+                                            <i class="fas fa-plus-circle"></i> Thêm mới
+                                        </a>
+                                    }
+
+                                    @*HueCIT*@
+                                    <a asp-area="HueCIT" asp-controller="DiemVeSinh" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                        <i class="fas fa-sync"></i> Đồng bộ thông tin
+                                    </a>
+                                    <a asp-area="HueCIT" asp-controller="DiemVeSinh" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                        <i class="fas fa-sync"></i> Đồng bộ không gian
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Đồng bộ</label>
+                                        <select onchange="this.form.submit()" class="form-control" id="nguon" name="nguon" asp-items="ViewBag.listNguonDongBo">
+                                            <option value="-1">tất cả</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <table class="table table-hover table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" class="text-center">STT</th>
+                                            <th>Điểm vệ sinh công cộng</th>
+                                            <th width="30%" class="text-center">Mô tả</th>
+                                            <th width="5%" class="text-center">Bản đồ</th>
+                                            <th width="15%" class="text-center">Chức năng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (Model != null)
+                                            {
+                                                int count = 0;
+                                                <tr>
+                                                    <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                </tr>
+                                                foreach (var d in Model.Items)
+                                                {
+                                                    count++;
+                                                    <tr>
+                                                        <td class="text-center">@count</td>
+                                                        <td>@d.Ten</td>
+                                                        <td>@d.ViTri</td>
+                                                        <td class="text-center">
+                                                            @if (d.X != null && d.X != 0 && d.Y != null && d.Y != 0)
+                                                            {
+                                                                <input type="checkbox" checked onclick="return false;" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="checkbox" onclick="return false;" />
+                                                            }
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if (User.IsInRole("edit_vesinhcongcong") || User.IsInRole("root"))
+                                                            {
+                                                                <a title="Sửa bản đồ điểm vệ sinh" href="/HueCIT/BanDo/EditDiemVeSinh/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-info btn-xs"><i class="fas fa-map"></i> Bản đồ</a>
+                                                            }
+                                                            @if (User.IsInRole("edit_vesinhcongcong") || User.IsInRole("root"))
+                                                            {
+                                                                <a title="Sửa điểm vệ sinh" href="/Hoso/Suadiemvesinh/?id=@d.Id" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+
+                                                            }
+                                                            @if (User.IsInRole("delete_vesinhcongcong") || User.IsInRole("root"))
+                                                            {
+                                                                <a title="Xóa điểm vệ sinh" data-title="Bạn muốn xóa điểm vệ sinh tại ví trí @d.ViTri ?" data-url="/Hoso/Xoadiemvesinh/?id=@HashUtil.EncodeID(d.Id.ToString())&ReturnUrl=/Hoso/Cosoluutru" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                            @{
+                                if (Model.TotalRecords > Model.PageSize)
+                                {
+                                    <div class="card-footer">
+                                        @await Component.InvokeAsync("Paging", new { page = Model })
+                                    </div>
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+

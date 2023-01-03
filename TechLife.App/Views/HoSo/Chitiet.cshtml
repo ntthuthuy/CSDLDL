@@ -1,0 +1,608 @@
+﻿@model TechLife.Model.DuLieuDuLich.DuLieuDuLichModel
+@using TechLife.Common;
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">@ViewData["Title"]</h3>
+                            <div class="card-tools">
+                                <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                    <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Thông tin cơ bản</h3>
+
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body" style="display: block;">
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Tên cơ sở: </label>
+                                                <span>@Model.Ten</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Loại hình: </label>
+                                                <span>@Model.LoaiHinh.TenLoai</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Viết tắt: </label>
+                                                <span>@Model.TenVietTat</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Địa chỉ: </label>
+                                                <span>@Functions.GetFullDiaPhuong(Model.SoNha, Model.DuongPho, Model.PhuongXa, Model.QuanHuyen)</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Số điện thoại: </label>
+                                                <span>@Model.SoDienThoai</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Email: </label>
+                                                <span>@Model.Email</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Fax: </label>
+                                                <span>@Model.Fax</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Website: </label>
+                                                <span>@Model.Website</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Họ tên người đại diện: </label>
+                                                <span>@Model.HoTenNguoiDaiDien</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Chức vụ: </label>
+                                                <span>@Model.ChucVuNguoiDaiDien</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Số điện thoại: </label>
+                                                <span>@Model.SoDienThoaiNguoiDaiDien</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Số GPDK kinh doanh: </label>
+                                                <span>@Model.SoGiayPhep</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Thời điểm bắt đầu kinh doanh: </label>
+                                                <span>@Functions.GetDatetimeToVn(Model.ThoiDiemBatDauKinhDoanh)</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Số lần chuyển chủ: </label>
+                                                <span>@Model.SoLanChuyenChu</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Tên công ty, đơn vị chủ quản: </label>
+                                                <span>@Model.NhaCungCap.Ten</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Tổng số vốn đầu tư ban đầu (1000 VNĐ): </label>
+                                                <span>@Model.TongVonDauTuBanDau</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Tổng số vốn đầu tư nâng cấp: </label>
+                                                <span>@Model.TongVonDauTuBoSung</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Diện tích mặt bằng (m2): </label>
+                                                <span>@Model.DienTichMatBang</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Diện tích mặt bằng xây dựng (m2): </label>
+                                                <span>@Model.DienTichMatBangXayDung</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Tổng diện tích xây dựng (m2): </label>
+                                                <span>@Model.DienTichXayDung</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Số tầng: </label>
+                                                <span>@Model.SoTang</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    @if (Model.HangSao > 0)
+                                    {
+                                        <hr />
+                                        <div class="form-row">
+                                            <div class="col-md-3">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Hạng sao: </label>
+                                                    <span>@Model.HangSao <span>Sao</span></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Số quyết định: </label>
+                                                    <span>@Model.SoQuyetDinh <span>Sao</span></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Ngày công nhận: </label>
+                                                    <span>@Functions.GetDatetimeToVn(Model.NgayQuyetDinh)</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Ngày hết hạn: </label>
+                                                    <span>@Functions.GetDatetimeToVn(Model.NgayHetHan)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    }
+                                    @if (Model.DSVanBan != null && Model.DSVanBan.Where(v => v.IsStatus).ToList().Count() > 0)
+                                    {
+                                        var list = Model.DSVanBan.Where(v => v.IsStatus).ToList();
+                                        <div class="form-row">
+                                            <div class="col-md-12">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Hồ sơ gồm có</label>
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="tcenter" width="10%">STT</th>
+                                                                <th width="70%">Tên gọi</th>
+                                                                <th width="5%" class="tcenter">File</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @for (int i = 0; i < list.Count; i++)
+                                                            {
+                                                                <tr>
+                                                                    <td class="tcenter">
+                                                                        @(i+1)
+                                                                    </td>
+                                                                    <td>
+                                                                        @list[i].TenGoi
+                                                                    </td>
+                                                                    <td class="tcenter">
+                                                                        @if (!String.IsNullOrEmpty(list[i].FilePath))
+                                                                        {
+                                                                            <a target="_blank" href="@(Configuration["BaseAddress"]+list[i].FilePath)"><i class="fas fa-download"></i></a>
+                                                                            <br />
+                                                                        }
+
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    }
+
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+
+
+                            @if (Model.IsDatChuan)
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Đạt tiêu chuẩn phục vụ khách du lịch</h3>
+
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-header -->
+                                    <div class="card-body" style="display: none;">
+                                        <div class="form-row">
+                                            <div class="col-md-3">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Số văn bản công nhận đạt chuẩn: </label>
+                                                    <span>@Model.SoCVDatChuan</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="position-relative form-group">
+                                                    <label class="control-label">Ngày công nhận: </label>
+                                                    <span>@Functions.GetDatetimeToVn(Model.NgayCVDatChuan)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+
+                            }
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Thông tin lao động</h3>
+
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Tổng số:</label>
+                                                <span>@Model.SoLuongLaoDong</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Độ tuổi trung bình Nam:</label>
+                                                <span>@Model.DoTuoiTBNam</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Độ tuổi trung bình Nữ:</label>
+                                                <span>@Model.DoTuoiTBNu</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ Việt Nam có giới tính Nam:</label>
+                                                <span>@Model.SoLDNamTrongNuoc</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ Việt Nam có giới tính Nữ:</label>
+                                                <span>@Model.SoLDNuTrongNuoc</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ Nước ngoài có giới tính Nam:</label>
+                                                <span>@Model.SoLDNamNgoaiNuoc</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ Nước ngoài có giới tính Nữ:</label>
+                                                <span>@Model.SoLDNuNgoaiNuoc</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ trực tiếp:</label>
+                                                <span>@Model.SoLDTrucTiep</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ gián tiếp:</label>
+                                                <span>@Model.SoLDGianTiep</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ Thường xuyên:</label>
+                                                <span>@Model.SoLDThuongXuyen</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">LĐ Thời vụ:</label>
+                                                <span>@Model.SoLDThoiVu</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @{
+                                        if (Model.DSBoPhan != null)
+                                        {
+                                            <br />
+                                            <table class="table table-condensed table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%">#</th>
+                                                        <th>Bộ phận</th>
+                                                        <th width="25%">Số lượng (người)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int count = 0;
+                                                        for (int i = 0; i < Model.DSBoPhan.Where(v => v.SoLuong > 0).Count(); i++)
+                                                        {
+                                                            count++;
+                                                            <tr>
+                                                                <td class="text-center">@count</td>
+                                                                <td>
+                                                                    @Model.DSBoPhan[i].BoPhan.TenBoPhan
+                                                                </td>
+                                                                <td>
+                                                                    @Model.DSBoPhan[i].SoLuong
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    }
+
+                                                </tbody>
+                                            </table>
+
+                                        }
+                                    }
+
+                                    @{
+                                        if (Model.DSTrinhDo != null)
+                                        {
+                                            <br />
+                                            <table class="table table-condensed table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%">#</th>
+                                                        <th>Trình độ</th>
+                                                        <th width="25%">Số lượng (người)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int count = 0;
+                                                        for (int i = 0; i < Model.DSTrinhDo.Where(v => v.SoLuong > 0).Count(); i++)
+                                                        {
+                                                            count++;
+                                                            <tr>
+                                                                <td class="text-center">@count</td>
+                                                                <td>
+                                                                    @Model.DSTrinhDo[i].TrinhDo.TenTrinhDo
+                                                                </td>
+                                                                <td>
+                                                                    @Model.DSTrinhDo[i].SoLuong
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    }
+
+                                                </tbody>
+                                            </table>
+
+                                        }
+                                    }
+
+                                    @{
+                                        if (Model.DSNgoaiNgu != null)
+                                        {
+                                            <br />
+                                            <table class="table table-condensed table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%">#</th>
+                                                        <th>Ngoại ngữ</th>
+                                                        <th width="25%">Số lượng (người)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int count = 0;
+                                                        for (int i = 0; i < Model.DSNgoaiNgu.Where(v => v.SoLuong > 0).Count(); i++)
+                                                        {
+                                                            count++;
+                                                            <tr>
+                                                                <td class="text-center">@count</td>
+                                                                <td>
+                                                                    @Model.DSNgoaiNgu[i].NgoaiNgu.TenNgoaiNgu
+                                                                </td>
+                                                                <td>
+                                                                    @Model.DSNgoaiNgu[i].SoLuong
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    }
+
+                                                </tbody>
+                                            </table>
+
+                                        }
+                                    }
+
+                                    @{
+                                        if (Model.DSMucDoTTNN != null)
+                                        {
+                                            <br />
+                                            <table class="table table-condensed table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%">#</th>
+                                                        <th>Mức độ thành thạo các ngôn ngữ</th>
+                                                        <th width="25%">Số lượng (người)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int count = 0;
+                                                        for (int i = 0; i < Model.DSMucDoTTNN.Where(v => v.SoLuong > 0).Count(); i++)
+                                                        {
+                                                            count++;
+                                                            <tr>
+                                                                <td class="text-center">@count</td>
+                                                                <td>
+                                                                    @Model.DSMucDoTTNN[i].MucDoThongThao.MucDo
+                                                                </td>
+                                                                <td>
+                                                                    @Model.DSMucDoTTNN[i].SoLuong
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    }
+
+                                                </tbody>
+                                            </table>
+
+                                        }
+                                    }
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+
+
+                            @if (Model.Tours != null && Model.Tours.Count > 0)
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Danh sách tour hiện có</h3>
+
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-header -->
+                                    <div class="card-body" style="display: none;">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th width="15%" class="text-center">Mã</th>
+                                                    <th>Tên</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null && Model.Tours != null && Model.Tours.Count > 0)
+                                                    {
+                                                        int stt = 0;
+                                                        foreach (var d in Model.Tours)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">@d.MaTour</td>
+                                                                <td><a href="/Dichvu/Tour_chitiet/?tourId=@d.Id"><strong>@d.TenChuyenDi</strong></a></td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+
+                            }
+
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+

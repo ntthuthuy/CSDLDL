@@ -1,0 +1,113 @@
+﻿@model TechLife.Common.RoleAssignRequest
+@{
+    ViewData["Title"] = "Gắn quyền vai trò";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6"></div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item">Hệ thống</li>
+                        <li class="breadcrumb-item">Phân quyền vai trò</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="AssignRoleGroup">
+                            <div class="card-header">
+                                <h3 class="card-title">Gắn quyền vai trò</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+
+                                @Html.ValidationSummary()
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <select name="roles" multiple="multiple" data-dropdown-css-class="select2-purple" style="width: 100%;" data-placeholder="Chọn quyền hệ thống" class="form-control select2">
+                                            @{
+                                                var listRoles = Model.Roles.Where(v => v.Selected == false);
+                                                foreach (var r in listRoles)
+                                                {
+                                                    <option value="@r.Value">@r.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <input hidden name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Danh sách quyền đã gắn</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="mb-0 table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" class="text-center">STT</th>
+                                        <th>Quyền</th>
+                                        <th width="20%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int count = 0;
+                                        var list = Model.Roles.Where(v => v.Selected == true);
+                                        foreach (var r in list)
+                                        {
+                                            count++;
+                                            <tr>
+                                                <td class="text-center">@count</td>
+                                                <td>@r.Text</td>
+                                                <td class="text-center">
+                                                    @{
+                                                        var url = "/User/RoleGroupUnAssign/?id=" + r.Value + "&groupId=" + Model.Id + "";
+                                                    }
+                                                    <a title="Xóa quyền" data-title="Bạn muốn xóa quyền ở vai trò này?" data-url="/User/RoleGroupUnAssign/?id=@r.Value&groupId=@Model.Id" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts
+{
+    <script>
+        $('.select2').select2()
+    </script>
+}
+
+
+

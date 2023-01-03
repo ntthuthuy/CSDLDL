@@ -1,0 +1,297 @@
+﻿@using TechLife.Common;
+@using TechLife.Model;
+@model HanhTrinhModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@section scripts{
+    <script src="https://cdn.ckeditor.com/ckeditor5/24.0.0/classic/ckeditor.js"></script>
+    <script src="https://ckeditor.com/apps/ckfinder/3.5.0/ckfinder.js"></script>
+    <script>
+        $('.select2').select2();
+        ClassicEditor
+            .create(document.querySelector('.editer'), {
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".upload-image").off("change").on("change", (function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    var number = $(this).data("id");
+                    reader.onload = imageIsLoaded.bind(reader, number);
+                    reader.readAsDataURL(this.files[0]);
+                }
+            }));
+               $(".chk-change-avata").off("change").on("change", (function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/HoSo/ChangeAvata",
+                    data: { "id": $(this).val() },
+                    datatype: "application/json",
+                    success: function (response) {
+                        AlertAction(response.message);
+                    },
+                });
+            }));
+        });
+    </script>
+}
+<style>
+    .ck-editor__editable {
+        min-height: 200px;
+    }
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="Hanhtrinh" method="post" enctype="multipart/form-data">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title_chird"] </h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.ValidationSummary()
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngày</label>
+                                            <select asp-for="Ngay" class="form-control select2">
+                                                @{
+                                                    for (int day = 1; day <= Model.Tour.SoNgay; day++)
+                                                    {
+                                                        <option value="@day">Ngày @day</option>
+                                                    }
+                                                }
+
+                                            </select>
+                                            <span asp-validation-for="Ngay" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Giờ</label>
+                                            <select asp-for="Gio" class="form-control select2">
+                                                @{
+                                                    for (int i = 1; i < 24; i++)
+                                                    {
+                                                        <option value="@i">@i giờ </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="Gio" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Phút</label>
+                                            <select asp-for="Phut" class="form-control select2">
+                                                @{
+                                                    <option value="0">00</option>
+                                                    for (int i = 5; i < 60; i = i + 5)
+                                                    {
+                                                        <option value="@i">@i phút </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="Phut" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Điểm đến</label>
+                                            <select asp-for="NoiDenId" class="form-control select2" asp-items="ViewBag.listDLDL">
+                                                <option value="0">Chọn điểm đếm</option>
+                                            </select>
+                                            <span asp-validation-for="NoiDenId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Thời gian (phút)</label>
+                                            <input asp-for="ThoiGian" class="form-control text-right" />
+                                            <span asp-validation-for="ThoiGian" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Mô tả</label>
+                                            <textarea rows="5" asp-for="Mota" class="form-control editer"></textarea>
+                                            <span asp-validation-for="Mota" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Hình ảnh điểm đến</label>
+                                            @{
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <table class="table table-hover table-striped table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th width="5%" class="text-center">STT</th>
+                                                                    <th width="15%" class="text-center">Hình ảnh</th>
+                                                                    <th class="text-center">Ảnh đại diện</th>
+                                                                    <th width="15%" class="text-center">Xóa</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @{
+                                                                    if (Model.DSHinhAnh != null && Model.DSHinhAnh.Count() > 0)
+                                                                    {
+                                                                        int count = 0;
+                                                                        foreach (var img in Model.DSHinhAnh)
+                                                                        {
+                                                                            string ck = "";
+                                                                            count++;
+                                                                            <tr>
+                                                                                <th class="text-center">@count</th>
+                                                                                <td class="tcenter">
+                                                                                    <a href="@(Configuration["BaseAddress"] + img.FileUrl)" data-toggle="lightbox" data-title="@img.FileName" data-gallery="gallery">
+                                                                                        <img src="@(Configuration["BaseAddress"] + img.FileUrl)" class="img-fluid mb-2" alt="@img.FileName" />
+                                                                                    </a>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input @if (img.IsStatus) { ck = "checked"; } @ck type="radio" value="@img.FileId" name="avata" class="chk-change-avata" />
+                                                                                </td>
+                                                                                <td class="tcenter">
+                                                                                    <a title="Xóa hình ảnh" href="javasctipt:void(0)" data-title="Bạn muốn xóa hình ảnh này" data-url="/Hoso/Xoaanh/?id=@img.FileId" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                                                </td>
+                                                                            </tr>
+
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            <div class="row" id="images">
+                                                <div class="col-sm-2">
+                                                    <a title="Chọn ảnh" href="javascript:void(0)">
+                                                        <div class="position-relative form-group add-images" id="img_1" style="background-image: url('https://i.stack.imgur.com/mwFzF.png');background-size:100px;height:100px ">
+                                                            <input asp-for="Images.Images" type="file" class="form-control custom-file-input upload-image btn" />
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <input type="hidden" name="ReturnUrl" value="/Dichvu/Tour/" class="form-control text-right" />
+                                    <input type="hidden" asp-for="TourId" class="form-control text-right" />
+                                    <input type="hidden" asp-for="Id" class="form-control text-right" />
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    @if (Model.Tour.DSHanhTrinh != null && Model.Tour.DSHanhTrinh.Count() > 0)
+                    {
+                        <!-- /.card -->
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Danh sách hành trình</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="timeline">
+                                    <!-- timeline time label -->
+                                    @{
+                                        for (int ngay = Model.Tour.SoNgay; ngay >= 1; ngay--)
+                                        {
+
+                                            var Items = Model.Tour.DSHanhTrinh.Where(v => v.Ngay == ngay).OrderByDescending(v => v.Gio).ThenByDescending(v => v.Phut);
+                                            if (Items.Count() > 0)
+                                            {
+                                                <div class="time-label">
+                                                    <span class="bg-red">Ngày @ngay</span>
+                                                </div>
+                                                foreach (var item in Items)
+                                                {
+                                                    <div>
+                                                        <div class="timeline-item">
+                                                            <span class="time"><i class="fas fa-clock"></i> @item.ThoiGian phút</span>
+                                                            @{
+                                                                string gio = item.Gio.ToString().Length > 1 ? item.Gio.ToString() : "0" + item.Gio.ToString();
+                                                                string phut = item.Phut.ToString().Length > 1 ? item.Phut.ToString() : "0" + item.Phut.ToString();
+                                                            }
+                                                            <h3 class="timeline-header"><a href="/Dichvu/Hanhtrinh/?tourId=@item.TourId&id=@item.Id">Vào lúc: @gio:@phut  @item.DiaDiem</a></h3>
+                                                           <div class="timeline-body">
+                                                                @if (!String.IsNullOrEmpty(item.Mota))
+                                                            {
+                                                                @Html.Raw(item.Mota)
+                                                            }
+                                                                    
+                                                                    <div class="row">
+                                                                        @if (item.DSHinhAnh != null && item.DSHinhAnh.Count > 0)
+                                                                        {
+                                                                            foreach (var img in item.DSHinhAnh)
+                                                                            {
+                                                                                <div class="col-sm-2">
+                                                                                    <img style="width:150px;height:100px" src="@(Configuration["BaseAddress"]+img.FileUrl)" alt="...">
+                                                                                </div>
+                                                                            }
+                                                                        }
+                                                                    </div>
+
+                                                                </div>
+                                                           
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+
+                                        }
+                                        <div>
+                                            <i class="fas fa-clock bg-gray"></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div><!-- /.container-fluid -->
+        </div>
+    </section>
+</div>

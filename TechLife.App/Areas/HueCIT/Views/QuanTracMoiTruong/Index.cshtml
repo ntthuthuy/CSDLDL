@@ -1,0 +1,248 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"]; ;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model X.PagedList.IPagedList<TechLife.App.Areas.HueCIT.Models.DanhSachQuanTracMoiTruong>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@using TechLife.Common;
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css" />
+}
+
+    <style>
+
+        .Good{
+            width: 20px;
+            height: 20px;
+            border: solid 1px black;
+            background-color: green;
+        }
+        .Moderate{
+            width: 20px;
+            height: 20px;
+            border: solid 1px black;
+            background-color: blue;
+        }
+        .UnhealthyforSensitiveGroups{
+            width: 20px;
+            height: 20px;
+            border: solid 1px black;
+            background-color: pink;
+        }
+        .Unhealthy{
+            width: 20px;
+            height: 20px;
+            border: solid 1px black;
+            background-color: yellow;
+        }
+        .VeryUnhealthy{
+            width: 20px;
+            height: 20px;
+            border: solid 1px black;
+            background-color: orange;
+        }
+        .Hazardous{
+            width: 20px;
+            height: 20px;
+            border: solid 1px black;
+            background-color: red;
+        }
+    </style>
+
+    <div class="content-wrapper" style="min-height: 1363.2px;">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                            <li class="breadcrumb-item active">Dữ liệu dịch vụ du lịch</li>
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <form method="get" style="width:100%">
+                                <div class="card-header">
+                                    <h3 class="card-title">Danh sách chất lượng không khí VN_AQI</h3>
+                                    <div class="card-tools">
+                                        <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                            <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                        </a>
+                                        <a id="dongBoBtn" asp-controller="QuanTracMoiTruong" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                            <i class="fas fa-sync"></i> Đồng bộ
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Địa điểm quan trắc</label>
+                                                <select onchange="this.form.submit()" class="form-control" id="diadiem" name="diadiem" value="@ViewBag.DiaDiem" asp-items="@ViewBag.ListDiaDiemQuanTrac">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Thời gian</label>
+                                                <div class="m-custom-input-wrapper">
+                                                    <input onchange="this.form.submit()" type="date" id="tungay" name="tungay" value="@ViewBag.TuNgay" class="form-control m-custom-input" />
+                                                    <input onchange="this.form.submit()" type="date" id="denngay" name="denngay" value="@ViewBag.DenNgay" class="form-control m-custom-input" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%" class="text-center">STT</th>
+                                                        <th width="10%" class="text-center">Thời điểm</th>
+                                                        <th width="5%" class="text-center">AQI</th>
+                                                        <th width="5%" class="text-center">CO2</th>
+                                                        <th width="5%" class="text-center">HUM</th>
+                                                        <th width="5%" class="text-center">PM01</th>
+                                                        <th width="5%" class="text-center">PM10</th>
+                                                        <th width="5%" class="text-center">PM25</th>
+                                                        <th width="5%" class="text-center">TEMP</th>
+                                                        <th width="5%" class="text-center">TVOC</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                    if (Model != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="10">Danh sách hiển thị <strong>@Model.Count</strong> trên tổng số <strong>@Model.TotalItemCount</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">
+                                                                    @d.ThoiDiem.ToString("dd/MM/yyyy HH:mm")
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.AQI.GiaTri</span>
+                                                                    <div class="@d.AQI.TenTrangThai float-right"></div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.CO2.GiaTri</span>
+                                                                    <div class="@d.CO2.TenTrangThai float-right"></div>
+                                                                    </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.HUM.GiaTri</span>
+                                                                    <div class="@d.HUM.TenTrangThai float-right"></div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.PM01.GiaTri</span>
+                                                                    <div class="@d.PM01.TenTrangThai float-right"></div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.PM10.GiaTri</span>
+                                                                    <div class="@d.PM10.TenTrangThai float-right"></div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.PM25.GiaTri</span>
+                                                                    <div class="@d.PM25.TenTrangThai float-right"></div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.TEMP.GiaTri</span>
+                                                                    <div class="@d.TEMP.TenTrangThai float-right"></div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="text-left">@d.TVOC.GiaTri</span>
+                                                                    <div class="@d.TVOC.TenTrangThai float-right"></div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="10">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            @{
+                                if (Model.PageCount > 1)
+                                {
+                                    <!-- Phân trang -->
+                                    <div class="card-footer">
+                                        <div class="m-paging">
+                                            @Html.PagedListPager(Model, trang => Url.Action("Index", new { trang, tungay = ViewBag.TuNgay, dengay = ViewBag.DenNgay, diadiem = ViewBag.DiaDiem }),
+                                    new PagedListRenderOptions{
+                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                    LinkToNextPageFormat = "<i class='fas fa-angle-right'></i>",
+                                    LinkToPreviousPageFormat = "<i class='fas fa-angle-left'></i>",
+                                    LinkToLastPageFormat = "<i class='fas fa-angle-double-right'></i>",
+                                    LinkToFirstPageFormat = "<i class='fas fa-angle-double-left'></i>",
+                                    MaximumPageNumbersToDisplay = 3,
+                                    EllipsesElementClass = "d-none"
+                                    }
+                                    )
+                                        </div>
+                                    </div>
+                                    <!-- Kết thúc -->
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var trangthai in ViewBag.ListTrangThaiQuanTrac)
+                    {
+                        <div class="col-sm-2">
+                            <div class="row">
+                                <div class="@trangthai.Id col-sm-2"></div>
+                                <div class="col-sm-10">@trangthai.TenTrangThai</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+
+
+@section scripts
+    {
+
+    }

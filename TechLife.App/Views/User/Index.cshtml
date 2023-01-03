@@ -1,0 +1,154 @@
+﻿@using TechLife.Common;
+@using TechLife.Common.Enums;
+@model PagedResult<TechLife.Model.UserModel>
+@{
+    ViewData["Title"] = "Danh sách tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Hệ thống</li>
+                        <li class="breadcrumb-item active">Tài khoản</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <form method="get" style="width:100%">
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Danh sách tài khoản</h3>
+                                <div class="card-tools">
+                                    <a href="/User/Create/" class="btn btn-xs btn-success">
+                                        <i class="fas fa-plus-circle"></i> Thêm mới
+                                    </a>
+                                    <a class="btn btn-xs btn-success btn-form-dongbo">
+                                        <i class="fas fa-sync"></i> Đồng bộ
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                @*<div class="row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Loại tài khoản</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="type" name="type" asp-items="ViewBag.listLoaiTaiKhoan">
+                                                <option value="1">@StringEnum.GetStringValue(LoaiTaiKhoan.HeThong)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>*@
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th width="15%" class="text-center">Tài khoản</th>
+                                                    <th>Họ và tên</th>
+                                                    <th width="20%" class="text-center">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                if (Model != null && Model.Items != null)
+                                                {
+                                                    int stt = 0;
+                                                    foreach (var d in Model.Items)
+                                                    {
+                                                        stt++;
+                                                    <tr>
+                                                        <td class="text-center">@stt</td>
+                                                        <td class="text-center">@d.UserName</td>
+                                                        <td>@d.FullName</td>
+                                                        <td class="text-center">
+                                                            @*@Html.ActionLink("Sửa", "EditUser", new { id = d.Id }) |*@
+                                                            @*@Html.ActionLink("Gắn quyền", "RoleAssign", new { id = d.Id })*@
+                                                            <a href="/User/RoleAssign?id=@d.Id">Phân quyền</a>
+                                                        </td>
+                                                    </tr>
+                                                    }
+                                                }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            @{
+                            if (Model.TotalRecords > Model.PageSize)
+                            {
+                                <div class="card-footer">
+                                    @await Component.InvokeAsync("Paging", new { page = Model })
+                                </div>
+                            }
+                            }
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    <div class="modal fade" id="modal-dongbo">
+        <div class="modal-dialog">
+            <form method="post" action="/User/Dongbo">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Đồng bộ tài khoản</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Loại tài khoản</label>
+                                    <select onchange="this.form.submit()" class="form-control" id="service_sso" name="service_sso">
+                                        <option value="2">Hệ thống xác thực tập trung SSO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="submit" class="btn btn-primary">Đồng bộ</button>
+                    </div>
+                </div>
+            </form>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".btn-form-dongbo").on("click", function () {
+                $("#modal-dongbo").modal("show");
+            })
+        });
+    </script>
+
+}

@@ -1,0 +1,188 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.DuLieuDuLich;
+@model PagedResult<DuLieuDuLichModel>
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                    @if (User.IsInRole("create_dichvuvuichoi")|| User.IsInRole("root"))
+                                    {
+
+                                        <a href="/Hoso/Themmoikhuvcgt/" class="btn btn-xs btn-success">
+                                            <i class="fas fa-plus-circle"></i> Thêm mới
+                                        </a>
+                                    }
+                                    @*HueCIT*@
+                                    <a asp-area="HueCIT" asp-controller="Vcgt" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                        <i class="fas fa-sync"></i> Đồng bộ thông tin
+                                    </a>
+                                    <a asp-area="HueCIT" asp-controller="Vcgt" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                        <i class="fas fa-sync"></i> Đồng bộ không gian
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Loại hình</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="loaihinh" name="loaihinh" asp-items="ViewBag.listLoaiKhuVuiChoi">
+                                                <option value="-1">tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Quận, huyện, thành phố</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
+                                                <option value="-1">tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Đồng bộ</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="nguon" name="nguon" asp-items="ViewBag.listNguonDongBo">
+                                                <option value="-1">tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th width="20%" class="text-center">Loại hình</th>
+                                                    <th>Thông tin khu vui chơi giải trí</th>
+                                                    <th width="5%" class="text-center">Bản đồ</th>
+                                                    <th width="15%" class="text-center">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null && Model.Items != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model.Items)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">
+                                                                    @d.LoaiHinh.TenLoai <br />
+                                                                </td>
+                                                                <td>
+                                                                    <strong>
+                                                                        <a href="/Hoso/Chitiet/?id=@HashUtil.EncodeID(d.Id.ToString())">
+                                                                            @{
+                                                                                if (d.HangSao > 0)
+                                                                                {
+                                                                                    <strong class="text-yellow">(@d.HangSao.ToString() <i class="fas fa-star"></i>)</strong>
+                                                                                }
+
+                                                                            }@d.Ten
+                                                                        </a>
+                                                                    </strong>
+                                                                    <br /><strong>Số điện thoại:</strong> @d.SoDienThoai
+                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen)
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (d.ToaDoX != null && d.ToaDoX != 0 && d.ToaDoY != null && d.ToaDoY != 0)
+                                                                    {
+                                                                        <input type="checkbox" checked onclick="return false;" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="checkbox" onclick="return false;" />
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (User.IsInRole("edit_dichvuvuichoi") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Sửa bản đồ điểm du lịch" href="/HueCIT/BanDo/Edit/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-info btn-xs"><i class="fas fa-map"></i> Bản đồ</a>
+
+                                                                    }
+                                                                    @if (User.IsInRole("edit_dichvuvuichoi") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Sửa hồ sơ điểm du lịch" href="/Hoso/Suathongtinkhuvcgt/?id=@d.Id" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+
+                                                                    }
+                                                                    @if (User.IsInRole("delete_dichvuvuichoi") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Xóa hồ sơ điểm du lịch" data-title="Bạn muốn xóa hồ sơ @d.Ten ?" data-url="/Hoso/Xoathongtinkhuvcgt/?id=@HashUtil.EncodeID(d.Id.ToString())&ReturnUrl=/Hoso/Diemdulich" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            @{
+                                if (Model.TotalRecords > Model.PageSize)
+                                {
+                                    <div class="card-footer">
+                                        @await Component.InvokeAsync("Paging", new { page = Model })
+                                    </div>
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+

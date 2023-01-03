@@ -1,0 +1,82 @@
+﻿@using TechLife.Common
+@using TechLife.Model
+@model List<GroupModel>
+
+@{
+    ViewData["Title"] = "Danh sách vai trò";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Hệ thống</li>
+                        <li class="breadcrumb-item active">Vai trò</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Danh sách vai trò</h3>
+                            <div class="card-tools">
+                                <a href="/User/CreateGroup/" class="btn btn-xs btn-success">
+                                    <i class="fas fa-plus-circle"></i> Thêm mới
+                                </a>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table class="table table-hover table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" class="text-center">STT</th>
+                                        <th>Vai trò</th>
+                                        <th width="20%" class="text-center">Chức năng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        if (Model != null && Model.Count() > 0)
+                                        {
+                                            int stt = 0;
+                                            foreach (var d in Model)
+                                            {
+                                                stt++;
+                                                <tr>
+                                                    <td class="text-center">@stt</td>
+                                                    <td>@d.Name</td>
+                                                    <td class="text-center">
+                                                        @Html.ActionLink("Sửa", "EditGroup", new { id = d.Id }) |
+                                                        @Html.ActionLink("Gắn quyền", "AssignRoleGroup", new { id = d.Id })
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+

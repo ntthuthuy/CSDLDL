@@ -1,0 +1,253 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.Tour;
+@model TourUpdateRequest
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="Suatour" method="post" enctype="multipart/form-data">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.ValidationSummary()
+                                <input type="hidden" asp-for="Tour.Id" />
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Mã tour</label>
+                                            <input asp-for="Tour.MaTour" class="form-control" />
+                                            <span asp-validation-for="Tour.MaTour" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Tên tour</label>
+                                            <input asp-for="Tour.TenChuyenDi" class="form-control" />
+                                            <span asp-validation-for="Tour.TenChuyenDi" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Loại tour</label>
+                                            <select asp-for="Tour.LoaiId" asp-items="ViewBag.listLoaiDDL" class="form-control">
+                                                <option value="0">Chọn loại hình</option>
+                                            </select>
+                                            <span asp-validation-for="Tour.TenChuyenDi" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Số ngày diễn ra (ngày)</label>
+                                            <input asp-for="Tour.SoNgay" class="form-control text-right" />
+                                            <span asp-validation-for="Tour.SoNgay" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Giá (đồng/người/tour)</label>
+                                            <input asp-for="Tour.Gia" class="form-control text-right" />
+                                            <span asp-validation-for="Tour.Gia" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Đơn vị tổ chức</label>
+                                            <select asp-for="Tour.CongTyLuHanhId" class="form-control select2" asp-items="ViewBag.listCongTyLuHanh">
+                                                <option value="0">Chọn công ty lữ hành</option>
+                                            </select>
+                                            <span asp-validation-for="Tour.CongTyLuHanhId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <label>  <input checked type="checkbox" asp-for="Tour.IsHangNgay" class="form-check-input"><strong>Tour diễn ra hàng ngày</strong></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Địa điểm khởi hành</label>
+                                            <input asp-for="Tour.KhoiHanhTu" class="form-control" />
+                                            <span asp-validation-for="Tour.KhoiHanhTu" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Lịch trình</label>
+                                            <input asp-for="Tour.LichTrinh" class="form-control" />
+                                            <span asp-validation-for="Tour.LichTrinh" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Hình thức tour</label>
+                                            <select asp-for="Tour.HinhThucId" class="form-control select2" asp-items="ViewBag.listHinhThuc">
+                                            </select>
+                                            <span asp-validation-for="Tour.HinhThucId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Mô tả</label>
+                                            <textarea rows="5" asp-for="Tour.MoTaChuyenDi" class="form-control editer"></textarea>
+                                            <span asp-validation-for="Tour.MoTaChuyenDi" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Hình ảnh</label>
+                                        @{
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <table class="table table-hover table-striped table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="5%" class="text-center">STT</th>
+                                                                <th width="15%" class="text-center">Hình ảnh</th>
+                                                                <th class="text-center">Ảnh đại diện</th>
+                                                                <th width="15%" class="text-center">Xóa</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                if (Model.Tour.DSHinhAnh != null && Model.Tour.DSHinhAnh.Count() > 0)
+                                                                {
+                                                                    int count = 0;
+                                                                    foreach (var img in Model.Tour.DSHinhAnh)
+                                                                    {
+                                                                        string ck = "";
+                                                                        count++;
+                                                                        <tr>
+                                                                            <th class="text-center">@count</th>
+                                                                            <td class="tcenter">
+                                                                                <a href="@(Configuration["BaseAddress"] + img.FileUrl)" data-toggle="lightbox" data-title="@img.FileName" data-gallery="gallery">
+                                                                                    <img src="@(Configuration["BaseAddress"] + img.FileUrl)" class="img-fluid mb-2" alt="@img.FileName" />
+                                                                                </a>
+                                                                            </td>
+                                                                            <td>
+                                                                                <input @if (img.IsStatus) { ck = "checked"; } @ck type="radio" value="@img.FileId" name="avata" class="chk-change-avata" />
+                                                                            </td>
+                                                                            <td class="tcenter">
+                                                                                <a title="Xóa hình ảnh" href="javasctipt:void(0)" data-title="Bạn muốn xóa hình ảnh này" data-url="/Hoso/Xoaanh/?id=@img.FileId" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    }
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        }
+                                        <div class="row" id="images">
+                                            <div class="col-sm-2">
+                                                <a title="Chọn ảnh" href="javascript:void(0)">
+                                                    <div class="position-relative form-group add-images" id="img_1" style="background-image: url('https://i.stack.imgur.com/mwFzF.png');background-size:100px;height:100px ">
+                                                        <input asp-for="Images.Images" type="file" data-id="1" class="form-control custom-file-input upload-image btn" />
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="submit" name="submit_type" value="save" class="btn btn-primary">Lưu</button>
+                                    <button type="submit" name="submit_type" value="save_add" class="btn btn-primary">Lưu và tạo hành trình</button>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts{
+    <script src="https://cdn.ckeditor.com/ckeditor5/24.0.0/classic/ckeditor.js"></script>
+    <script src="https://ckeditor.com/apps/ckfinder/3.5.0/ckfinder.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('.editer'), {
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".chk-change-avata").off("change").on("change", (function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/HoSo/ChangeAvata",
+                    data: { "id": $(this).val() },
+                    datatype: "application/json",
+                    success: function (response) {
+                        AlertAction(response.message);
+                    },
+                });
+            }));
+            $(".upload-image").off("change").on("change", (function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    var number = $(this).data("id");
+                    reader.onload = imageIsLoaded.bind(reader, number);
+                    reader.readAsDataURL(this.files[0]);
+                }
+            }));
+        });
+    </script>
+}
+<style>
+    .ck-editor__editable {
+        min-height: 200px;
+    }
+</style>

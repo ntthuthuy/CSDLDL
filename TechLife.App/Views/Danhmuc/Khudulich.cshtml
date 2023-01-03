@@ -1,0 +1,86 @@
+﻿@using TechLife.Common;
+@using TechLife.Model;
+@model List<DanhMucModel>
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">@ViewData["Title"]</h3>
+                            <div class="card-tools">
+                                <a href="/Danhmuc/Themdanhmuc/?act=khudulich" class="btn btn-xs btn-success">
+                                    <i class="fas fa-plus-circle"></i> Thêm mới
+                                </a>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table class="table table-hover table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" class="text-center">STT</th>
+                                        <th width="30%" class="text-center">Tên</th>
+                                        <th>Mô tả</th>
+                                        <th width="15%" class="text-center">Chức năng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        if (Model != null && Model != null)
+                                        {
+                                            int stt = 0;
+                                            foreach (var d in Model)
+                                            {
+                                                stt++;
+                                                <tr>
+                                                    <td class="text-center">@stt</td>
+                                                    <td>@d.Ten</td>
+                                                    <td>@d.MoTa</td>
+                                                    <td class="text-center">
+                                                        <a title="Sửa danh mục" href="/Danhmuc/Suadanhmuc/?act=khudulich&id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+                                                        <a title="Xóa danh mục" data-title="Bạn muốn xóa @d.Ten ?" data-url="/Danhmuc/Xoadanhmuc/?act=khudulich&id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                       
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+

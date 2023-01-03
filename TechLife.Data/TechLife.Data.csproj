@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20201213084457_UPdateHDVFile.cs" />
+    <Compile Remove="Migrations\20201213084457_UPdateHDVFile.Designer.cs" />
+    <Compile Remove="Migrations\20201213090008_UPdateHDVFile_2.cs" />
+    <Compile Remove="Migrations\20201213090008_UPdateHDVFile_2.Designer.cs" />
+    <Compile Remove="Migrations\20201223135858_UpdateMoiQuanHeDS.cs" />
+    <Compile Remove="Migrations\20201223135858_UpdateMoiQuanHeDS.Designer.cs" />
+    <Compile Remove="Migrations\20210324082841_DBThanhTra.cs" />
+    <Compile Remove="Migrations\20210324082841_DBThanhTra.Designer.cs" />
+    <Compile Remove="Migrations\20210324083947_seednew1.cs" />
+    <Compile Remove="Migrations\20210324083947_seednew1.Designer.cs" />
+    <Compile Remove="Migrations\20210324084157_IgnoreChanges.cs" />
+    <Compile Remove="Migrations\20210324084157_IgnoreChanges.Designer.cs" />
+    <Compile Remove="Migrations\20210324085218_TblThanhTra.cs" />
+    <Compile Remove="Migrations\20210324085218_TblThanhTra.Designer.cs" />
+    <Compile Remove="Migrations\20210324085800_ThanhTra.cs" />
+    <Compile Remove="Migrations\20210324085800_ThanhTra.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechLife.Common\TechLife.Common.csproj" />
+  </ItemGroup>
+
+</Project>

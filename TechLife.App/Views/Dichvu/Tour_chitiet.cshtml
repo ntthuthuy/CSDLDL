@@ -1,0 +1,184 @@
+﻿@using TechLife.Model;
+@using TechLife.Common.Enums;
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@model TechLife.Model.Tour.TourVm
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">@ViewData["Title"]</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="col-md-2">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Mã tour:</label>
+                                        <span>@Model.MaTour</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Tên tour:</label>
+                                        <span>@Model.TenChuyenDi</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Số ngày:</label>
+                                        <span>@Model.SoNgay</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Giá (đồng/người/tour):</label>
+                                        <span>@Model.Gia</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Đơn vị tổ chức:</label>
+                                        <span>@Model.TenCongTy</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Hình thức tour:</label>
+                                        @if (Model.HinhThucId == 1)
+                                        {
+                                            <span>@StringEnum.GetStringValue(HinhThucTour.Ghep)</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@StringEnum.GetStringValue(HinhThucTour.Rieng)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Địa điểm khởi hành:</label>
+                                        <span>@Model.KhoiHanhTu</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Lịch trình:</label>
+                                        <span>@Model.LichTrinh</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Hình ảnh tour:</label>
+                                        <div class="row" id="images">
+                                            @{
+                                                foreach (var img in Model.DSHinhAnh)
+                                                {
+                                                    <div class="col-sm-2">
+                                                        <a href="@(Configuration["BaseAddress"] + img.FileUrl)" data-toggle="lightbox" data-title="@img.FileName" data-gallery="gallery">
+                                                            <img src="@(Configuration["BaseAddress"] + img.FileUrl)" class="img-fluid mb-2" alt="@img.FileName" />
+                                                        </a>
+                                                    </div>
+                                                }
+                                            }
+                                           
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                               
+                            </div> <div class="form-row">
+                                <div class="col-md-12">
+                                    <div class="position-relative form-group">
+                                        <label class="control-label">Mô tả:</label>
+                                        <span>@Html.Raw(Model.MoTaChuyenDi)</span>
+                                    </div>
+                                </div>
+                               
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                    @if (Model.DSHanhTrinh != null && Model.DSHanhTrinh.Count() > 0)
+                    {
+                        <!-- /.card -->
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Danh sách hành trình</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="timeline">
+                                    <!-- timeline time label -->
+                                    @{
+                                        for (int ngay = Model.SoNgay; ngay >= 1; ngay--)
+                                        {
+
+                                            var Items = Model.DSHanhTrinh.Where(v => v.Ngay == ngay).OrderByDescending(v => v.Gio).ThenByDescending(v => v.Phut);
+                                            if (Items.Count() > 0)
+                                            {
+                                                <div class="time-label">
+                                                    <span class="bg-red">Ngày @ngay</span>
+                                                </div>
+                                                foreach (var item in Items)
+                                                {
+                                                    <div>
+                                                        <div class="timeline-item">
+                                                            <span class="time"><i class="fas fa-clock"></i> @item.ThoiGian phút</span>
+                                                            <h3 class="timeline-header"><a href="/Dichvu/Hanhtrinh/?tourId=@item.TourId&id=@item.Id&ReturnUrl=/Dichvu/Tour/">@item.Gio:@item.Phut  @item.DiaDiem</a></h3>
+                                                            @if (!String.IsNullOrEmpty(item.Mota))
+                                                            {
+                                                                <div class="timeline-body">
+                                                                    @Html.Raw(item.Mota)
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+
+                                        }
+                                        <div>
+                                            <i class="fas fa-clock bg-gray"></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div><!-- /.container-fluid -->
+        </div>
+    </section>
+    <!-- /.content -->
+</div>

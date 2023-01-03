@@ -1,0 +1,228 @@
+﻿@model TechLife.Model.HuongDanVien.HuongDanVienModel
+@using TechLife.Common;
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">@ViewData["Title"]</h3>
+                            <div class="card-tools">
+                                <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                    <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Họ và tên:</label>
+                                            <span>@Model.HoVaTen</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngày sinh:</label>
+                                            <span>@Functions.GetDatetimeToVn(Model.NgaySinh)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">
+                                                Ngoại ngữ:
+                                            </label>
+                                            @if (Model.NgonNgu != null && Model.NgonNgu.Count() > 0)
+                                            {
+                                                foreach (var n in Model.NgonNgu)
+                                                {
+                                                    <span>@n</span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Loại hình:</label>
+                                            @if (Model.LoaiHinh != null && Model.LoaiHinh.Count() > 0)
+                                            {
+                                                foreach (var n in Model.LoaiHinh)
+                                                {
+                                                    <span>@n</span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Công ty lữ hành:</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Số CMND, CCCD:</label>
+                                            <span>@(Model.CMND)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngày cấp:</label>
+                                            <span>@(Functions.GetDatetimeToVn(Model.NgayCapCMND))</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Nơi cấp:</label>
+                                            <span>@(Model.NoiCapCMND)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Địa chỉ:</label>
+                                            <span>@(Model.DiaChi)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Hộ khẩu thường trú:</label>
+                                            <span>@(Model.HoKhau)</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Số điện thoại:</label>
+                                            <span>@(Model.SoDienThoai)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Email:</label>
+                                            <span>@(Model.Email)</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <hr />
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Loại thẻ:</label>
+                                            <span>@(Model.LoaiThe)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Mã số thẻ:</label>
+                                            <span>@(Model.SoTheHDV)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngày cấp:</label>
+                                            <span>@(Functions.GetDatetimeToVn(Model.NgayCapThe))</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Nơi cấp:</label>
+                                            <span>@(Model.NoiCapThe)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngày hết hạn</label>
+                                            <span>@(Functions.GetDatetimeToVn(Model.NgayHetHan))</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                @if (Model.DSVanBan != null && Model.DSVanBan.Where(v => v.IsStatus).ToList().Count() > 0)
+                                {
+
+                                    var list = Model.DSVanBan.Where(v => v.IsStatus).ToList();
+                                    <div class="form-row">
+                                        <div class="col-md-12">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label">Hồ sơ gồm có</label>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="tcenter" width="10%">STT</th>
+                                                            <th width="70%">Tên gọi</th>
+                                                            <th width="5%" class="tcenter">File</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < list.Count; i++)
+                                                        {
+                                                            <tr>
+                                                                <td class="tcenter">
+                                                                    @(i+1)
+                                                                </td>
+                                                                <td>
+                                                                    @list[i].TenGoi
+                                                                </td>
+                                                                <td class="tcenter">
+                                                                    @if (!String.IsNullOrEmpty(list[i].FilePath))
+                                                                    { 
+                                                                        <a target="_blank" href="@(Configuration["BaseAddress"]+list[i].FilePath)"><i class="fas fa-download"></i></a>
+                                                                        <br />
+                                                                    }
+
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+

@@ -1,0 +1,114 @@
+﻿@model TechLife.Common.RoleAssignRequest
+@{
+    ViewData["Title"] = "Gắn quyền cho tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <form id="form" method="get">
+                        <div class="position-relative form-group">
+                            <select asp-for="GroupId" asp-items="Model.GroupRoles" style="width: 100%;" class="form-control select2">
+                                <option value="0">Chọn nhóm</option>
+                            </select>
+                            <input hidden name="id" value="@Model.Id" />
+                        </div>
+                    </form>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item">Hệ thống</li>
+                        <li class="breadcrumb-item">Phân quyền tài khoản</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-outline card-default">
+                        <form asp-action="RoleAssign">
+                         
+                            <div class="card-body">
+
+                                @Html.ValidationSummary()
+
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <select name="roles" multiple="multiple" asp-for="RoleId" asp-items="Model.Roles" class="form-control select2">
+                                           
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <input hidden name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-outline card-default">
+                     
+                        <div class="card-body">
+                            <table class="mb-0 table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" class="text-center">STT</th>
+                                        <th>Quyền</th>
+                                        <th width="20%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int count = 0;
+                                        var list = Model.UserRoles;
+                                        foreach (var r in list)
+                                        {
+                                            count++;
+                                            <tr>
+                                                <td class="text-center">@count</td>
+                                                <td>@r.Description</td>
+                                                <td class="text-center">
+                                                    @{
+                                                        var url = "/User/RoleUnAssign/?id=" + r.Id + "&userId=" + Model.Id + "";
+                                                    }
+
+                                                    <a title="Xóa hồ sơ công ty lữ hành" data-title="Bạn muốn xóa quyền @r.Description ?" data-url="@url" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts
+{
+    <script>
+        $('.select2').select2()
+        $("#GroupId").on("change", function () {
+            this.form.submit()
+        })
+    </script>
+}
+
+

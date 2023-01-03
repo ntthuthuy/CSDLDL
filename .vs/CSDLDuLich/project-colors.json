@@ -1,0 +1,46 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "1531542f-2b4f-457d-8c63-25263cc8ea49": {
+      "ProjectGuid": "1531542f-2b4f-457d-8c63-25263cc8ea49",
+      "DisplayName": "TechLife.App",
+      "ColorIndex": 0
+    },
+    "57c2f70e-5744-4044-aaf2-f17421494f28": {
+      "ProjectGuid": "57c2f70e-5744-4044-aaf2-f17421494f28",
+      "DisplayName": "TechLife.SSO",
+      "ColorIndex": 1
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "83003a4e-2a53-4fc0-8a0d-fc1993b5e59d": {
+      "ProjectGuid": "83003a4e-2a53-4fc0-8a0d-fc1993b5e59d",
+      "DisplayName": "TechLife.Api",
+      "ColorIndex": 2
+    },
+    "80eab4b8-61ae-4a91-8084-d609b45b68d1": {
+      "ProjectGuid": "80eab4b8-61ae-4a91-8084-d609b45b68d1",
+      "DisplayName": "TechLife.Service",
+      "ColorIndex": 3
+    },
+    "84f40e5f-1ba1-4131-ae16-6e7434ff1429": {
+      "ProjectGuid": "84f40e5f-1ba1-4131-ae16-6e7434ff1429",
+      "DisplayName": "TechLife.Data",
+      "ColorIndex": 4
+    },
+    "2136b1ae-fe49-4927-bf2a-12977b7155e8": {
+      "ProjectGuid": "2136b1ae-fe49-4927-bf2a-12977b7155e8",
+      "DisplayName": "TechLife.Model",
+      "ColorIndex": 5
+    },
+    "f018abd4-93a8-402f-a0bb-625e7e9ba8bf": {
+      "ProjectGuid": "f018abd4-93a8-402f-a0bb-625e7e9ba8bf",
+      "DisplayName": "TechLife.Common",
+      "ColorIndex": 6
+    }
+  },
+  "NextColorIndex": 7
+}

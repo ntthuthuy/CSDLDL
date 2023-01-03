@@ -1,0 +1,125 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.DuLieuDuLich;
+@model PagedResult<TimKiemDuLieuVrm>
+@{
+    ViewData["Title"] = ViewData["Title"];
+    ViewData["searchUrl"] = "/Thongke/TimkiemDuLieu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                  
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="float-right">
+
+                                    <a href="/Thongke/DownloadExcelDocument?search=@Context.Request.Query["search"]" title="Dowload" class="btn btn-primary"><i class="fa fa-download"></i> Xuất file excel</a>
+                                </div>
+
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+
+                                <table class="table table-hover table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" class="text-center">STT</th>
+                                            <th width="15%" class="text-center">Tên</th>
+                                            <th width="10%" class="text-center">Số quyết định</th>
+                                            <th width="7%" class="text-center">Số giấy phép</th>
+                                            <th width="15%" class="text-center">Thông tin</th>
+                                            <th width="15%" class="text-center">Người đại diện</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (Model != null && Model.Items != null)
+                                            {
+                                                int stt = 0;
+                                                int loaihinh = 0;
+                                                foreach (var d in Model.Items)
+                                                {
+                                                    if (loaihinh != d.LinhVucKinhDoanhId)
+                                                    {
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                <h5 class="timeline-header"><a href="javascript:void(0)"><strong>@d.LoaiHinh.TenLoai</strong></a></h5>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    stt++;
+                                                    <tr>
+                                                        <td class="text-center">@stt</td>
+                                                        <td>
+                                                            <strong>
+                                                                <a>                                                                 
+                                                                    @d.Ten
+                                                                </a>
+                                                            </strong>                                                           
+                                                        </td>
+                                                        <td class="text-center">@d.SoQuyetDinh</td>
+                                                        <td class="text-center">@d.SoGiayPhep</td>
+                                                        <td>
+                                                            <br /><strong>Số điện thoại: </strong> @d.SoDienThoai
+                                                            <br /><strong>Email: </strong> @d.Email
+                                                            <br /><strong>Địa chỉ: </strong>@d.DiaChi
+                                                        </td>
+                                                        <td>
+                                                            <strong>Họ và tên: </strong> @d.HoTenNguoiDaiDien
+                                                            <br /><strong>Chức vụ: </strong> @d.ChucVuNguoiDaiDien
+                                                            <br /><strong>Số điện thoại: </strong> @d.SDTNguoiDaiDien
+                                                        </td>
+                                                    </tr>
+                                                    loaihinh = d.LinhVucKinhDoanhId;
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">
+
+                            </div>
+                         
+                        </form>
+
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#Id").off("change").on("change", function () {
+                document.getElementById('form').submit();
+            });
+        })
+    </script>
+}

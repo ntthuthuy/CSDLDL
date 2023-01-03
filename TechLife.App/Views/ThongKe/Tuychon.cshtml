@@ -1,0 +1,263 @@
+﻿@model TechLife.Model.ThongKe.LoaiThongKeRequest
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common.Enums;
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <form id="form" method="get" asp-action="Index">
+                        <div class="position-relative form-group">
+                            <select class="form-control" asp-for="Id" asp-items="ViewBag.ListLoaiThongKe">
+                                <option value="">Chọn loại thống kê</option>
+                            </select>
+                            <span asp-validation-for="Id" class="text-danger"></span>
+                        </div>
+                    </form>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post" action="/Thongke/Tuychon_ketqua">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Tùy chọn báo cáo dữ liệu du lịch</h3>
+                                <div class="card-tools">
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Lĩnh vực quản lý</label>
+                                            <select asp-items="ViewBag.listLinhVucKinhDoanh" class="form-control btn-type-change" name="linhvuc">
+                                                <option value="0">Chọn lĩnh vực</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row" id="type">
+
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="submit" name="type_sumit" value="view" class="btn btn-primary">Xem danh sách</button>
+                                    <button type="submit" name="type_sumit" value="download" class="btn btn-primary">Tải danh sách</button>
+                                    @*<button type="submit" name="type_sumit" value="view_char" class="btn btn-primary">Xem biểu đồ</button>*@
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </form>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts{
+    <script type="text/html" id="tmp_cosoluutru">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại hình</label>
+                <select multiple asp-items="ViewBag.listLoaiHinhKD" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Hạng sao</label>
+                <select multiple asp-items="ViewBag.listTieuChuan" class="form-control" name="hangsao">
+                </select>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="position-relative form-group">
+                <label class="control-label">Có các dịch vụ / tiện nghi</label>
+                @{
+                    int loai = (int)LinhVucKinhDoanh.CoSoLuuTru;
+                    var lstTienNghi = ((List<TechLife.Model.TienNghi.TienNghiVm>)ViewBag.TienNghi).Where(v => v.LinhVucId.Split(',').Contains(loai.ToString())).ToList();
+                    <div class="row">
+                        @foreach (var item in lstTienNghi)
+                        {
+                            <div style="padding-left: 30px;" class="form-check col-md-3">
+                                <input class="form-check-input" value="@item.Id" type="checkbox" name="tiennghi">
+                                <label class="form-check-label">@item.Ten</label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="tmp_nhahang">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại nhà hàng</label>
+                <select multiple asp-items="ViewBag.listLoaiNhaHang" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="position-relative form-group">
+                <label class="control-label">Có các dịch vụ / tiện nghi</label>
+                @{
+                    int loaiNhaHang = (int)LinhVucKinhDoanh.NhaHang;
+                    var lstTienNghiNhaHang = ((List<TechLife.Model.TienNghi.TienNghiVm>)ViewBag.TienNghi).Where(v => v.LinhVucId.Split(',').Contains(loaiNhaHang.ToString())).ToList();
+                    <div class="row">
+                        @foreach (var item in lstTienNghiNhaHang)
+                        {
+                            <div style="padding-left: 30px;" class="form-check col-md-3">
+                                <input class="form-check-input" value="@item.Id" type="checkbox" name="tiennghi">
+                                <label class="form-check-label">@item.Ten</label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="tmp_muasam">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại hình</label>
+                <select multiple asp-items="ViewBag.listLoaiDichVu" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="position-relative form-group">
+                <label class="control-label">Có các dịch vụ / tiện nghi</label>
+                @{
+                    int loaiMuaSam = (int)LinhVucKinhDoanh.MuaSam;
+                    var lstTienNghiMuaSam = ((List<TechLife.Model.TienNghi.TienNghiVm>)ViewBag.TienNghi).Where(v => v.LinhVucId.Split(',').Contains(loaiMuaSam.ToString())).ToList();
+
+                    <div class="row">
+                        @foreach (var item in lstTienNghiMuaSam)
+                        {
+                            <div style="padding-left: 30px;" class="form-check col-md-3">
+                                <input class="form-check-input" value="@item.Id" type="checkbox" name="tiennghi">
+                                <label class="form-check-label">@item.Ten</label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="tmp_diemdulich">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại hình</label>
+                <select multiple asp-items="ViewBag.listLoaiDDL" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+
+    </script>
+
+    <script type="text/html" id="tmp_khudulich">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại hình</label>
+                <select multiple asp-items="ViewBag.listLoaiKhuDL" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+
+    </script>
+
+    <script type="text/html" id="tmp_luhanh">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại hình</label>
+                <select multiple asp-items="ViewBag.listLoaiCTLH" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="tmp_huongdanvien">
+        <div class="col-md-6">
+            <div class="position-relative form-group">
+                <label class="control-label">Loại thẻ</label>
+                <select multiple asp-items="ViewBag.listLoaiThe" class="form-control" name="loaihinh">
+                </select>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".btn-type-change").on("change", function () {
+                var type = $(this).val();
+                if (type == 1) {
+                    $("#type").html($("#tmp_cosoluutru").html())
+                    $("select").select2();
+                }
+                else if (type == 2) {
+                    $("#type").html($("#tmp_luhanh").html())
+                    $("select").select2();
+                }
+                else if (type == 3) {
+                    $("#type").html($("#tmp_muasam").html())
+                    $("select").select2();
+                }
+                else if (type == 4) {
+                    $("#type").html($("#tmp_nhahang").html())
+                    $("select").select2();
+                }
+                else if (type == 5) {
+                    $("#type").html($("#tmp_diemdulich").html())
+                    $("select").select2();
+                }
+                else if (type == 6) {
+                    $("#type").html($("#tmp_huongdanvien").html())
+                    $("select").select2();
+                }
+                else {
+                    $("#type").html("")
+                    $("select").select2();
+                }
+            });
+            $("#Id").off("change").on("change", function () {
+                document.getElementById('form').submit();
+            });
+        });
+    </script>
+}
+
+
+

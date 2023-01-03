@@ -1,0 +1,241 @@
+﻿@model TechLife.Model.HoSoThanhTra.HoSoThanhTraUpdateRequest
+@using TechLife.Common;
+@using TechLife.Common.Enums;
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@inject IHttpContextAccessor HttpContextAccessor;
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+
+                        <form asp-action="Suathongtin" enctype="multipart/form-data">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="ThoiGian" class="control-label"></label><span class="text-red">*</span>
+                                            <input asp-for="ThoiGian" class="form-control" />
+                                            <span asp-validation-for="ThoiGian" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="HoSoId" class="control-label"> </label><span class="text-red">*</span>
+                                            <select asp-for="HoSoId" class="form-control" asp-items="ViewBag.listHoSo">
+                                                <option value="0">Chọn</option>
+                                            </select>
+                                            <span asp-validation-for="HoSoId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="TruongDoan" class="control-label"></label><span class="text-red">*</span>
+                                            <input asp-for="TruongDoan" class="form-control" />
+                                            <span asp-validation-for="TruongDoan" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="NoiDung" class="control-label"></label>
+                                            <textarea rows="3" asp-for="NoiDung" class="form-control"></textarea>
+                                            <span asp-validation-for="NoiDung" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="KetQua" class="control-label"></label> <span class="text-red">*</span>
+                                            <select asp-for="KetQua" asp-items="ViewBag.listKetQua" class="form-control">
+                                            </select>
+                                            <span asp-validation-for="KetQua" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <div class="position-relative form-group">
+                                            <label asp-for="KetLuan" class="control-label"></label>
+                                            <textarea rows="3" asp-for="KetLuan" class="form-control"></textarea>
+                                            <span asp-validation-for="KetLuan" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                                    <p class="d-flex flex-column">
+                                        <span class="text-muted">VĂN BẢN LIÊN QUAN </span>
+                                    </p>
+                                </div>
+
+                                <table class="table table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" width="5%">#</th>
+                                            <th class="text-center" width="10%">Số hiệu</th>
+                                            <th class="text-center" width="10%">Ngày ký</th>
+                                            <th>Tên văn bản</th>
+                                            <th class="text-center" width="15%">File đính kèm</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int count = 0;
+                                            for (int i = 0; i < Model.DSVanBanDaLuu.Count; i++)
+                                            {
+                                                count++;
+                                                <tr>
+                                                    <td class="text-center">@count</td>
+                                                    <td class="text-center">@Model.DSVanBanDaLuu[i].SoHieu</td>
+                                                    <td class="text-center">@Functions.GetDatetimeToVn(Model.DSVanBanDaLuu[i].NgayKy)</td>
+                                                    <td>
+                                                        @Model.DSVanBanDaLuu[i].TenVanBan
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href="@(Configuration["BaseAddress"] + Model.DSVanBanDaLuu[i].FilePath)"><i class="fa fa-download"></i></a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                                <br />
+                                <div id="documents">
+                                    <div class="form-row">
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label" for="DSVanBan_0__SoHieu">Số hiệu</label>
+                                                <input class="form-control" type="text" id="DSVanBan_0__SoHieu" name="DSVanBan[0].SoHieu" value="">
+                                                <span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[0].SoHieu" data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label" for="DSVanBan_0__TenVanBan">Loại văn bản</label>
+                                                <input class="form-control" type="text" id="DSVanBan_0__TenVanBan" name="DSVanBan[0].TenVanBan" value="">
+                                                <span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[0].TenVanBan" data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label" for="DSVanBan_0__NgayKy">Ngày ký</label>
+                                                <input class="form-control" type="date" data-val="true" data-val-required="The Ngày ký field is required." id="DSVanBan_0__NgayKy" name="DSVanBan[0].NgayKy">
+                                                <span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[0].NgayKy" data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label class="control-label" for="DSVanBan_0__File">File đính kèm</label>
+                                                <input class="form-control" type="file" id="DSVanBan_0__File" name="DSVanBan[0].File">
+                                                <span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[0].File" data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <input type="hidden" id="rownum_docment" value="0" />
+                                    <button type="button" class="btn btn-success add-rows-doc">Thêm văn bản</button>
+                                </div>
+
+                            </div>
+                            <div class="card-footer">
+                                <div class="col col-12">
+                                    <div class="float-right">
+                                        <input type="hidden" asp-for="Id"></input>
+                                        <button type="submit" name="type_sumit" value="save" class="btn btn-primary">Lưu</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".add-rows-doc").off("click").on("click", (function () {
+                var i = parseInt($("#rownum_docment").val());
+                var count = i + 1;
+                $("#rownum_docment").val(count);
+                var html = '<div class="form-row">' +
+                    '<div class="col-md-3">' +
+                    '<div class="position-relative form-group">' +
+                    '<label class="control-label" for="DSVanBan_' + count + '__SoHieu">Số hiệu</label>' +
+                    '<input class="form-control" type="text" id="DSVanBan_' + count + '__SoHieu" name="DSVanBan[' + count + '].SoHieu" value="">' +
+                    '<span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[' + count + '].SoHieu" data-valmsg-replace="true"></span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-3">' +
+                    '<div class="position-relative form-group">' +
+                    '<label class="control-label" for="DSVanBan_' + count + '__TenVanBan">Loại văn bản</label> ' +
+                    '<input class="form-control" type="text" id="DSVanBan_' + count + '__TenVanBan" name="DSVanBan[' + count + '].TenVanBan" value="">' +
+                    '<span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[' + count + '].TenVanBan" data-valmsg-replace="true"></span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-3">' +
+                    '<div class="position-relative form-group">' +
+                    '<label class="control-label" for="DSVanBan_' + count + '__NgayKy">Ngày ký</label>  ' +
+                    '<input class="form-control" type="date" data-val="true" data-val-required="The Ngày ký field is required." id="DSVanBan_' + count + '__NgayKy" name="DSVanBan[' + count + '].NgayKy" value="2' + count + '21-' + count + '3-25">' +
+                    '<span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[' + count + '].NgayKy" data-valmsg-replace="true"></span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-3">' +
+                    '<div class="position-relative form-group">' +
+                    '<label class="control-label" for="DSVanBan_' + count + '__File">File đính kèm</label>' +
+                    '<input class="form-control" type="file" id="DSVanBan_' + count + '__File" name="DSVanBan[' + count + '].File">' +
+                    '<span class="text-danger field-validation-valid" data-valmsg-for="DSVanBan[' + count + '].File" data-valmsg-replace="true"></span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+                $("#documents").append(html);
+            }));
+        });
+    </script>
+
+}

@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"]; ;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common;
+@model X.PagedList.IPagedList<TechLife.App.Areas.HueCIT.Models.DichVuDiTichTrinhDien>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css" />
+}
+
+    <div class="content-wrapper" style="min-height: 1363.2px;">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                            <li class="breadcrumb-item active">Dữ liệu chuyên ngành liên thông</li>
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <form method="get" style="width:100%">
+                                <div class="card-header">
+                                    <h3 class="card-title">@ViewData["Title"]</h3>
+                                    <div class="card-tools">
+                                        <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                            <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                        </a>
+                                        <a id="dongBoBtn" asp-area="HueCIT" asp-controller="DichVuDiTich" asp-action="DongBo" class="btn btn-xs btn-outline-success">
+                                            <i class="fas fa-sync"></i> Đồng bộ
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%" class="text-center">STT</th>
+                                                        <th width="15%" class="text-center">Tiêu đề</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                    if (Model != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="2">Danh sách hiển thị <strong>@Model.PageCount</strong> trên tổng số <strong>@Model.TotalItemCount</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">
+                                                                    <strong>
+                                                                        <a href="#" data-toggle="modal" data-target=".dichvuditich-@d.ID">
+                                                                            @d.TieuDe
+                                                                        </a>
+                                                                    </strong>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @{
+                                if (Model.PageCount > 1)
+                                {
+                                    <!-- Phân trang -->
+                                    <div class="card-footer">
+                                        <div class="m-paging">
+                                            @Html.PagedListPager(Model, trang => Url.Action("Index", new { trang }),
+                                    new PagedListRenderOptions{
+                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                    LinkToNextPageFormat = "<i class='fas fa-angle-right'></i>",
+                                    LinkToPreviousPageFormat = "<i class='fas fa-angle-left'></i>",
+                                    LinkToLastPageFormat = "<i class='fas fa-angle-double-right'></i>",
+                                    LinkToFirstPageFormat = "<i class='fas fa-angle-double-left'></i>",
+                                    MaximumPageNumbersToDisplay = 3,
+                                    EllipsesElementClass = "d-none"
+                                    }
+                                    )
+                                        </div>
+                                    </div>
+                                    <!-- Kết thúc -->
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+@{
+    // MODAL (hidden) : Chi tiết dịch vụ di tích
+    foreach (var item in Model)
+    {
+        <div class="modal fade dichvuditich-@item.ID" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="card-header">
+                        <h6 class="m-title">@item.TieuDe</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="false" style="font-size:14px;">@item.NgayCapNhat</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>
+                                    @item.TomTat
+                                </p>
+                            </div>
+                            <div class="col-sm-12 text-center">
+                                <img src="@item.URLHinhAnh" alt="@item.TieuDe" style="width: 90%; height: 90%;" />
+                            </div>
+                            <div class="col-sm-12">
+                                @Html.Raw(item.NoiDung)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section scripts{
+}

@@ -1,0 +1,97 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@using TechLife.Common
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+@model List<TechLife.App.Models.MenuViewModel>
+@{
+    var user = (TechLife.Model.UserModel)ViewBag.User;
+}
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/" class="brand-link">
+        @if (!String.IsNullOrEmpty(user.AvataUrl))
+        {
+        <img src="@(Configuration["BaseAddress"] + user.AvataUrl)" class="brand-image img-circle elevation-3" style="opacity: .8;width: 35px;height: 35px;">
+        }
+        else
+        {
+        <img src="~/img/avata_blank.png" class="brand-image img-circle elevation-3" style="opacity: .8; width: 35px; height: 35px;">
+        }
+
+        <span class="brand-text font-weight-light">@(user.FirstName + " "+ user.LastName)</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+                @{
+
+                    string url_curent = TempData.GetTempData(SystemConstants.UrlIndex);
+
+                    if (Model.Where(v => v.Url == Context.Request.Path.ToString()).Count() > 0)
+                    {
+                        url_curent = Context.Request.Path.ToString();
+                    }
+
+                    TempData.AddTempData(SystemConstants.UrlIndex, url_curent);
+
+                    var list = Model.Where(v => v.GroupId == 0).ToList();
+                    foreach (var d in list)
+                    {
+                        var list_chirld = Model.Where(v => v.GroupId == d.Id).ToList();
+                        if (list_chirld.Count() > 0)
+                        {
+                            var active_chirld = list_chirld.Where(v => v.GroupId == d.Id && v.Url == url_curent).ToList();
+
+                            string active = active_chirld.Count() > 0 ? "active" : "";
+                            string open = active_chirld.Count() > 0 ? "menu-is-opening menu-open" : "";
+
+                    <li class="nav-item @open">
+                        <a href="@d.Url" class="nav-link @active">
+                            <i class="nav-icon fas @d.Icon"></i>
+                            <p>
+                                @d.Name
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            @{
+                                        foreach (var c in list_chirld)
+                                        {
+                                            active = c.Url == url_curent ? "active" : "";
+                                <li class="nav-item">
+                                    <a href="@c.Url" class="nav-link @active">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>@c.Name</p>
+                                    </a>
+                                </li>
+                                        }
+                            }
+                        </ul>
+                    </li>
+                        }
+                        else
+                        {
+                            string active = d.Url == url_curent ? "active" : "";
+                    <li class="nav-item">
+                        <a href="@d.Url" class="nav-link @active">
+                            <i class="nav-icon fas @d.Icon"></i>
+                            <p>
+                                @d.Name
+                            </p>
+                        </a>
+                    </li>
+                        }
+                    }
+                }
+
+
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>

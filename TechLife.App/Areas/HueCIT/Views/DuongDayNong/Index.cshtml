@@ -1,0 +1,365 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"];;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common;
+@model X.PagedList.IPagedList<TechLife.App.Areas.HueCIT.Models.DuongDayNongTrinhDien>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css"/>
+}
+
+<div class="content-wrapper" style="min-height: 1363.2px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Dữ liệu chuyên ngành liên thông</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                    @if (User.IsInRole("create_duongdaynong") || User.IsInRole("root"))
+                                    {
+                                        <a href="javascript:void(0)" class="btn btn-xs btn-success addBtn">
+                                            <i class="fas fa-plus-circle"></i> Thêm mới
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Nhóm đơn vị</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="nhomdonvi" name="nhomdonvi" asp-items="ViewBag.listLoai">
+                                                <option value="-1">Tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Đơn vị tiếp nhận</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="donvi" name="donvi" asp-items="ViewBag.listDonVi">
+                                                <option value="-1">Tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" class="text-center">STT</th>
+                                                    <th width="15%">Nhóm đơn vị</th>
+                                                    <th>Thông tin đơn vị tiếp nhận</th>
+                                                    <th width="15%" class="text-center">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model != null)
+                                                    {
+                                                        int stt = 0;
+                                                        <tr>
+                                                            <td class="text-blue text-center" colspan="6">Danh sách hiển thị <strong>@Model.Count</strong> trên tổng số <strong>@Model.TotalItemCount</strong> dòng </td>
+                                                        </tr>
+                                                        foreach (var d in Model)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">@d.TenNhom</td>
+                                                                <td>
+                                                                    <strong class="d-block">
+                                                                        <a class="detailBtn" href="javascript:void(0)" data-id="@d.ID">
+                                                                            @d.DonViTiepNhan
+                                                                        </a>
+                                                                    </strong>
+                                                                    <div>
+                                                                        <strong>Số điện thoại: </strong><span>@d.DienThoai</span>
+                                                                    </div>
+                                                                </td>
+                                                                
+                                                                <td class="text-center">
+                                                                    @if (User.IsInRole("edit_duongdaynong") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Sửa đường dây nóng" href="javascript:void(0)" data-id="@d.ID" class="btn btn-warning btn-xs editBtn"><i class="fas fa-edit"></i> Sửa</a>
+
+                                                                    }
+                                                                    @if (User.IsInRole("delete_duongdaynong") || User.IsInRole("root"))
+                                                                    {
+                                                                        <a title="Xóa đường dây nóng" data-title="Bạn muốn xóa đường dây nóng @d.DonViTiepNhan ?" data-url="/HueCIT/DuongDayNong/Delete?id=@HashUtil.EncodeID(d.ID.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                                    }
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td class="text-red" colspan="5">Không có dữ liệu nào trong danh sách</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @{
+                                if (Model.PageCount > 1)
+                                {
+                                    <!-- Phân trang -->
+                                    <div class="card-footer">
+                                        <div class="m-paging">
+                                            @Html.PagedListPager(Model, trang => Url.Action("Index", new { trang, loai = ViewBag.Loai, diadiem = ViewBag.DiaDiem }),
+                                                new PagedListRenderOptions{
+                                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                                    LinkToNextPageFormat = "<i class='fas fa-angle-right'></i>",
+                                                    LinkToPreviousPageFormat = "<i class='fas fa-angle-left'></i>",
+                                                    LinkToLastPageFormat = "<i class='fas fa-angle-double-right'></i>",
+                                                    LinkToFirstPageFormat = "<i class='fas fa-angle-double-left'></i>",
+                                                    MaximumPageNumbersToDisplay = 3,
+                                                    EllipsesElementClass = "d-none"
+                                                }
+                                            )
+                                        </div>
+                                    </div>
+                                    <!-- Kết thúc -->
+                                }
+                            }
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="card-header">
+                <h6 class="m-title" id="detailTenDonVi"></h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="col-md-12 mb-1">
+                    <p class="modal-detail-title">Nhóm đơn vị:</p>
+                    <span class="modal-detail-content" id="detailNhom"></span>
+                </div>
+                <div class="col-md-12 mb-1">
+                    <p class="modal-detail-title">Điện thoại:</p>
+                    <span class="modal-detail-content" id="detailDienThoai"></span>
+                </div>
+                <div class="col-md-12 mb-1">
+                    <p class="modal-detail-title">Địa chỉ:</p>
+                    <span class="modal-detail-content" id="detailDiaChi"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAdd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div>
+                <form asp-action="Add" method="post">
+                    <div class="card-header">
+                        <h6 class="m-title">Thêm mới đường dây nóng</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Nhóm đơn vị <span class="text-red">*</span></label>
+                                    <select class="form-control" name="Nhom" asp-items="ViewBag.listLoai" data-val="true" data-val-required="Vui lòng chọn nhóm đơn vị.">
+                                        <option value="0">Chọn</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Tên đơn vị tiếp nhận <span class="text-red">*</span></label>
+                                    <input class="form-control" name="DonViTiepNhan" data-val="true" data-val-required="Vui lòng nhập tên đơn vị."/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Số điện thoại <span class="text-red">*</span></label>
+                                    <input class="form-control" name="DienThoai" data-val="true" data-val-required="Vui lòng nhập số điện thoại."/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Địa chỉ:</label>
+                                    <input class="form-control" name="DiaChi" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <button type="submit" data-dismiss="modal" aria-label="Close" class="btn btn-outline-secondary">Hủy</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div>
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" name="ID" id="editId"/>
+                    <div class="card-header">
+                        <h6 class="m-title">Cập nhật đường dây nóng</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Nhóm đơn vị <span class="text-red">*</span></label>
+                                    <select class="form-control" name="Nhom" asp-items="ViewBag.listLoai" id="editNhomDonVi" data-val="true" data-val-required="Vui lòng chọn nhóm đơn vị.">
+                                        <option value="0">Chọn</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Tên đơn vị tiếp nhận <span class="text-red">*</span></label>
+                                    <input class="form-control" name="DonViTiepNhan" id="editTenDonVi" data-val="true" data-val-required="Vui lòng nhập tên đơn vị."/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Số điện thoại <span class="text-red">*</span></label>
+                                    <input class="form-control" name="DienThoai" id="editDienThoai" data-val="true" data-val-required="Vui lòng nhập số điện thoại."/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="position-relative form-group">
+                                    <label class="control-label">Địa chỉ:</label>
+                                    <input class="form-control" name="DiaChi" id="editDiaChi" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <button type="submit" data-dismiss="modal" aria-label="Close" class="btn btn-outline-secondary">Hủy</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $( document ).ready(function() {
+            $('.detailBtn').on('click', function() {
+                const id = $(this).data("id");
+                if(id) {
+                    $('#detailTenDonVi').text('');
+                    $("#detailNhom").text('');
+                    $("#detailDienThoai").text('');
+                    $('#detailDiaChi').text('');
+
+                    $.ajax({
+                        url: '/HueCIT/DuongDayNong/Get?id=' + id,
+                        type: "GET",
+                        async: false,
+                        success: function(data) {
+                            $('#detailTenDonVi').text(data.donViTiepNhan);
+                            $("#detailNhom").text(data.tenNhom);
+                            $("#detailDienThoai").text(data.dienThoai);
+                            $('#detailDiaChi').text(data.diaChi);
+                            $('#modalDetail').modal('show');
+                        },
+                        error: function(xhr) {
+                            console.log('error');
+                        }
+                    });
+                }
+            });
+
+            $('.addBtn').on('click', function() {
+                $('#modalAdd').modal('show');
+            });
+
+            $('.editBtn').on('click', function() {
+                const id = $(this).data("id");
+                if(id) {
+                    $('#editId').val(id);
+                    $.ajax({
+                        url: '/HueCIT/DuongDayNong/Get?id=' + id,
+                        type: "GET",
+                        async: false,
+                        success: function(data) {
+                            $('#editTenDonVi').val(data.donViTiepNhan);
+                            $("#editNhomDonVi").val(data.nhomDonVi);
+                            $('#editNhomDonVi').trigger('change');
+                            $("#editDienThoai").val(data.dienThoai);
+                            $('#editDiaChi').val(data.diaChi);
+                            $('#modalEdit').modal('show');
+                        },
+                        error: function(xhr) {
+                            console.log('error');
+                        }
+                    });
+                }
+                
+            });
+        });
+    </script>
+}

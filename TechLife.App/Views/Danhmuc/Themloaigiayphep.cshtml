@@ -1,0 +1,71 @@
+﻿@model TechLife.Model.GiayPhepChungChi.GiayPhepCreateRequest
+
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form asp-action="Themloaigiayphep">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.ValidationSummary()
+                                <div class="col-md-6">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group">
+                                        <label asp-for="Ten" class="control-label"></label>
+                                        <input asp-for="Ten" class="form-control" />
+                                        <span asp-validation-for="Ten" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="LoaiHinhId" class="control-label"></label>
+                                        <select multiple asp-items="ViewBag.listLinhVucKinhDoanh" asp-for="LoaiHinhId" class="form-control">
+                                        </select>
+                                        <span asp-validation-for="LoaiHinhId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="submit" name="submit_type" value="save" class="btn btn-primary">Lưu</button>
+                                    <button type="submit" name="submit_type" value="save_add" class="btn btn-primary">Lưu và thêm mới</button>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+

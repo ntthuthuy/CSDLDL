@@ -1,0 +1,231 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"]; ;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TechLife.Common;
+@using TechLife.Common.Enums;
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@model TechLife.App.Areas.HueCIT.Models.DoanhNghiepTrinhDien
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
+
+
+@section css {
+    <link rel="stylesheet" href="~/css/style.css" />
+}
+    <style>
+        #mapgg {
+            margin: 0 auto;
+            width: 100%;
+            height: 300px;
+        }
+
+        .custom-file-input {
+            height: 100% !important
+        }
+
+        .add-images:hover {
+            box-shadow: 5px 5px rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
+
+    <div class="content-wrapper" style="min-height: 1363.2px;">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                            <li class="breadcrumb-item active">Dữ liệu chuyên ngành liên thông</li>
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <form asp-action="Add" enctype="multipart/form-data">
+                                <div class="card-header">
+                                    <h3 class="card-title">@Model.TenDoanhNghiep</h3>
+                                    <div class="card-tools">
+                                        <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                            <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="col-sm-12">
+                                        <div class="card card-primary card-outline card-outline-tabs">
+                                            <div class="card-header p-0 border-bottom-0">
+                                                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Thông tin chung</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" id="custom-tabs-four-vanban-tab" data-toggle="pill" href="#custom-tabs-four-vanban" role="tab" aria-controls="custom-tabs-four-vanban" aria-selected="true">Văn bản</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="tab-content" id="custom-tabs-four-tabContent">
+                                                    <!-- Thông tin hồ sơ -->
+                                                    <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    @if (Model != null)
+                                                    {
+                                                        <div class="form-row">
+                                                            <div class="col-md-10">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Tên doanh nghiệp:</label>
+                                                                    <span class="d-block">@Model.TenDoanhNghiep</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Mã số thuế:</label>
+                                                                    <span class="d-block">@Model.MaSoDoanhNghiep</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Loại hình doanh nghiệp:</label>
+                                                                    <span class="d-block">@Model.TenLoaiHinh</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Tình trạng hoạt động:</label>
+                                                                    <span class="btn-block btn btn-sm btn-success m-tag" style="width: 20%;">@Model.TenTrangThai</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <div class="col-md-12">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Địa chỉ:</label>
+                                                                    <span class="d-block">@Model.DiaChi</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <div class="col-md-3">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Số điện thoại/Fax:</label>
+                                                                    @{
+                                                                        if (String.IsNullOrEmpty(Model.DienThoai))
+                                                                        {
+                                                                            <span class="d-block">
+                                                                                @Model.Fax
+                                                                            </span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span class="d-block">
+                                                                                @Model.DienThoai
+                                                                            </span>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Email:</label>
+                                                                    <span class="d-block">@Model.HopThu</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Website:</label>
+                                                                    <span class="d-block">@Model.TrangChu</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Người đại diện:</label>
+                                                                    <span class="d-block">@Model.NguoiDaiDien</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <div class="col-md-12">
+                                                                <div class="position-relative form-group">
+                                                                    <label class="control-label">Ngành nghề:</label>
+                                                                    <strong><span class="d-block">@Model.NganhNgheChinhId - @Model.TenNganhNgheChinh (Nghề chính)</span></strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <!-- Thông tin văn bản -->
+                                                <div class="tab-pane fade show" id="custom-tabs-four-vanban" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <table class="table table-hover table-striped table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th width="5%" class="text-center">STT</th>
+                                                                        <th width="50%" class="text-center">Văn bản</th>
+                                                                        <th width="10%" class="text-center">Tải về</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        if (Model != null && Model.DSVanBan.Count() > 0)
+                                                                        {
+                                                                            int stt = 0;
+                                                                            foreach (var d in Model.DSVanBan)
+                                                                            {
+                                                                                stt++;
+                                                                                <tr>
+                                                                                    <td class="text-center">@stt</td>
+                                                                                    <td class="text-left">@d.TenGiayPhep (Số ký hiệu: @d.SoKyHieu)</td>
+                                                                                    <td class="text-center">
+                                                                                        @if (User.IsInRole("root"))
+                                                                                        {
+                                                                                            <a href="#" title="Tải xuống văn bản doanh nghiệp" class="btn btn-xs d-block">
+                                                                                                <i class="fa fa-download"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <tr>
+                                                                                <td class="text-red" colspan="6">Không có dữ liệu nào trong danh sách</td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /.card -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+@section scripts{
+}
