@@ -13,3 +13,5 @@
 /TechLife.Model/obj
 /TechLife.Service/bin
 /TechLife.Service/obj
+/TechLife.App/appsettings.Development.json
+/TechLife.App/appsettings.Production.json
