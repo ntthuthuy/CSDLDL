@@ -12,6 +12,7 @@ namespace TechLife.SSO.Controllers
     {
         public ActionResult Index()
         {
+            int abc = 5;
             if (ClientSso.Ins.CurrentSessionLoginInfo != null)
             {
                 ClientSso.Ins.XacThucNguoiDung();
