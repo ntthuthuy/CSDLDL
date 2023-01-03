@@ -99,7 +99,7 @@ namespace TechLife.Data.Entities
         public bool IsStatus { get; set; }
         public bool IsDelete { get; set; }
         public string NgonNguId { get; set; }
-        public decimal GiaThamKhao { get; set; }
+        public decimal? GiaThamKhao { get; set; }
 
         //HueCIT
         public int? LoaiDiaDiemAnUong { get; set; }

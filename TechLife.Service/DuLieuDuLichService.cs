@@ -433,7 +433,7 @@ namespace TechLife.Service
                     {
                         foreach (var d in request.DSLoaiPhongGiuong.Where(v => !v.IsDelete && v.TenGoi != null))
                         {
-                            _context.LoaiGiuongPhongs.Add(new LoaiGiuongPhong()
+                            _context.LoaiGiuongPhong.Add(new LoaiGiuongPhong()
                             {
                                 Ten = d.TenGoi,
                                 LuuTruId = coSoLuuTru.Id,
@@ -935,6 +935,7 @@ namespace TechLife.Service
         {
             try
             {
+
                 var query = from m in _context.HoSo
                             join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
                             from xa in dp.DefaultIfEmpty()
@@ -1067,7 +1068,7 @@ namespace TechLife.Service
                     DSTrinhDo = _trinhDoService.GetAllByHoSo(x.m.Id).Result,
                     DSDanhGia = _danhGiaService.GetAll(x.m.Id, TechLife.Common.Enums.LoaiBinhLuan.hosodulich.ToString()).Result,
                     Tours = _tourService.GetAll(x.m.Id).Result,
-                    DSNhaHang = _context.QuyMoNhaHangLuuTru.Where(v => v.HoSoId == x.m.Id).Select(v => new QuyMoNhaHangVm()
+                    DSNhaHang = _context.QuyMoNhaHangLuuTru.OrderBy(x => x.Id).Where(v => v.HoSoId == x.m.Id).Select(v => new QuyMoNhaHangVm()
                     {
                         DienTich = v.DienTich,
                         HoSoId = v.HoSoId,
@@ -1088,6 +1089,23 @@ namespace TechLife.Service
                         GiayPhepId = x.GiayPhepId,
                         IsStatus = x.IsStatus
                     }).ToList(),
+                    DSLoaiPhongGiuong = _context.LoaiGiuongPhong.OrderBy(x => x.Id).Where(v => v.LuuTruId == x.m.Id).Select(v => new TechLife.Model.LoaiPhong.LoaiPhongGiuong()
+                    {
+                        Id = v.Id,
+                        GiaGiuong = Functions.ConvertDecimalVND(v.GiaGiuongPhu),
+                        GiaPhong = Functions.ConvertDecimalVND(v.GiaPhong),
+                        TenGoi = v.Ten,
+                        SoGiuong = v.SoGiuong,
+                        IsDelete = v.IsDelete
+
+                    }).ToList(),
+                    Amenities = _context.Amenities.Where(v => v.CompanyId == x.m.Id).Select(v => new Model.DuLieuDuLich.AmenityVm()
+                    {
+                        Id = v.AmenityId,
+                        Name = _context.TienNghi.Where(x => x.Id == v.AmenityId).Select(v => v.Ten).FirstOrDefault()
+
+                    }).ToList(),
+                    GiaThamKhao = x.m.GiaThamKhao != null ? Functions.ConvertDecimalVND(Convert.ToDecimal(x.m.GiaThamKhao)) : "0",
                     //HueCIT
                     ToaDoX = x.m.ToaDoX,
                     ToaDoY = x.m.ToaDoY,
@@ -1563,13 +1581,13 @@ namespace TechLife.Service
                         }
                     }
                 }
-                var loaiGiuongPhong = _context.LoaiGiuongPhongs.Where(x => x.LuuTruId == id);
-                _context.LoaiGiuongPhongs.RemoveRange(loaiGiuongPhong);
+                var loaiGiuongPhong = _context.LoaiGiuongPhong.Where(x => x.LuuTruId == id);
+                _context.LoaiGiuongPhong.RemoveRange(loaiGiuongPhong);
                 if (request.DSLoaiPhongGiuong != null && request.DSLoaiPhongGiuong.Count() > 0)
                 {
                     foreach (var d in request.DSLoaiPhongGiuong.Where(v => !v.IsDelete))
                     {
-                        _context.LoaiGiuongPhongs.Add(new LoaiGiuongPhong()
+                        _context.LoaiGiuongPhong.Add(new LoaiGiuongPhong()
                         {
                             Ten = d.TenGoi,
                             LuuTruId = id,
@@ -1642,7 +1660,7 @@ namespace TechLife.Service
                 {
                     foreach (var d in request.Images)
                     {
-                        
+
 
                         var image = new FileUpload()
                         {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 
 namespace TechLife.Common
 {
@@ -77,7 +78,14 @@ namespace TechLife.Common
 
             return Convert.ToDouble(value).ToString("#,### vnđ", cul.NumberFormat);
         }
+        public static string ConvertDecimalVND(decimal value)
+        {
+            if (value == 0) return "0";
+            var cul = CultureInfo.GetCultureInfo("en-us");
 
+            return Convert.ToDecimal(value).ToString("#,### ", cul.NumberFormat);
+
+        }
         public static string ConvertTimeVn(int gio, int phut)
         {
             string result = "";

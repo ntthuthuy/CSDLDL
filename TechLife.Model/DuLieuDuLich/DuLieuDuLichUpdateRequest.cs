@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TechLife.Model.HoSoVanBan;
+using TechLife.Model.LoaiPhong;
 
 namespace TechLife.Model.DuLieuDuLich
 {
@@ -14,6 +15,7 @@ namespace TechLife.Model.DuLieuDuLich
         public ImageUploadRequest Images { get; set; }
         public DocumentUploadRequest Files { get; set; }
         public List<HoSoVanBanCreateRequets> Docs { get; set; }
+        public List<LoaiPhongGiuong> DSLoaiPhongGiuong { get; set; }
     }
 
     //HueCIT
