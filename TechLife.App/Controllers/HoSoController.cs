@@ -490,11 +490,15 @@ namespace TechLife.App.Controllers
         {
             try
             {
+                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
                 var csltModel = new DuLieuDuLichModel();
-
                 ViewData["Title"] = "Thêm cơ sở lưu trú";
                 ViewData["Title_parent"] = "Hồ sơ";
-
+                var amenities = tienNghi.Select(x => new Model.DuLieuDuLich.AmenityVm()
+                {
+                    Id = x.Id,
+                    Name = x.Ten
+                }).ToList();
                 csltModel.DSLoaiPhong = await ListLoaiPhongHoSo();
                 csltModel.DSDichVu = await ListDichVuHoSo();
                 csltModel.DSNhaHang = ListNhaHangLuuTru();
@@ -504,7 +508,7 @@ namespace TechLife.App.Controllers
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru);
-
+                csltModel.Amenities = amenities;
                 await OptionHuyen();
                 await OptionXa(-1);
                 await OptionDonViTinh(2);
@@ -515,7 +519,7 @@ namespace TechLife.App.Controllers
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
-                    Images = new ImageUploadRequest()
+                    Images = new ImageUploadRequest(),
                 };
 
                 return View(model);
@@ -588,7 +592,7 @@ namespace TechLife.App.Controllers
                 await Tracking("Thêm cơ sở lưu trú " + request.DuLieuDuLich.Ten);
                 if (type_sumit == "save")
                 {
-                    return Redirect("/Hoso/Cosoluutru/");
+                    return Redirect("/Hoso/Suacosoluutru/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
                 }
                 else
                 {
@@ -617,10 +621,15 @@ namespace TechLife.App.Controllers
             {
                 ViewData["Title"] = "Sửa cơ sở lưu trú";
                 ViewData["Title_parent"] = "Hồ sơ";
-
+                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
                 int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-
                 var csltModel = await _duLieuDuLichService.GetById(Id);
+                var amenities = tienNghi.Select(x => new Model.DuLieuDuLich.AmenityVm()
+                {
+                    Id = x.Id,
+                    Name = x.Ten,
+                    IsSelect = csltModel.Amenities.Select(v => v.Id).Contains(x.Id) ? true : false
+                }).ToList();
                 if (csltModel != null)
                 {
                     csltModel.DSLoaiPhong = await ListLoaiPhongHoSo(csltModel.Id, csltModel.DSLoaiPhong);
@@ -632,7 +641,7 @@ namespace TechLife.App.Controllers
                     csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSTienNghi);
                     csltModel.DSNhaHang = ListNhaHangLuuTru(csltModel.Id, csltModel.DSNhaHang);
                     csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSVanBan);
-
+                    csltModel.Amenities = amenities;
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
                     await OptionDonViTinh(2);
@@ -645,6 +654,8 @@ namespace TechLife.App.Controllers
                 {
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest(),
+                    DSLoaiPhongGiuong = csltModel.DSLoaiPhongGiuong,
+
                 };
 
                 return View(model);

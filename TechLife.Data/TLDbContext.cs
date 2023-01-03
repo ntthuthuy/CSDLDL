@@ -164,7 +164,7 @@ namespace TechLife.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         //TechLifeUpdate ngày 28
-        public DbSet<LoaiGiuongPhong> LoaiGiuongPhongs { get; set; }
+        public DbSet<LoaiGiuongPhong> LoaiGiuongPhong { get; set; }
         public DbSet<Amenities> Amenities { get; set; }
         //HueCIT
         public DbSet<LoaiDiaDiemAnUong> LoaiDiaDiemAnUong { get; set; }
