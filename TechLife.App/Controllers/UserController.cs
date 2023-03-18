@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using TechLife.App.ApiClients;
 using TechLife.Common;
 using TechLife.Model;
+using TechLife.Model.HSCV;
 using TechLife.Service;
 
 namespace TechLife.App.Controllers
@@ -389,9 +390,17 @@ namespace TechLife.App.Controllers
         public async Task<IActionResult> Dongbo_phongban(int service_sso)
         {
 
-            var resultApi = await _hscvApiClient.DSPhongBan(SystemConstants.AppSettings.UniqueCode);
+            var phongBan = await _hscvApiClient.DSPhongBan(SystemConstants.AppSettings.UniqueCode);
+            var trungTam = await _hscvApiClient.DSPTrungTam(SystemConstants.AppSettings.UniqueCode);
 
-            var result = await _phongBanService.CreateSso(resultApi);
+            var trungTamTrucThuoc = trungTam.Select(v => new PhongBanVm()
+            {
+                DepartmentName = v.OrganizationName,
+                UniqueCode = v.UniqueCode
+            }).ToList();
+
+            var data = phongBan.Union(trungTamTrucThuoc).ToList();
+            var result = await _phongBanService.CreateSso(data);
 
             TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
 
@@ -402,9 +411,11 @@ namespace TechLife.App.Controllers
         public async Task<IActionResult> Dongbo(int service_sso)
         {
 
-            var resultApi = await _hscvApiClient.DSTaiKhoan(SystemConstants.AppSettings.UniqueCode);
+            var taiKhoanSo = await _hscvApiClient.DSTaiKhoan(SystemConstants.AppSettings.UniqueCode);
+            var taiKhoanTrungTam = await _hscvApiClient.DSTaiKhoan(SystemConstants.AppSettings.UniqueCodeTrungTam);
 
-            var result = await _userService.CreateSSO(resultApi);
+            var data = taiKhoanSo.Union(taiKhoanTrungTam).ToList();
+            var result = await _userService.CreateSSO(data);
 
             TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
 

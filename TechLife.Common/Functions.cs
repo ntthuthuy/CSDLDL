@@ -71,7 +71,7 @@ namespace TechLife.Common
                 return date.ToString("hh:mm dd/MM/yyyy");
             else return String.Empty;
         }
-          
+
         public static string ConvertDecimalToVnd(decimal value)
         {
             var cul = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
@@ -131,6 +131,22 @@ namespace TechLife.Common
         private static string ToJsonData(DataTable dataTable)
         {
             return JsonConvert.SerializeObject(dataTable);
+        }
+        public static string TrimAndUpper(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return string.Empty;
+            else
+            {
+                return str.Trim().ToUpper();
+            }
+        }
+        public static string TrimAndLower(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return string.Empty;
+            else
+            {
+                return str.Trim().ToLower();
+            }
         }
     }
 }

@@ -39,62 +39,71 @@ namespace TechLife.App.Controllers
         [HttpGet]
         public async Task<IActionResult> Authenticate(string token, int count = 0, string ReturnUrl = "/")
         {
-            if (count > 3)
+            try
+            {
+                if (count > 3)
+                {
+                    return Redirect(ReturnUrl);
+                }
+                if (String.IsNullOrEmpty(token))
+                {
+                    return Redirect("/AccessDenied?type=1");
+                }
+                if (String.IsNullOrEmpty(Request.Cookies["EsbUsersServicesToken"]))
+                {
+                    return Redirect("/AccessDenied?type=2");
+                }
+                if (String.IsNullOrEmpty(Request.Cookies["AccessToken"]))
+                {
+                    return Redirect("/AccessDenied?type=3");
+                }
+                string unaccessToken = HashUtil.Decrypt(Request.Cookies["AccessToken"]);
+                string hashToken = HashUtil.Hash(unaccessToken);
+
+                var arr = unaccessToken.Split("|");
+                string username = arr[0];
+
+                var result = await _userService.Authencate(username);
+                if (!result.IsSuccessed)
+                {
+                    return Redirect("/AccessDenied");
+
+                }
+
+                var userPrincipal = this.ValidateToken(result.ResultObj);
+                var authProperties = new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+                    IsPersistent =true
+                };
+                HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
+                HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj);
+                await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            userPrincipal,
+                            authProperties);
+
+                var user = await _userService.GetByUserName(username);
+                string jsonUser = JsonConvert.SerializeObject(user.ResultObj);
+
+                HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
+
+
+                await _trackingService.Create(new TrackingCreateRequets()
+                {
+                    Action = "Đăng nhập bằng SSO",
+                    FullName = username,
+                    UserName = username,
+                    Time = DateTime.Now
+                });
+
+                return Redirect(ReturnUrl);
+            }
+            catch
             {
                 return Redirect(ReturnUrl);
             }
-            if (String.IsNullOrEmpty(token))
-            {
-                return Redirect("/AccessDenied?type=1");
-            }
-            if (String.IsNullOrEmpty(Request.Cookies["EsbUsersServicesToken"]))
-            {
-                return Redirect("/AccessDenied?type=2");
-            }
-            if (String.IsNullOrEmpty(Request.Cookies["AccessToken"]))
-            {
-                return Redirect("/AccessDenied?type=3");
-            }
-            string unaccessToken = HashUtil.Decrypt(Request.Cookies["AccessToken"]);
-            string hashToken = HashUtil.Hash(unaccessToken);
-
-            var arr = unaccessToken.Split("|");
-            string username = arr[0];
-
-            var result = await _userService.Authencate(username);
-            if (!result.IsSuccessed)
-            {
-                return Redirect("/AccessDenied");
-
-            }
-
-            var userPrincipal = this.ValidateToken(result.ResultObj);
-            var authProperties = new AuthenticationProperties
-            {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
-                IsPersistent = true
-            };
-            HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
-            HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj);
-            await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        userPrincipal,
-                        authProperties);
-
-            var user = await _userService.GetByUserName(username);
-            string jsonUser = JsonConvert.SerializeObject(user.ResultObj);
-
-            HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
-
-            await _trackingService.Create(new TrackingCreateRequets()
-            {
-                Action = "Đăng nhập bằng SSO",
-                FullName = username,
-                UserName = username,
-                Time = DateTime.Now
-            });
-
-            return Redirect(ReturnUrl);
+         
         }
         [HttpGet]
         public IActionResult Signin(string ReturnUrl = "/")

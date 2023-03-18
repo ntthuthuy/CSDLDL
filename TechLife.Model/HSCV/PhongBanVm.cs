@@ -27,4 +27,9 @@ namespace TechLife.Model.HSCV
         public DateTime? CreatedOnDate { get; set; }
         public DateTime? LastModifiedOnDate { get; set; }
     }
+    public class TrungTamVm
+    {
+        public string UniqueCode { get; set; }
+        public string OrganizationName { get; set; }
+    }
 }

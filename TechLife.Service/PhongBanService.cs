@@ -30,17 +30,22 @@ namespace TechLife.Service
         }
         public async Task<ApiResult<bool>> CreateSso(List<TechLife.Model.HSCV.PhongBanVm> request)
         {
+            var phongBan = await _context.PhongBan.Where(v => !v.IsDelete && !string.IsNullOrEmpty(v.MaDinhDanh)).Select(v => v.MaDinhDanh.TrimAndUpper()).ToListAsync();
+
             if (request != null && request.Count > 0)
             {
                 foreach (var item in request)
                 {
-                    var obj = new PhongBan()
+                    if (!phongBan.Contains(item.UniqueCode.TrimAndUpper()))
                     {
-                        MaDinhDanh = item.UniqueCode,
-                        Ten = item.DepartmentName,
-                        SoDienThoai = item.OfficePhone
-                    };
-                    _context.PhongBan.Add(obj);
+                        var obj = new PhongBan()
+                        {
+                            MaDinhDanh = item.UniqueCode.TrimAndUpper(),
+                            Ten = item.DepartmentName,
+                            SoDienThoai = item.OfficePhone
+                        };
+                        _context.PhongBan.Add(obj);
+                    }
                 }
             }
 

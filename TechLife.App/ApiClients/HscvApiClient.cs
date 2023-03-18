@@ -15,6 +15,7 @@ namespace TechLife.App.ApiClients
     public interface IHscvApiClient
     {
         Task<List<PhongBanVm>> DSPhongBan(string madinhdanh);
+        Task<List<TrungTamVm>> DSPTrungTam(string madinhdanh);
         Task<List<TaiKhoanVm>> DSTaiKhoan(string madinhdanh);
         Task<PagedResult<VanBanDen>> DSVanBanDen(string madinhdanh, VanBanDenRequest request);
     }
@@ -38,7 +39,10 @@ namespace TechLife.App.ApiClients
         {
             return await GetHSCVAsync<List<PhongBanVm>>($"/API/AdministrationOrganization/Dep/getAllDepartmentOfOrganization?organId={madinhdanh}");
         }
-
+        public async Task<List<TrungTamVm>> DSPTrungTam(string madinhdanh)
+        {
+            return await GetHSCVAsync<List<TrungTamVm>>($"/API/AdministrationOrganization/Org/getAllSubOrganization?organId={madinhdanh}");
+        }
         public async Task<List<TaiKhoanVm>> DSTaiKhoan(string madinhdanh)
         {
             return await GetHSCVAsync<List<TaiKhoanVm>>($"/API/AdministrationOrganization/Emp/_getListEmployeeInOrganizationByUniquecode?uniqueCode={madinhdanh}");

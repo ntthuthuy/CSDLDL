@@ -61,7 +61,7 @@ namespace TechLife.App
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 
-                options.LoginPath = new PathString("/Login/Signin");
+                options.LoginPath = new PathString("/LoginWithSSO");
                 options.AccessDeniedPath = new PathString("/Logout");
                 options.AccessDeniedPath = new PathString("/AccessDenied");
 
@@ -150,6 +150,7 @@ namespace TechLife.App
             services.AddTransient<IGroupService, GroupService>();
             services.AddTransient<IMenuService, MenuService>();
             services.AddTransient<ILogService, LogService>();
+            services.AddTransient<ILoginWithSsoApiClient, LoginWithSsoApiClient>();
             //HueCIT
             services.AddTransient<IFileUploaderService, FileUploaderService>();
             services.AddTransient<IDiemVeSinhDongBoService, DiemVeSinhDongBoService>();

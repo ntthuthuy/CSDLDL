@@ -20,7 +20,9 @@ namespace TechLife.Common
             public const string Token = "Token";
             public const string BaseAddress = "BaseAddress";
             public const string HSCVAddress = "HSCVAddress";
+            public const string SsoAddress = "SsoAddress";
             public const string UniqueCode = "00.23.H57";
+            public const string UniqueCodeTrungTam = "01.23.H57";
         }
 
         public class ProductSettings

@@ -13,4 +13,17 @@ namespace TechLife.Common
 
         public T Obj { get; set; }
     }
+    public class KetQuaXacThuc
+    {
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; }
+        public UserSSo UserObj { get; set; }
+
+    }
+    public class UserSSo
+    {
+        public string TaiKhoan { get; set; }
+        public string HoVaTen { get; set; }
+        public string TenDonVi { get; set; }
+    }
 }

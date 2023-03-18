@@ -73,7 +73,7 @@ namespace TechLife.Service
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
 
-            var result = await _signInManager.PasswordSignInAsync(user, "Abcd1234@", true, true);
+            await _signInManager.SignInAsync(user, true);
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -82,13 +82,16 @@ namespace TechLife.Service
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
             claims.Add(new Claim(ClaimTypes.Sid, user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.GivenName, user.FullName));
+            claims.Add(new Claim(ClaimTypes.Version, DateTime.Now.ToString()));
             claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
+
             //foreach (var r in roles)
             //{
             //    claims.Add(new Claim(ClaimTypes.Role, r));
             //}
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(_config["Tokens:Issuer"],
