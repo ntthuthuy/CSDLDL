@@ -17,7 +17,6 @@ using TechLife.Service;
 
 namespace TechLife.App.Controllers
 {
-    [Authorize(Roles = "root")]
     public class UserController : BaseController
     {
         private readonly IRoleApiClient _roleApiClient;
@@ -50,18 +49,14 @@ namespace TechLife.App.Controllers
             _phongBanService = phongBanService;
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Logout(string ReturnUrl)
         {
-
             await _userService.Logout();
-
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("Token");
-            HttpContext.Session.Remove(SystemConstants.AppSettings.UserInfo);
-            return Redirect("/sso");
+            return Redirect($"{_configuration[SystemConstants.AppSettings.SsoAddress]}");
         }
         [HttpGet]
+        [Authorize(Roles = "root")]
+
         public async Task<IActionResult> Index()
         {
 
@@ -83,6 +78,8 @@ namespace TechLife.App.Controllers
             return View(data.ResultObj);
         }
         [HttpGet]
+        [Authorize(Roles = "root")]
+
         public async Task<IActionResult> Create()
         {
             ViewBag.Group = await _groupApiClient.GetAll();
@@ -91,6 +88,8 @@ namespace TechLife.App.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "root")]
+
         public async Task<IActionResult> Create(UserModel request)
         {
             request.FullName = request.LastName + " " + request.FirstName;

@@ -62,7 +62,6 @@ namespace TechLife.App
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 
                 options.LoginPath = new PathString("/LoginWithSSO");
-                options.AccessDeniedPath = new PathString("/Logout");
                 options.AccessDeniedPath = new PathString("/AccessDenied");
 
                 options.SlidingExpiration = true;
