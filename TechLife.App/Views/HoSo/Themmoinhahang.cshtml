@@ -72,6 +72,9 @@
                                                     <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-tiennghi" role="tab" aria-controls="custom-tabs-four-tiennghi" aria-selected="true">Dịch vụ bổ sung</a>
                                                 </li>
                                                 <li class="nav-item">
+                                                    <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-content" role="tab" aria-controls="custom-tabs-four-content" aria-selected="true">Bài viết quảng bá</a>
+                                                </li>
+                                                <li class="nav-item">
                                                     <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Bảng giá thực đơn</a>
                                                 </li>
                                                 <li class="nav-item">
@@ -394,6 +397,23 @@
 
                                                         }
                                                     }
+                                                </div>
+                                                <div class="tab-pane fade" id="custom-tabs-four-content" role="tabpanel" aria-labelledby="custom-tabs-four-content-tab">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="box box-">
+                                                                <div class="box-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <textarea asp-for="DuLieuDuLich.GioiThieu" class="form-control"></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <!-- Thông tin giá thực đơn -->
                                                 <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
@@ -837,5 +857,42 @@
             ].join(', ');
         }
     </script>
+    <script src="~/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('DuLieuDuLich_GioiThieu', {
+            filebrowserUploadUrl: '/HoSo/UploadImage/',
+            height: 450,
 
+        });
+        CKEDITOR.editorConfig = function (config) {
+            // Define changes to default configuration here. For example:
+            config.language = 'de';
+            // config.extraPlugins = 'my_own_plugin'; // if you have any plugin
+            // config.uiColor = '#AADC6E';
+            // config.image_previewText = CKEDITOR.tools.repeat(' Hier steht dann dein guter Text. ', 8 );
+            // config.contentsLanguage = 'de';
+            config.height = 350; // 350px, specify if you want a larger height of the editor
+
+            config.linkShowAdvancedTab = false;
+            config.linkShowTargetTab = false;
+        };
+        CKEDITOR.on('dialogDefinition', function (ev) {
+            var dialogName = ev.data.name;
+            var dialogDefinition = ev.data.definition;
+            ev.data.definition.resizable = CKEDITOR.DIALOG_RESIZE_NONE;
+
+            if (dialogName == 'link') {
+                var infoTab = dialogDefinition.getContents('info');
+                infoTab.remove('protocol');
+                dialogDefinition.removeContents('target');
+                dialogDefinition.removeContents('advanced');
+            }
+
+            if (dialogName == 'image') {
+                dialogDefinition.removeContents('Link');
+                dialogDefinition.removeContents('advanced');
+                var infoTab = dialogDefinition.getContents('info');
+            }
+        });
+    </script>
 }

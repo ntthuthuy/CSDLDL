@@ -75,15 +75,13 @@ namespace TechLife.Service
 
             await _signInManager.SignInAsync(user, true);
 
-            var roles = await _userManager.GetRolesAsync(user);
-
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.Sid, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.GivenName, user.FullName));
-            claims.Add(new Claim(ClaimTypes.Version, DateTime.Now.ToString()));
-            claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
+            //claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            //claims.Add(new Claim(ClaimTypes.Sid, user.Id.ToString()));
+            //claims.Add(new Claim(ClaimTypes.GivenName, user.FullName));
+            //claims.Add(new Claim(ClaimTypes.Version, DateTime.Now.ToString()));
+            //claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
 
             //foreach (var r in roles)
             //{
@@ -118,11 +116,11 @@ namespace TechLife.Service
 
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            //claims.Add(new Claim(ClaimTypes.Email, user.Email));
             claims.Add(new Claim(ClaimTypes.Sid, user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.GivenName, user.FullName));
             claims.Add(new Claim(ClaimTypes.Version, DateTime.Now.ToString()));
-            claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
+            //claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
 
             //foreach (var r in roles)
             //{

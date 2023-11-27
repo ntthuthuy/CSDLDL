@@ -247,7 +247,7 @@ namespace TechLife.Service
                     PhucVu = request.PhucVu,
                     ToaDoX = request.ToaDoX,
                     ToaDoY = request.ToaDoY,
-                    MaDoanhNghiep = request.MaDoanhNghiep
+                    MaDoanhNghiep = request.MaDoanhNghiep,
                 };
                 _context.HoSo.Add(coSoLuuTru);
                 var result = await _context.SaveChangesAsync();

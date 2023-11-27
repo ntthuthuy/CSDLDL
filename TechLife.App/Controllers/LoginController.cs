@@ -19,7 +19,6 @@ using TechLife.Model.Tracking;
 using TechLife.Service;
 using System.Web;
 using Newtonsoft.Json;
-
 namespace TechLife.App.Controllers
 {
     public class LoginController : Controller

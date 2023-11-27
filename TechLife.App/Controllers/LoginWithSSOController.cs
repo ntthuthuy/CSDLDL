@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using RestSharp;
 
 namespace TechLife.App.Controllers
 {
@@ -48,8 +49,11 @@ namespace TechLife.App.Controllers
 
             return principal;
         }
+       
         public async Task<IActionResult> Index(string token)
         {
+            if (User.Identity.IsAuthenticated) return Redirect("/");
+
             if (string.IsNullOrEmpty(token))
                 return Redirect(_configuration[SystemConstants.AppSettings.SsoAddress]);
             var ssoRessult = await _loginWithSsoApiClient.Authenticate(token);
@@ -63,6 +67,7 @@ namespace TechLife.App.Controllers
             {
                 return Redirect("/AccessDenied?type=3");
             }
+           
             var userPrincipal = this.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {

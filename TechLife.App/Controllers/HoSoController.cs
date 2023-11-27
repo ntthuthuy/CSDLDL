@@ -4296,7 +4296,7 @@ namespace TechLife.App.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "manage_travel_data")]
+        [Authorize(Roles = "manage_travel_data,root")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Xoanhahang_luutru(int id)
         {
