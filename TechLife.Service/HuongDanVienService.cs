@@ -171,8 +171,8 @@ namespace TechLife.Service
         public async Task<List<HuongDanVienModel>> GetAll(string key = "")
         {
             var query = from m in _context.HuongDanVien
-                        where m.IsDelete == false 
-                        && (!String.IsNullOrEmpty(key) ? m.HoVaTen.Contains(key)|| m.SoTheHDV.Contains(key) : 1 == 1)
+                        where m.IsDelete == false
+                        && (!String.IsNullOrEmpty(key) ? m.HoVaTen.Contains(key) || m.SoTheHDV.Contains(key) : 1 == 1)
                         select new HuongDanVienModel
                         {
                             Id = m.Id,
@@ -230,47 +230,51 @@ namespace TechLife.Service
                             NgayCapThe = m.NgayCapThe,
                             IsDelete = m.IsDelete,
                             IsStatus = m.IsStatus,
-                            DSQuaTrinhHD = m.DSQuaTrinhHoatDong.Select(v => new QuaTrinhHoatDongModel()
-                            {
-                                HDVId = v.HDVId,
-                                HoatDong = v.HoatDong,
-                                Id = v.Id,
-                                KetQua = v.KetQua,
-                                ThoiGian = v.ThoiGian
-                            }).ToList(),
-                            DSVanBan = _context.HoSoVanBan.Where(v => v.HosoId == m.Id && v.Loai == LoaiFile.hosohuongdanvien.ToString()).Select(x => new HoSoVanBanVm()
-                            {
-                                FileName = x.FileName,
-                                FilePath = x.FilePath,
-                                Id = x.Id,
-                                MaSo = x.MaSo,
-                                NgayCap = x.NgayCap,
-                                NgayHetHan = x.NgayHetHan,
-                                NoiCap = x.NoiCap,
-                                TenGoi = x.TenGoi,
-                                GiayPhepId = x.GiayPhepId,
-                                IsStatus = x.IsStatus
-                            }).ToList(),
-                            NoiCapThe = m.NoiCapThe,
-                            LoaiHinhId = _context.HuongDanVienLoaiHinh.Where(v => v.HuongDanVienId == m.Id).Select(v => v.LoaiHinhId).ToList(),
-                            NgonNguId = _context.HuongDanVienNgonNgu.Where(v => v.HuongDanVienId == m.Id).Select(v => v.NgonNguId).ToList(),
-                            Images = _fileUploadService.GetImageByHoSoId(m.Id, LoaiFile.hosohuongdanvien.ToString()).Result
+                            NoiCapThe = m.NoiCapThe
                         };
 
-            if (query == null || query.Count() <= 0)
+            var model = await query.FirstOrDefaultAsync();
+
+            if (model == null)
             {
                 throw new TLException($"Cannot find with id {id}");
             }
 
-            var model = await query.FirstOrDefaultAsync();
 
+            model.DSQuaTrinhHD = _context.QuaTrinhHoatDong.Where(x => x.HDVId == model.Id).Select(v => new QuaTrinhHoatDongModel()
+            {
+                HDVId = v.HDVId,
+                HoatDong = v.HoatDong,
+                Id = v.Id,
+                KetQua = v.KetQua,
+                ThoiGian = v.ThoiGian
+            }).ToList();
+
+            model.DSVanBan = _context.HoSoVanBan.Where(v => v.HosoId == model.Id && v.Loai == LoaiFile.hosohuongdanvien.ToString()).Select(x => new HoSoVanBanVm()
+            {
+                FileName = x.FileName,
+                FilePath = x.FilePath,
+                Id = x.Id,
+                MaSo = x.MaSo,
+                NgayCap = x.NgayCap,
+                NgayHetHan = x.NgayHetHan,
+                NoiCap = x.NoiCap,
+                TenGoi = x.TenGoi,
+                GiayPhepId = x.GiayPhepId,
+                IsStatus = x.IsStatus
+            }).ToList();
+
+            model.LoaiHinhId = _context.HuongDanVienLoaiHinh.Where(v => v.HuongDanVienId == model.Id).Select(v => v.LoaiHinhId).ToList();
+            model.NgonNguId = _context.HuongDanVienNgonNgu.Where(v => v.HuongDanVienId == model.Id).Select(v => v.NgonNguId).ToList();
+            model.Images = _fileUploadService.GetImageByHoSoId(model.Id, LoaiFile.hosohuongdanvien.ToString()).Result;
+           
             return model;
         }
 
         public async Task<PagedResult<HuongDanVienModel>> GetPaging(GetPagingRequest request)
         {
             var query = from m in _context.HuongDanVien
-                        where (request.namehdv == -1 || m.Id == request.namehdv) && m.IsDelete == false && (request.loaithe == -1 || m.LoaiTheId == request.loaithe ) 
+                        where (request.namehdv == -1 || m.Id == request.namehdv) && m.IsDelete == false && (request.loaithe == -1 || m.LoaiTheId == request.loaithe)
                               || (request.TinhTrang == "" || request.TinhTrang == "Thẻ hết hạn" || request.TinhTrang == "Thẻ còn hạn")
                         select new { m };
 
@@ -315,9 +319,6 @@ namespace TechLife.Service
                     IsDelete = x.m.IsDelete,
                     IsStatus = x.m.IsStatus,
                     NoiCapThe = x.m.NoiCapThe,
-                    LoaiHinhId = _context.HuongDanVienLoaiHinh.Where(v => v.HuongDanVienId == x.m.Id).Select(v => v.LoaiHinhId).ToList(),
-                    NgonNguId = _context.HuongDanVienNgonNgu.Where(v => v.HuongDanVienId == x.m.Id).Select(v => v.HuongDanVienId).ToList(),
-                    Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosohuongdanvien.ToString()).Result
                 }).ToListAsync();
 
             //4. Select and projection
@@ -327,7 +328,7 @@ namespace TechLife.Service
                 PageIndex = request.PageIndex,
                 PageSize = request.PageSize,
                 Items = data
-                
+
             };
             return pagedResult;
         }

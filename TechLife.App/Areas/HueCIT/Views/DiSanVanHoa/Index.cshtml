@@ -7,6 +7,13 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList.Web.Common
 
+@inject TechLife.Service.IUserService userService;
+@using TechLife.App.Extensions.Authorizations
+@using TechLife.Common.Extension;
+@{
+    var user = Context.Request.GetUser();
+    var User = new CustomClaimsPrincipal(userService, this.User);
+}
 
 @section css {
     <link rel="stylesheet" href="~/css/style.css" />
@@ -119,7 +126,7 @@
                                                             <tr>
                                                                 <td class="text-center">@stt</td>
                                                                 <td class="text-center">
-                                                                    @d.LoaiHinh.TenLoai <br />
+                                                                    @d.LoaiHinh?.TenLoai <br />
                                                                 </td>
                                                                 <td>
                                                                     <strong>

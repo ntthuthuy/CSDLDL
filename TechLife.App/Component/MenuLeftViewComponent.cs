@@ -1,34 +1,32 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using TechLife.App.Extensions.Authorizations;
 using TechLife.App.Models;
-using TechLife.Common;
-using TechLife.Model;
+using TechLife.Common.Extension;
+using TechLife.Service;
 
 namespace TechLife.App.Component
 {
     public class MenuLeftViewComponent : ViewComponent
     {
+        private readonly IUserService _userService;
+
+        public MenuLeftViewComponent(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+        private new CustomClaimsPrincipal User => new CustomClaimsPrincipal(_userService, (ClaimsPrincipal)base.User);
+
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var model = new List<MenuViewModel>();
             try
             {
-                var userInfo = new UserModel();
-                try
-                {
-                    var data = HttpContext.Session.GetString(SystemConstants.AppSettings.UserInfo);
-                    userInfo = JsonConvert.DeserializeObject<UserModel>(data);
-                }
-                catch (Exception ex)
-                {
-                    userInfo = null;
-                }
+                var userInfo = Request.GetUser();
 
                 ViewBag.User = userInfo;
 
@@ -36,147 +34,147 @@ namespace TechLife.App.Component
                 if (userInfo != null)
                 {
                     //Dữ liệu du lịch
-                    if (userInfo.Roles.Contains("view_luutru")
-                        || userInfo.Roles.Contains("view_nhahang")
-                        || userInfo.Roles.Contains("view_muasam")
-                        || userInfo.Roles.Contains("view_diemdulich")
-                        || userInfo.Roles.Contains("view_khudulich")
-                        || userInfo.Roles.Contains("view_congtyluhanh")
-                        || userInfo.Roles.Contains("view_tourdulich")
-                        || userInfo.Roles.Contains("view_huongdanvien")
-                        || userInfo.Roles.Contains("view_congtyvanchuyen")
-                        || userInfo.Roles.Contains("view_dichvuvuichoi")
-                        || userInfo.Roles.Contains("view_dichvuthethao")
-                        || userInfo.Roles.Contains("view_vesinhcongcong")
-                        || userInfo.Roles.Contains("view_donviquanly")
-                        || userInfo.Roles.Contains("view_dichvucssk")
-                        || userInfo.Roles.Contains("view_diadiemanuong")
-                        || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_luutru")
+                        || User.IsInRole("view_nhahang")
+                        || User.IsInRole("view_muasam")
+                        || User.IsInRole("view_diemdulich")
+                        || User.IsInRole("view_khudulich")
+                        || User.IsInRole("view_congtyluhanh")
+                        || User.IsInRole("view_tourdulich")
+                        || User.IsInRole("view_huongdanvien")
+                        || User.IsInRole("view_congtyvanchuyen")
+                        || User.IsInRole("view_dichvuvuichoi")
+                        || User.IsInRole("view_dichvuthethao")
+                        || User.IsInRole("view_vesinhcongcong")
+                        || User.IsInRole("view_donviquanly")
+                        || User.IsInRole("view_dichvucssk")
+                        || User.IsInRole("view_diadiemanuong")
+                        || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 3, Name = "Dữ liệu du lịch", Url = "#", Icon = "fa-database" });
                     }
 
-                    if (userInfo.Roles.Contains("view_luutru") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_luutru") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 4, Name = "Cơ sở lưu trú", Url = "/Hoso/Cosoluutru/", Icon = "fa-circle", GroupId = 3 });
-                    if (userInfo.Roles.Contains("view_diemdulich") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_diemdulich") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 8, Name = "Điểm du lịch", Url = "/Hoso/Diemdulich/", Icon = "fa-circle", GroupId = 3 });
-                    if (userInfo.Roles.Contains("view_khudulich") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_khudulich") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 53, Name = "Khu du lịch", Url = "/Hoso/Khudulich/", Icon = "fa-circle", GroupId = 3 });
-                    if (userInfo.Roles.Contains("view_disan") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_disan") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 188, Name = "Di sản văn hóa", Url = "/HueCIT/DiSanVanHoa/Index/", Icon = "fa-circle", GroupId = 3 });
-                    if (userInfo.Roles.Contains("view_tourdulich") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_tourdulich") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 61, Name = "Tour du lịch", Url = "/Dichvu/Tour/", Icon = "fa-circle", GroupId = 3 });
-                    if (userInfo.Roles.Contains("view_congtyluhanh") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_congtyluhanh") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 61, Name = "Công ty lữ hành", Url = "/Hoso/Congtyluhanh/", Icon = "fa-circle", GroupId = 3 });
-                    if (userInfo.Roles.Contains("view_huongdanvien") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_huongdanvien") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 9, Name = "Hướng dẫn viên", Url = "/Hoso/Huongdanvien/", Icon = "fa-circle", GroupId = 3 });
 
                     //Dữ liệu dịch vụ
-                    if (userInfo.Roles.Contains("view_luutru")
-                        || userInfo.Roles.Contains("view_nhahang")
-                        || userInfo.Roles.Contains("view_muasam")
-                        || userInfo.Roles.Contains("view_diemdulich")
-                        || userInfo.Roles.Contains("view_khudulich")
-                        || userInfo.Roles.Contains("view_congtyluhanh")
-                        || userInfo.Roles.Contains("view_tourdulich")
-                        || userInfo.Roles.Contains("view_huongdanvien")
-                        || userInfo.Roles.Contains("view_congtyvanchuyen")
-                        || userInfo.Roles.Contains("view_dichvuvuichoi")
-                        || userInfo.Roles.Contains("view_dichvuthethao")
-                        || userInfo.Roles.Contains("view_vesinhcongcong")
-                        || userInfo.Roles.Contains("view_donviquanly")
-                        || userInfo.Roles.Contains("view_dichvucssk")
-                        || userInfo.Roles.Contains("view_diadiemanuong")
-                        || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_luutru")
+                        || User.IsInRole("view_nhahang")
+                        || User.IsInRole("view_muasam")
+                        || User.IsInRole("view_diemdulich")
+                        || User.IsInRole("view_khudulich")
+                        || User.IsInRole("view_congtyluhanh")
+                        || User.IsInRole("view_tourdulich")
+                        || User.IsInRole("view_huongdanvien")
+                        || User.IsInRole("view_congtyvanchuyen")
+                        || User.IsInRole("view_dichvuvuichoi")
+                        || User.IsInRole("view_dichvuthethao")
+                        || User.IsInRole("view_vesinhcongcong")
+                        || User.IsInRole("view_donviquanly")
+                        || User.IsInRole("view_dichvucssk")
+                        || User.IsInRole("view_diadiemanuong")
+                        || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 200, Name = "Dữ liệu dịch vụ", Url = "#", Icon = "fa-database" });
                     }
                     //HueCIT
-                    if (userInfo.Roles.Contains("view_diadiemanuong") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_diadiemanuong") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 105, Name = "Địa điểm ăn uống", Url = "/HueCIT/DiaDiemAnUong/Index/", Icon = "fa-circle", GroupId = 200 });
 
-                    if (userInfo.Roles.Contains("view_nhahang") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_nhahang") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 5, Name = "Nhà hàng", Url = "/Hoso/Nhahang/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_muasam") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_muasam") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 7, Name = "Cơ sở mua sắm", Url = "/Hoso/Cosomuasam/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_congtyvanchuyen") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_congtyvanchuyen") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 61, Name = "Công ty vận chuyển", Url = "/Hoso/Vanchuyen/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_dichvuvuichoi") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_dichvuvuichoi") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 54, Name = "Dịch vụ vui chơi, giải trí", Url = "/Hoso/Vcgt/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_dichvucssk") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_dichvucssk") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 55, Name = "Dịch vụ chăm sóc sức khỏe", Url = "/Hoso/Cssk/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_dichvuthethao") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_dichvuthethao") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 56, Name = "Dịch vụ thể thao", Url = "/Hoso/Thethao/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_vesinhcongcong") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_vesinhcongcong") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 10, Name = "Vệ sinh công cộng", Url = "/Hoso/Vesinhcongcong/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_donviquanly") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_donviquanly") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 10, Name = "Đơn vị quản lý", Url = "/Hoso/Nhacungcap/", Icon = "fa-circle", GroupId = 200 });
                     //HueCIT
-                    if (userInfo.Roles.Contains("view_thoitiet") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_thoitiet") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 110, Name = "Dự báo thời tiết", Url = "/HueCIT/ThoiTiet/Index/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_diemgiaodich") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_diemgiaodich") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 111, Name = "Điểm giao dịch", Url = "/HueCIT/DiemGiaoDich/Index/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_duongdaynong") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_duongdaynong") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 112, Name = "Đường dây nóng", Url = "/HueCIT/DuongDayNong/Index/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_quantrac") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_quantrac") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 166, Name = "Quan trắc môi trường", Url = "/HueCIT/QuanTracMoiTruong/Index/", Icon = "fa-circle", GroupId = 200 });
-                    if (userInfo.Roles.Contains("view_quantrac") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_quantrac") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 167, Name = "Tỷ giá", Url = "/HueCIT/TyGia/Index/", Icon = "fa-circle", GroupId = 200 });
 
                     //Dữ liệu chuyên ngành liên thông
                     //HueCIT
-                    if (userInfo.Roles.Contains("view_lienthongve")
-                        || userInfo.Roles.Contains("view_lienthonghues")
-                        || userInfo.Roles.Contains("view_lienthongdulich")
-                        || userInfo.Roles.Contains("view_lienthongdoanhnghiep")
-                        || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthongve")
+                        || User.IsInRole("view_lienthonghues")
+                        || User.IsInRole("view_lienthongdulich")
+                        || User.IsInRole("view_lienthongdoanhnghiep")
+                        || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 101, Name = "Dữ liệu chuyên ngành", Url = "#", Icon = "fa-database" });
                     }
-                    if (userInfo.Roles.Contains("view_lienthongve") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthongve") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 102, Name = "Vé điện tử tham quan di tích", Url = "/HueCIT/Ve/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
-                    if (userInfo.Roles.Contains("view_lienthonghues") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthonghues") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 103, Name = "Phản ánh hiện trường Hue-S", Url = "/HueCIT/HienTruong/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
-                    if (userInfo.Roles.Contains("view_lienthongdoanhnghiep") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthongdoanhnghiep") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 104, Name = "Doanh nghiệp", Url = "/HueCIT/DoanhNghiep/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
-                    if (userInfo.Roles.Contains("view_lienthongsukien") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthongsukien") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 105, Name = "Sự kiện", Url = "/HueCIT/SuKien/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
-                    if (userInfo.Roles.Contains("view_lienthonglehoi") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthonglehoi") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 108, Name = "Lễ hội", Url = "/HueCIT/LeHoi/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
-                    if (userInfo.Roles.Contains("view_lienthongamthuc") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthongamthuc") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 109, Name = "Ẩm thực", Url = "/HueCIT/AmThuc/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
-                    if (userInfo.Roles.Contains("view_lienthongdichvuditich") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_lienthongdichvuditich") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 110, Name = "Dịch vụ di tích", Url = "/HueCIT/DichVuDiTich/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
 
-                    if (userInfo.Roles.Contains("view_dulieuthanhtra") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_dulieuthanhtra") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 30, Name = "Dữ liệu thanh tra", Url = "#", Icon = "fa-list-alt" });
                     }
-                    if (userInfo.Roles.Contains("create_dulieuthanhtra") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("create_dulieuthanhtra") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 16, Name = "Thêm hồ sơ", Url = "/Thanhtra/Themmoi/", Icon = "fa-circle", GroupId = 30 });
-                    if (userInfo.Roles.Contains("view_dulieuthanhtra") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("view_dulieuthanhtra") || User.IsInRole("root"))
                         model.Add(new MenuViewModel() { Id = 16, Name = "Danh sách hồ sơ", Url = "/Thanhtra/Danhsach/", Icon = "fa-circle", GroupId = 30 });
 
-                    if (userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 60, Name = "Dịch vụ công", Url = "/Dvc/Tracuu/", Icon = "fa-book" });
                     }
 
-                    if (userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 11, Name = "Quản trị danh mục", Url = "#", Icon = "fa-list-alt" });
                         model.Add(new MenuViewModel() { Id = 16, Name = "Loại điểm du lịch", Url = "/Danhmuc/Diemdulich/", Icon = "fa-circle", GroupId = 11 });
@@ -214,7 +212,7 @@ namespace TechLife.App.Component
                         model.Add(new MenuViewModel() { Id = 119, Name = "Chủ đề sự kiện", Url = "/HueCIT/DanhMuc/ChuDeSuKien/", Icon = "fa-circle", GroupId = 11 });
                     }
 
-                    if (userInfo.Roles.Contains("report") || userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("report") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 40, Name = "Thống kê, báo cáo", Url = "/Thongke/", Icon = "fa-database" });
                         //model.Add(new MenuViewModel() { Id = 41, Name = "Biểu đồ số liệu lưu trú", Url = "/Thongke/Cosoluutru/", Icon = "fa-circle", GroupId = 40 });
@@ -226,7 +224,7 @@ namespace TechLife.App.Component
                         //model.Add(new MenuViewModel() { Id = 47, Name = "Tùy chọn báo cáo", Url = "/Thongke/Tuychon/", Icon = "fa-circle", GroupId = 40 });
                     }
 
-                    if (userInfo.Roles.Contains("root"))
+                    if (User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 47, Name = "Quản trị hệ thống", Url = "#", Icon = "fa-users-cog" });
                         model.Add(new MenuViewModel() { Id = 49, Name = "Phòng ban, trung tâm", Url = "/User/Phongban/", Icon = "fa-circle", GroupId = 47 });
@@ -236,7 +234,6 @@ namespace TechLife.App.Component
                         model.Add(new MenuViewModel() { Id = 53, Name = "Lịch sử sử dụng", Url = "/User/Tracking/", Icon = "fa-circle", GroupId = 47 });
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -248,5 +245,4 @@ namespace TechLife.App.Component
             );
         }
     }
-
 }

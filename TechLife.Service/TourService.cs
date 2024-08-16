@@ -395,16 +395,7 @@ namespace TechLife.Service
                         KhoiHanhTu = x.m.KhoiHanhTu,
                         LichTrinh = x.m.LichTrinh,
                         MaTour = x.m.MaTour,
-                        DSHanhTrinh = _context.HanhTrinh.Where(v => v.TourId == x.m.Id).Select(v => new HanhTrinhModel()
-                        {
-                            NoiDenId = v.NoiDenId,
-                            Gio = v.Gio,
-                            Mota = v.Mota,
-                            Ngay = v.Ngay,
-                            Phut = v.Phut,
-                            ThoiGian = v.ThoiGian,
-                        }).ToList(),
-                        DSHinhAnh = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.tour.ToString()).Result
+                    
                     }).ToListAsync();
 
                 //4. Select and projection

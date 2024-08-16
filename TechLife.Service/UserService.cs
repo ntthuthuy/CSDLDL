@@ -45,6 +45,10 @@ namespace TechLife.Service
         Task<ApiResult<bool>> UploadAvata(Guid id, string url);
         Task Logout();
         Task<ApiResult<string>> RegiterSocial(UserSocialRequest request);
+        Task<bool> IsContantRoles(Guid userId, IEnumerable<string> roles);
+        Task<bool> IsInRole(Guid userId, string role);
+
+        Task<bool> IsIsInRoles(Guid userId, IEnumerable<string> roles);
     }
 
     public class UserService : IUserService
@@ -73,16 +77,15 @@ namespace TechLife.Service
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
 
-            var result = await _signInManager.PasswordSignInAsync(user, "Abcd1234@", true, true);
+            await _signInManager.SignInAsync(user, true);
 
-            var roles = await _userManager.GetRolesAsync(user);
+            //var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>();
+            claims.Add(new Claim("Id", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.Sid, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.GivenName, user.FullName));
-            claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
+            claims.Add(new Claim("FullName", user.FullName));
+            //claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
             //foreach (var r in roles)
             //{
             //    claims.Add(new Claim(ClaimTypes.Role, r));
@@ -111,15 +114,13 @@ namespace TechLife.Service
                 return new ApiErrorResult<string>("Tài khoản hoặc mật khẩu không đúng!");
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
+            //var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>();
+            claims.Add(new Claim("Id", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.Sid, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.GivenName, user.FullName));
-            claims.Add(new Claim(ClaimTypes.Version, DateTime.Now.ToString()));
-            claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
+            claims.Add(new Claim("FullName", user.FullName));
+            //claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
 
             //foreach (var r in roles)
             //{
@@ -501,6 +502,68 @@ namespace TechLife.Service
                 return new ApiErrorResult<string>("Cập nhật không thành công");
             }
 
+        }
+        public async Task<bool> IsContantRoles(Guid userId, IEnumerable<string> roles)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+
+                if (user == null) return false;
+
+                var rolesInUser = await _userManager.GetRolesAsync(user);
+
+                if (rolesInUser == null || rolesInUser.Count == 0) return false;
+
+                var query = from ri in rolesInUser
+                            join r in roles on ri equals r
+                            select ri;
+
+                return query.Any();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public async Task<bool> IsInRole(Guid userId, string role)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+
+                if (user == null) return false;
+
+                return await _userManager.IsInRoleAsync(user, role);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> IsIsInRoles(Guid userId, IEnumerable<string> roles)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                    return false;
+                if (await _userManager.IsInRoleAsync(user, "root"))
+                    return true;
+
+                var rolesInUser = await _userManager.GetRolesAsync(user);
+                if (rolesInUser == null || rolesInUser.Count == 0) return false;
+                var query = from ri in rolesInUser
+                            join r in roles on ri equals r
+                            select ri;
+
+                return query.Any();
+            }
+            catch
+            {
+                throw;
+            }
         }
         public async Task Logout()
         {

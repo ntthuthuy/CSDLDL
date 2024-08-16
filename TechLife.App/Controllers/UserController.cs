@@ -194,7 +194,7 @@ namespace TechLife.App.Controllers
         [HttpPost]
         public async Task<IActionResult> RoleUnAssign(Guid id, Guid userId)
         {
-            var result = await _roleApiClient.RoleUnAssign(id, userId);
+            var result = await _roleService.RoleUnAssign(id, userId);
             if (result.IsSuccessed)
             {
                 return RedirectToAction("RoleAssign", new { id = userId });

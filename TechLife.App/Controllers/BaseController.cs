@@ -26,7 +26,7 @@ using TechLife.Service;
 
 namespace TechLife.App.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class BaseController : Controller
     {
         public readonly IUserService _userService;
@@ -153,32 +153,33 @@ namespace TechLife.App.Controllers
             var sessions = context.HttpContext.Session.GetString("Token");
             if (sessions == null)
             {
-                string userName = User.Identity.Name;
-                var result = _userService.Authencate(userName);
-                if (result.Result.ResultObj == null)
-                {
-                    context.Result = new RedirectToActionResult("Index", "Login", null);
-                }
-                var userPrincipal = this.ValidateToken(result.Result.ResultObj);
+                context.Result = new RedirectToActionResult("Logout", "User", null);
 
-                var authProperties = new AuthenticationProperties
-                {
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                };
-                context.HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
-                context.HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.Result.ResultObj);
-                context.HttpContext.SignInAsync(
-                            CookieAuthenticationDefaults.AuthenticationScheme,
-                            userPrincipal,
-                            authProperties);
+                //string userName = User.Identity.Name;
+                //var result = _userService.Authencate(userName);
+                //if (result.Result.ResultObj == null)
+                //{
+                //}
+                //var userPrincipal = this.ValidateToken(result.Result.ResultObj);
 
-                var user = _userService.GetByUserName(userName);
-                string jsonUser = JsonConvert.SerializeObject(user.Result.ResultObj);
+                //var authProperties = new AuthenticationProperties
+                //{
+                //    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                //};
+                //context.HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
+                //context.HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.Result.ResultObj);
+                //context.HttpContext.SignInAsync(
+                //            CookieAuthenticationDefaults.AuthenticationScheme,
+                //            userPrincipal,
+                //            authProperties);
 
-                HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
+                //var user = _userService.GetByUserName(userName);
+                //string jsonUser = JsonConvert.SerializeObject(user.Result.ResultObj);
+
+                ////HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
 
 
-                context.Result = new RedirectToActionResult("Index", "Home", null);
+                //context.Result = new RedirectToActionResult("Index", "Home", null);
                 //context.Result = new RedirectResult(Request.GetBackUrl());
             }
 

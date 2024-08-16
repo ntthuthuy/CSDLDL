@@ -1,5 +1,6 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,15 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using System;
+using System.IO;
 using TechLife.App.ApiClients;
 using TechLife.App.ApiClients.HueCIT;
 using TechLife.App.Areas.HueCIT;
 using TechLife.App.Areas.HueCIT.Jobs;
 using TechLife.App.Areas.HueCIT.Schedules;
+using TechLife.App.Extensions.Authorizations;
+using TechLife.App.Extensions.FileLogger;
 using TechLife.Common;
 using TechLife.Data;
 using TechLife.Data.Entities;
@@ -51,7 +56,6 @@ namespace TechLife.App
 
             //HueCIT
             services.AddDbContext<TLDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)), ServiceLifetime.Transient, ServiceLifetime.Singleton);
-
             services.AddInfrastructure();
 
             services.AddIdentity<User, Role>().AddEntityFrameworkStores<TLDbContext>();
@@ -61,18 +65,25 @@ namespace TechLife.App
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 
-                options.LoginPath = new PathString("/Login/Signin");
+                options.LoginPath = new PathString("/sso");
                 options.AccessDeniedPath = new PathString("/Logout");
                 options.AccessDeniedPath = new PathString("/AccessDenied");
 
                 options.SlidingExpiration = true;
             });
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(options => 
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
              .AddCookie(options =>
              {
+                 options.LoginPath = new PathString($"/sso");
+                 options.AccessDeniedPath = new PathString("/AccessDenied");
+                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                 options.SlidingExpiration = true;
              });
-
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddTransient<IRoleApiClient, RoleApiClient>();
@@ -150,6 +161,7 @@ namespace TechLife.App
             services.AddTransient<IGroupService, GroupService>();
             services.AddTransient<IMenuService, MenuService>();
             services.AddTransient<ILogService, LogService>();
+            services.AddTransient(typeof(ILogger<>), (typeof(Logger<>)));
             //HueCIT
             services.AddTransient<IFileUploaderService, FileUploaderService>();
             services.AddTransient<IDiemVeSinhDongBoService, DiemVeSinhDongBoService>();
@@ -159,7 +171,7 @@ namespace TechLife.App
             services.AddTransient<IThongKeService, ThongKeService>();
             services.AddTransient<ILoaiDichVuDongBoService, LoaiDichVuDongBoService>();
 
-
+            services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();
             services.AddControllers().AddNewtonsoftJson();
 
             IMvcBuilder builder = services.AddRazorPages();
@@ -175,7 +187,7 @@ namespace TechLife.App
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
 
             if (env.IsDevelopment())
@@ -187,6 +199,8 @@ namespace TechLife.App
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+
+                loggerFactory.AddFile(Directory.GetCurrentDirectory());
             }
          
             //app.UseHttpsRedirection();

@@ -124,7 +124,7 @@ namespace TechLife.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("changepass/{id}")]
+        [HttpPost("changepass/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> ChangePass(Guid id, [FromBody] UserChangePassRequest request)
         {

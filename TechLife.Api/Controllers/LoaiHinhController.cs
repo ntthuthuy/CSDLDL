@@ -28,6 +28,7 @@ namespace TechLife.Api.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var result = await _loaiHinhService.GetAll();

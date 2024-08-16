@@ -81,10 +81,10 @@ namespace TechLife.App.Controllers
                         userPrincipal,
                         authProperties);
 
-            var user = await _userService.GetByUserName(username);
-            string jsonUser = JsonConvert.SerializeObject(user.ResultObj);
+            //var user = await _userService.GetByUserName(username);
+            //string jsonUser = JsonConvert.SerializeObject(user.ResultObj);
 
-            HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
+            //HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
 
             await _trackingService.Create(new TrackingCreateRequets()
             {
@@ -141,10 +141,10 @@ namespace TechLife.App.Controllers
                             userPrincipal,
                             authProperties);
 
-                var user = await _userService.GetByUserName(request.UserName);
-                string jsonUser = JsonConvert.SerializeObject(user.ResultObj);
+                //var user = await _userService.GetByUserName(request.UserName);
+                //string jsonUser = JsonConvert.SerializeObject(user.ResultObj);
 
-                HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
+                //HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
 
                 await _trackingService.Create(new TrackingCreateRequets()
                 {

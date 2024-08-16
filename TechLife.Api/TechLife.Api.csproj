@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>da3f9125-a865-4306-87fa-82beedd3f677</UserSecretsId>
     <OutputType>WinExe</OutputType>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
@@ -23,14 +23,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.31" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TechLife.Common\TechLife.Common.csproj" />
     <ProjectReference Include="..\TechLife.Data\TechLife.Data.csproj" />
+    <ProjectReference Include="..\TechLife.Model\TechLife.Model.csproj" />
     <ProjectReference Include="..\TechLife.Service\TechLife.Service.csproj" />
   </ItemGroup>
 </Project>

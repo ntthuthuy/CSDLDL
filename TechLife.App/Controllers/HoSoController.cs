@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -41,6 +42,7 @@ namespace TechLife.App.Controllers
         private readonly ITienNghiService _tienNghiService;
         private readonly IBoPhanService _boPhanService;
         private readonly IHuongDanVienService _huongDanVienService;
+        private readonly ILogger<HoSoController> _logger;
         //HueCIT
         private readonly IHoSoService _hoSoService;
         private readonly IConfiguration _config;
@@ -77,7 +79,8 @@ namespace TechLife.App.Controllers
             , ITienNghiService tienNghiService
             , IBoPhanService boPhanService
             , IHuongDanVienService huongDanVienService
-            , IHoSoService hoSoService)
+            , IHoSoService hoSoService
+            , ILogger<HoSoController> logger)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
                   , dichVuApiClient, ngoaiNguApiClient
@@ -102,6 +105,7 @@ namespace TechLife.App.Controllers
             _huongDanVienService = huongDanVienService;
             _hoSoService = hoSoService;
             _config = configuration;
+            _logger = logger;
         }
 
         private async Task<List<DichVuHoSoModel>> ListDichVuHoSo(int hosoId = 0, List<DichVuHoSoModel> listValue = null)
@@ -471,7 +475,7 @@ namespace TechLife.App.Controllers
                     loaihinh = loaihinh,
                     huyen = huyen,
                     namecslt = namecslt,
-                                        
+
                 };
 
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.CoSoLuuTru, pageRequest);
@@ -480,6 +484,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -731,9 +736,9 @@ namespace TechLife.App.Controllers
                 if (result.IsSuccessed && request.DuLieuDuLich.ToaDoX != null && request.DuLieuDuLich.ToaDoX != 0 && request.DuLieuDuLich.ToaDoY != null && request.DuLieuDuLich.ToaDoY != 0)
                 {
                     TechLife.Model.HueCIT.ToaDo geo = new TechLife.Model.HueCIT.ToaDo
-                    { 
+                    {
                         x = request.DuLieuDuLich.ToaDoY,
-                        y= request.DuLieuDuLich.ToaDoX
+                        y = request.DuLieuDuLich.ToaDoX
                     };
 
                     TechLife.Model.HueCIT.HoSoDongBoAdd data = new Model.HueCIT.HoSoDongBoAdd
@@ -1828,6 +1833,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -2125,25 +2131,33 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "view_huongdanvien,root")]
         public async Task<IActionResult> Huongdanvien()
         {
-            ViewData["Title"] = "Hướng dẫn viên du lịch";
-            ViewData["Title_parent"] = "Hồ sơ";
-                    
-            //int namehdv = !String.IsNullOrEmpty(Request.Query["namehdv"]) ? Convert.ToInt32(Request.Query["namehdv"]) : -1;           
-            //int loaithe = !String.IsNullOrEmpty(Request.Query["loaithe"]) ? Convert.ToInt32(Request.Query["loaithe"]) : -1;           
-            //await OptionGetAllHDV(namehdv);
-            var pageRequest = new GetPagingRequest()
+            try
             {
-                Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
-                PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
-                PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
-                namehdv = !String.IsNullOrEmpty(Request.Query["namehdv"]) ? Convert.ToInt32(Request.Query["namehdv"]):-1,
-                loaithe = !String.IsNullOrEmpty(Request.Query["loaithe"]) ? Convert.ToInt32(Request.Query["loaithe"]) : -1,
-                TinhTrang = !String.IsNullOrEmpty(Request.Query["TinhTrang"]) ? Request.Query["TinhTrang"].ToString() : "",
+                ViewData["Title"] = "Hướng dẫn viên du lịch";
+                ViewData["Title_parent"] = "Hồ sơ";
 
-            };
+                //int namehdv = !String.IsNullOrEmpty(Request.Query["namehdv"]) ? Convert.ToInt32(Request.Query["namehdv"]) : -1;           
+                //int loaithe = !String.IsNullOrEmpty(Request.Query["loaithe"]) ? Convert.ToInt32(Request.Query["loaithe"]) : -1;           
+                //await OptionGetAllHDV(namehdv);
+                var pageRequest = new GetPagingRequest()
+                {
+                    Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
+                    PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
+                    PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
+                    namehdv = !String.IsNullOrEmpty(Request.Query["namehdv"]) ? Convert.ToInt32(Request.Query["namehdv"]) : -1,
+                    loaithe = !String.IsNullOrEmpty(Request.Query["loaithe"]) ? Convert.ToInt32(Request.Query["loaithe"]) : -1,
+                    TinhTrang = !String.IsNullOrEmpty(Request.Query["TinhTrang"]) ? Request.Query["TinhTrang"].ToString() : "",
 
-            var data = await _huongDanVienService.GetPaging(pageRequest);
-            return View(data);
+                };
+
+                var data = await _huongDanVienService.GetPaging(pageRequest);
+                return View(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi");
+                return View(pageError404);
+            }
         }
 
         [Authorize(Roles = "create_huongdanvien,root")]
@@ -2287,7 +2301,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
-       
+
         [Authorize(Roles = "manage_travel_data,root")]
         public async Task<IActionResult> Chitiet_Huongdanvien(string id)
         {
@@ -2356,20 +2370,29 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "view_vesinhcongcong,root")]
         public async Task<IActionResult> Vesinhcongcong()
         {
-            ViewData["Title"] = "Điểm vệ sinh công cộng";
-            ViewData["Title_parent"] = "Hồ sơ";
-
-            var pageRequest = new GetPagingRequest()
+            try
             {
-                Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
-                PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
-                PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
-                NguonDongBo = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1
-            };
-            OptionDongBoDiem(pageRequest.NguonDongBo ?? -1);
-            var data = await _diemVeSinhApiClient.GetPagings(pageRequest);
+                ViewData["Title"] = "Điểm vệ sinh công cộng";
+                ViewData["Title_parent"] = "Hồ sơ";
 
-            return View(data);
+                var pageRequest = new GetPagingRequest()
+                {
+                    Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
+                    PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
+                    PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
+                    NguonDongBo = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1
+                };
+                OptionDongBoDiem(pageRequest.NguonDongBo ?? -1);
+                var data = await _diemVeSinhApiClient.GetPagings(pageRequest);
+
+                return View(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi");
+                return View(pageError404);
+            }
+          
         }
 
         [Authorize(Roles = "create_vesinhcongcong,root")]
@@ -2525,6 +2548,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -2814,6 +2838,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -3132,6 +3157,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -3449,6 +3475,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -3740,7 +3767,7 @@ namespace TechLife.App.Controllers
             await Tracking(result.Message);
             return Redirect(Request.GetBackUrl());
         }
-          
+
         [Authorize(Roles = "view_luutru,view_nhahang" +
             ",view_diemdulich,view_khudulich" +
             ",view_dichvuvuichoi,view_vesinhcongcong" +
@@ -3765,19 +3792,27 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "view_donviquanly,root")]
         public async Task<IActionResult> Nhacungcap()
         {
-            ViewData["Title"] = "Danh sách đơn vị quản lý";
-            ViewData["Title_parent"] = "Hồ sơ";
-
-            var pageRequest = new GetPagingRequest()
+            try
             {
-                Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
-                PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
-                PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
-            };
+                ViewData["Title"] = "Danh sách đơn vị quản lý";
+                ViewData["Title_parent"] = "Hồ sơ";
 
-            var data = await _nhaCungCapService.GetPaging(pageRequest);
+                var pageRequest = new GetPagingRequest()
+                {
+                    Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
+                    PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
+                    PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
+                };
 
-            return View(data);
+                var data = await _nhaCungCapService.GetPaging(pageRequest);
+
+                return View(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi");
+                return View(pageError404);
+            }
         }
 
         [Authorize(Roles = "create_donviquanly,root")]
@@ -3957,6 +3992,7 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
         }
@@ -4958,7 +4994,7 @@ namespace TechLife.App.Controllers
             {
                 return 9;
             }
-            else if(loai == 1105)   //VeSinh
+            else if (loai == 1105)   //VeSinh
             {
                 return 11;
             }

@@ -5,6 +5,14 @@
     ViewData["Title"] = ViewData["Title"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+@inject TechLife.Service.IUserService userService;
+@using TechLife.App.Extensions.Authorizations
+@using TechLife.Common.Extension;
+@{
+    var user = Context.Request.GetUser();
+    var User = new CustomClaimsPrincipal(userService, this.User);
+}
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -108,7 +116,7 @@
                                                             <tr>
                                                                 <td class="text-center">@stt</td>
                                                                 <td class="text-center">
-                                                                    @d.LoaiHinh.TenLoai <br />
+                                                                    @d.LoaiHinh?.TenLoai <br />
                                                                 </td>
                                                                 <td>
                                                                     <strong>

@@ -13,23 +13,33 @@ namespace TechLife.Common
             string str = "";
             if (!String.IsNullOrEmpty(sonha))
             {
-                str += sonha + " - ";
+                str += sonha;
             }
             if (!String.IsNullOrEmpty(diachi))
             {
-                str += diachi + " - ";
+                if (!String.IsNullOrWhiteSpace(str))
+                    str += ", " + diachi;
+                else str += diachi;
             }
             if (!String.IsNullOrEmpty(xa))
             {
-                str += xa + " - ";
+                if (!String.IsNullOrWhiteSpace(str))
+                    str += ", " + xa;
+                else str += xa;
+
+              
             }
             if (!String.IsNullOrEmpty(huyen))
             {
-                str += huyen;
+                if (!String.IsNullOrWhiteSpace(str))
+                    str += ", " + huyen;
+                else str += huyen;
             }
             if (!String.IsNullOrEmpty(tinh))
             {
-                str += " - " + tinh;
+                if (!String.IsNullOrWhiteSpace(str))
+                    str += ", " + tinh;
+                else str += tinh;
             }
             return str;
         }
@@ -71,7 +81,7 @@ namespace TechLife.Common
                 return date.ToString("hh:mm dd/MM/yyyy");
             else return String.Empty;
         }
-          
+
         public static string ConvertDecimalToVnd(decimal value)
         {
             var cul = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");

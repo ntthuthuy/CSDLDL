@@ -7,7 +7,13 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList.Web.Common
 @using TechLife.Common;
-
+@inject TechLife.Service.IUserService userService;
+@using TechLife.App.Extensions.Authorizations
+@using TechLife.Common.Extension;
+@{
+    var user = Context.Request.GetUser();
+    var User = new CustomClaimsPrincipal(userService, this.User);
+}
 @section css {
     <link rel="stylesheet" href="~/css/style.css"/>
 }

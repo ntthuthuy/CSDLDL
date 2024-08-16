@@ -937,43 +937,43 @@ namespace TechLife.Service
             {
 
                 var query = from m in _context.HoSo
-                            join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
-                            from xa in dp.DefaultIfEmpty()
-                            join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
-                            from huyen in dph.DefaultIfEmpty()
+                                //join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
+                                //from xa in dp.DefaultIfEmpty()
+                                //join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
+                                //from huyen in dph.DefaultIfEmpty()
 
-                            join loaihinh in _context.LoaiHinh on m.LoaiHinhId equals loaihinh.Id into lh
-                            from loaihinh in lh.DefaultIfEmpty()
+                                //join loaihinh in _context.LoaiHinh on m.LoaiHinhId equals loaihinh.Id into lh
+                                //from loaihinh in lh.DefaultIfEmpty()
 
-                            join loainhahang in _context.DichVu on m.LoaiHinhId equals loainhahang.Id into lnh
-                            from loainhahang in lnh.DefaultIfEmpty()
+                                //join loainhahang in _context.DichVu on m.LoaiHinhId equals loainhahang.Id into lnh
+                                //from loainhahang in lnh.DefaultIfEmpty()
 
-                            join loaimuasam in _context.LoaiDichVu on m.LoaiHinhId equals loaimuasam.Id into lms
-                            from loaimuasam in lms.DefaultIfEmpty()
+                                //join loaimuasam in _context.LoaiDichVu on m.LoaiHinhId equals loaimuasam.Id into lms
+                                //from loaimuasam in lms.DefaultIfEmpty()
 
-                            join loaidiemdulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich) on m.LoaiHinhId equals loaidiemdulich.Id into lddl
-                            from loaidiemdulich in lddl.DefaultIfEmpty()
+                                //join loaidiemdulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich) on m.LoaiHinhId equals loaidiemdulich.Id into lddl
+                                //from loaidiemdulich in lddl.DefaultIfEmpty()
 
-                            join loaikhudulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich) on m.LoaiHinhId equals loaikhudulich.Id into lkhudl
-                            from loaikhudulich in lkhudl.DefaultIfEmpty()
+                                //join loaikhudulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich) on m.LoaiHinhId equals loaikhudulich.Id into lkhudl
+                                //from loaikhudulich in lkhudl.DefaultIfEmpty()
 
-                            join loaikhuvuichoi in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi) on m.LoaiHinhId equals loaikhuvuichoi.Id into lkhuvc
-                            from loaikhuvuichoi in lkhuvc.DefaultIfEmpty()
+                                //join loaikhuvuichoi in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi) on m.LoaiHinhId equals loaikhuvuichoi.Id into lkhuvc
+                                //from loaikhuvuichoi in lkhuvc.DefaultIfEmpty()
 
-                            join loaithethao in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.TheThao) on m.LoaiHinhId equals loaithethao.Id into ltt
-                            from loaithethao in ltt.DefaultIfEmpty()
+                                //join loaithethao in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.TheThao) on m.LoaiHinhId equals loaithethao.Id into ltt
+                                //from loaithethao in ltt.DefaultIfEmpty()
 
-                            join loaicssk in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.CSSK) on m.LoaiHinhId equals loaicssk.Id into lcssk
-                            from loaicssk in lcssk.DefaultIfEmpty()
+                                //join loaicssk in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.CSSK) on m.LoaiHinhId equals loaicssk.Id into lcssk
+                                //from loaicssk in lcssk.DefaultIfEmpty()
 
-                            join loailuhanh in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.LuHanh) on m.LoaiHinhId equals loailuhanh.Id into lluhanh
-                            from loailuhanh in lluhanh.DefaultIfEmpty()
+                                //join loailuhanh in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.LuHanh) on m.LoaiHinhId equals loailuhanh.Id into lluhanh
+                                //from loailuhanh in lluhanh.DefaultIfEmpty()
 
-                            join nhacungcap in _context.NhaCungCap on m.NhaCungCapId equals nhacungcap.Id into ncc
-                            from nhacungcap in ncc.DefaultIfEmpty()
+                                //join nhacungcap in _context.NhaCungCap on m.NhaCungCapId equals nhacungcap.Id into ncc
+                                //from nhacungcap in ncc.DefaultIfEmpty()
 
                             where m.IsDelete == false && m.Id == id
-                            select new { m, xa, huyen, loaihinh, loainhahang, loaimuasam, loaidiemdulich, loaikhudulich, loaikhuvuichoi, loaithethao, loaicssk, loailuhanh, nhacungcap };
+                            select new { m };
 
                 var data = await query.Select(x => new DuLieuDuLichModel()
                 {
@@ -1012,9 +1012,9 @@ namespace TechLife.Service
                     NgayQuyetDinh = x.m.NgayQuyetDinh,
                     PhongChayNo = x.m.PhongChayNo,
                     PhuongXaId = x.m.PhuongXaId,
-                    PhuongXa = x.xa.TenDiaPhuong,
+                    //PhuongXa = x.xa.TenDiaPhuong,
                     QuanHuyenId = x.m.QuanHuyenId,
-                    QuanHuyen = x.huyen.TenDiaPhuong,
+                    //QuanHuyen = x.huyen.TenDiaPhuong,
                     TinhThanh = "Thừa Thiên Huế",
 
                     SoDienThoai = x.m.SoDienThoai,
@@ -1025,7 +1025,7 @@ namespace TechLife.Service
                     SoNha = x.m.SoNha,
                     SoQuyetDinh = x.m.SoQuyetDinh,
                     SoTang = x.m.SoTang,
-                    NhaCungCap = new NhaCungCapVm() { Ten = x.nhacungcap.Ten },
+                    //NhaCungCap = new NhaCungCapVm() { Ten = x.nhacungcap.Ten },
                     //TenCongTy = x.m.TenCongTy,
                     NhaCungCapId = x.m.NhaCungCapId,
                     ThoiDiemBatDauKinhDoanh = x.m.ThoiDiemBatDauKinhDoanh,
@@ -1038,15 +1038,15 @@ namespace TechLife.Service
                     Website = x.m.Website,
                     GioDongCua = x.m.GioDongCua,
                     GioMoCua = x.m.GioMoCua,
-                    LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? new LoaiHinhModel() { Id = x.loaihinh.Id, TenLoai = x.loaihinh.TenLoai }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? new LoaiHinhModel() { Id = x.loainhahang.Id, TenLoai = x.loainhahang.TenDichVu }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? new LoaiHinhModel() { Id = x.loaidiemdulich.Id, TenLoai = x.loaidiemdulich.Ten }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? new LoaiHinhModel() { Id = x.loaikhudulich.Id, TenLoai = x.loaikhudulich.Ten }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? new LoaiHinhModel() { Id = x.loaikhuvuichoi.Id, TenLoai = x.loaikhuvuichoi.Ten }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? new LoaiHinhModel() { Id = x.loaithethao.Id, TenLoai = x.loaithethao.Ten }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? new LoaiHinhModel() { Id = x.loaicssk.Id, TenLoai = x.loaicssk.Ten }
-                        : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? new LoaiHinhModel() { Id = x.loailuhanh.Id, TenLoai = x.loailuhanh.Ten }
-                        : new LoaiHinhModel() { Id = x.loaimuasam.Id, TenLoai = x.loaimuasam.TenLoai },
+                    //LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? new LoaiHinhModel() { Id = x.loaihinh.Id, TenLoai = x.loaihinh.TenLoai }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? new LoaiHinhModel() { Id = x.loainhahang.Id, TenLoai = x.loainhahang.TenDichVu }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? new LoaiHinhModel() { Id = x.loaidiemdulich.Id, TenLoai = x.loaidiemdulich.Ten }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? new LoaiHinhModel() { Id = x.loaikhudulich.Id, TenLoai = x.loaikhudulich.Ten }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? new LoaiHinhModel() { Id = x.loaikhuvuichoi.Id, TenLoai = x.loaikhuvuichoi.Ten }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? new LoaiHinhModel() { Id = x.loaithethao.Id, TenLoai = x.loaithethao.Ten }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? new LoaiHinhModel() { Id = x.loaicssk.Id, TenLoai = x.loaicssk.Ten }
+                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? new LoaiHinhModel() { Id = x.loailuhanh.Id, TenLoai = x.loailuhanh.Ten }
+                    //    : new LoaiHinhModel() { Id = x.loaimuasam.Id, TenLoai = x.loaimuasam.TenLoai },
                     SoLDGianTiep = x.m.SoLDGianTiep,
                     SoLDNamNgoaiNuoc = x.m.SoLDNamNgoaiNuoc,
                     SoLDNamTrongNuoc = x.m.SoLDNamTrongNuoc,
@@ -1056,62 +1056,78 @@ namespace TechLife.Service
                     SoLDThuongXuyen = x.m.SoLDThuongXuyen,
                     SoLDTrucTiep = x.m.SoLDTrucTiep,
                     GioiThieu = x.m.GioiThieu,
-                    Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
-                    DocumentFiles = _fileUploadService.GetFileByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
-                    DSBoPhan = _boPhanService.GetAllByHoSo(x.m.Id).Result,
-                    DSVeDichVu = _dichVuService.GetAllByHoSo(x.m.Id).Result,
-                    DSLoaiPhong = _loaiPhongService.GetAllByHoSo(x.m.Id).Result,
-                    DSMucDoTTNN = _mucDoThongThaoNgoaiNguService.GetAllByHoSo(x.m.Id).Result,
-                    DSNgoaiNgu = _ngoaiNguService.GetAllByHoSo(x.m.Id).Result,
-                    DSThucDon = _thucDonService.GetAllByHoSo(x.m.Id).Result,
-                    DSTienNghi = _tienNghiService.GetAllByHoSo(x.m.Id).Result,
-                    DSTrinhDo = _trinhDoService.GetAllByHoSo(x.m.Id).Result,
-                    DSDanhGia = _danhGiaService.GetAll(x.m.Id, TechLife.Common.Enums.LoaiBinhLuan.hosodulich.ToString()).Result,
-                    Tours = _tourService.GetAll(x.m.Id).Result,
-                    DSNhaHang = _context.QuyMoNhaHangLuuTru.OrderBy(x => x.Id).Where(v => v.HoSoId == x.m.Id).Select(v => new QuyMoNhaHangVm()
-                    {
-                        DienTich = v.DienTich,
-                        HoSoId = v.HoSoId,
-                        Id = v.Id,
-                        SoGhe = v.SoGhe,
-                        TenGoi = v.TenGoi
-                    }).ToList(),
-                    DSVanBan = _context.HoSoVanBan.Where(v => v.HosoId == x.m.Id && v.Loai == LoaiFile.hosodulich.ToString()).Select(x => new HoSoVanBanVm()
-                    {
-                        FileName = x.FileName,
-                        FilePath = x.FilePath,
-                        Id = x.Id,
-                        MaSo = x.MaSo,
-                        NgayCap = x.NgayCap,
-                        NgayHetHan = x.NgayHetHan,
-                        NoiCap = x.NoiCap,
-                        TenGoi = x.TenGoi,
-                        GiayPhepId = x.GiayPhepId,
-                        IsStatus = x.IsStatus
-                    }).ToList(),
-                    DSLoaiPhongGiuong = _context.LoaiGiuongPhong.OrderBy(x => x.Id).Where(v => v.LuuTruId == x.m.Id).Select(v => new TechLife.Model.LoaiPhong.LoaiPhongGiuong()
-                    {
-                        Id = v.Id,
-                        GiaGiuong = Functions.ConvertDecimalVND(v.GiaGiuongPhu),
-                        GiaPhong = Functions.ConvertDecimalVND(v.GiaPhong),
-                        TenGoi = v.Ten,
-                        SoGiuong = v.SoGiuong,
-                        IsDelete = v.IsDelete
+                    //Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
 
-                    }).ToList(),
-                    Amenities = _context.Amenities.Where(v => v.CompanyId == x.m.Id).Select(v => new Model.DuLieuDuLich.AmenityVm()
-                    {
-                        Id = v.AmenityId,
-                        Name = _context.TienNghi.Where(x => x.Id == v.AmenityId).Select(v => v.Ten).FirstOrDefault()
-
-                    }).ToList(),
                     GiaThamKhao = x.m.GiaThamKhao != null ? Functions.ConvertDecimalVND(Convert.ToDecimal(x.m.GiaThamKhao)) : "0",
                     //HueCIT
                     ToaDoX = x.m.ToaDoX,
                     ToaDoY = x.m.ToaDoY,
                 }).FirstOrDefaultAsync();
 
-                return data;
+                var item = data;
+
+                item.LoaiHinh = item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? await _context.LoaiHinh.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenLoai }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? await _context.DichVu.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenDichVu }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.TheThao).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.CSSK).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.LuHanh).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VanChuyen ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.VanChuyen).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                    : await _context.LoaiDichVu.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenLoai }).FirstOrDefaultAsync();
+                item.Images = await _fileUploadService.GetImageByHoSoId(item.Id, LoaiFile.hosodulich.ToString());
+                item.NhaCungCap = await _context.NhaCungCap.Where(x => x.Id == item.NhaCungCapId).Select(x => new NhaCungCapVm() { Ten = x.Ten }).FirstOrDefaultAsync();
+                item.DocumentFiles = await _fileUploadService.GetFileByHoSoId(item.Id, LoaiFile.hosodulich.ToString());
+                item.DSBoPhan = await _boPhanService.GetAllByHoSo(item.Id);
+                item.DSVeDichVu = await _dichVuService.GetAllByHoSo(item.Id);
+                item.DSLoaiPhong = await _loaiPhongService.GetAllByHoSo(item.Id);
+                item.DSMucDoTTNN = await _mucDoThongThaoNgoaiNguService.GetAllByHoSo(item.Id);
+                item.DSNgoaiNgu = await _ngoaiNguService.GetAllByHoSo(item.Id);
+                item.DSThucDon = await _thucDonService.GetAllByHoSo(item.Id);
+                item.DSTienNghi = await _tienNghiService.GetAllByHoSo(item.Id);
+                item.DSTrinhDo = await _trinhDoService.GetAllByHoSo(item.Id);
+                item.DSDanhGia = await _danhGiaService.GetAll(item.Id, TechLife.Common.Enums.LoaiBinhLuan.hosodulich.ToString());
+                item.Tours = await _tourService.GetAll(item.Id);
+                item.DSNhaHang = await _context.QuyMoNhaHangLuuTru.OrderBy(x => x.Id).Where(v => v.HoSoId == item.Id).Select(v => new QuyMoNhaHangVm()
+                {
+                    DienTich = v.DienTich,
+                    HoSoId = v.HoSoId,
+                    Id = v.Id,
+                    SoGhe = v.SoGhe,
+                    TenGoi = v.TenGoi
+                }).ToListAsync();
+                item.DSVanBan = await _context.HoSoVanBan.Where(v => v.HosoId == item.Id && v.Loai == LoaiFile.hosodulich.ToString()).Select(x => new HoSoVanBanVm()
+                {
+                    FileName = x.FileName,
+                    FilePath = x.FilePath,
+                    Id = x.Id,
+                    MaSo = x.MaSo,
+                    NgayCap = x.NgayCap,
+                    NgayHetHan = x.NgayHetHan,
+                    NoiCap = x.NoiCap,
+                    TenGoi = x.TenGoi,
+                    GiayPhepId = x.GiayPhepId,
+                    IsStatus = x.IsStatus
+                }).ToListAsync();
+                item.DSLoaiPhongGiuong = await _context.LoaiGiuongPhong.OrderBy(x => x.Id).Where(v => v.LuuTruId == item.Id).Select(v => new TechLife.Model.LoaiPhong.LoaiPhongGiuong()
+                {
+                    Id = v.Id,
+                    GiaGiuong = Functions.ConvertDecimalVND(v.GiaGiuongPhu),
+                    GiaPhong = Functions.ConvertDecimalVND(v.GiaPhong),
+                    TenGoi = v.Ten,
+                    SoGiuong = v.SoGiuong,
+                    IsDelete = v.IsDelete
+
+                }).ToListAsync();
+                item.Amenities = await _context.Amenities.Where(v => v.CompanyId == item.Id).Select(v => new Model.DuLieuDuLich.AmenityVm()
+                {
+                    Id = v.AmenityId,
+                    Name = _context.TienNghi.Where(x => x.Id == v.AmenityId).Select(v => v.Ten).FirstOrDefault()
+
+                }).ToListAsync();
+
+                return item;
             }
             catch (Exception ex)
             {
@@ -1124,43 +1140,43 @@ namespace TechLife.Service
         public async Task<PagedResult<DuLieuDuLichModel>> GetPaging(string langId, int linhvucId, HoSoFromRequets request)
         {
             var query = from m in _context.HoSo
-                        join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
-                        from xa in dp.DefaultIfEmpty()
-                        join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
-                        from huyen in dph.DefaultIfEmpty()
+                            //join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
+                            //from xa in dp.DefaultIfEmpty()
+                            //join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
+                            //from huyen in dph.DefaultIfEmpty()
 
-                        join loaihinh in _context.LoaiHinh on m.LoaiHinhId equals loaihinh.Id into lh
-                        from loaihinh in lh.DefaultIfEmpty()
+                            //join loaihinh in _context.LoaiHinh on m.LoaiHinhId equals loaihinh.Id into lh
+                            //from loaihinh in lh.DefaultIfEmpty()
 
-                        join loainhahang in _context.DichVu on m.LoaiHinhId equals loainhahang.Id into lnh
-                        from loainhahang in lnh.DefaultIfEmpty()
+                            //join loainhahang in _context.DichVu on m.LoaiHinhId equals loainhahang.Id into lnh
+                            //from loainhahang in lnh.DefaultIfEmpty()
 
-                        join loaimuasam in _context.LoaiDichVu on m.LoaiHinhId equals loaimuasam.Id into lms
-                        from loaimuasam in lms.DefaultIfEmpty()
+                            //join loaimuasam in _context.LoaiDichVu on m.LoaiHinhId equals loaimuasam.Id into lms
+                            //from loaimuasam in lms.DefaultIfEmpty()
 
-                        join loaidiemdulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich) on m.LoaiHinhId equals loaidiemdulich.Id into lddl
-                        from loaidiemdulich in lddl.DefaultIfEmpty()
+                            //join loaidiemdulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich) on m.LoaiHinhId equals loaidiemdulich.Id into lddl
+                            //from loaidiemdulich in lddl.DefaultIfEmpty()
 
-                        join loaikhudulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich) on m.LoaiHinhId equals loaikhudulich.Id into lkhudl
-                        from loaikhudulich in lkhudl.DefaultIfEmpty()
+                            //join loaikhudulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich) on m.LoaiHinhId equals loaikhudulich.Id into lkhudl
+                            //from loaikhudulich in lkhudl.DefaultIfEmpty()
 
-                        join loaikhuvuichoi in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi) on m.LoaiHinhId equals loaikhuvuichoi.Id into lkhuvc
-                        from loaikhuvuichoi in lkhuvc.DefaultIfEmpty()
+                            //join loaikhuvuichoi in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi) on m.LoaiHinhId equals loaikhuvuichoi.Id into lkhuvc
+                            //from loaikhuvuichoi in lkhuvc.DefaultIfEmpty()
 
-                        join loaithethao in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.TheThao) on m.LoaiHinhId equals loaithethao.Id into ltt
-                        from loaithethao in ltt.DefaultIfEmpty()
+                            //join loaithethao in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.TheThao) on m.LoaiHinhId equals loaithethao.Id into ltt
+                            //from loaithethao in ltt.DefaultIfEmpty()
 
-                        join loaicssk in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.CSSK) on m.LoaiHinhId equals loaicssk.Id into lcssk
-                        from loaicssk in lcssk.DefaultIfEmpty()
+                            //join loaicssk in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.CSSK) on m.LoaiHinhId equals loaicssk.Id into lcssk
+                            //from loaicssk in lcssk.DefaultIfEmpty()
 
-                        join loailuhanh in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.LuHanh) on m.LoaiHinhId equals loailuhanh.Id into lluhanh
-                        from loailuhanh in lluhanh.DefaultIfEmpty()
+                            //join loailuhanh in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.LuHanh) on m.LoaiHinhId equals loailuhanh.Id into lluhanh
+                            //from loailuhanh in lluhanh.DefaultIfEmpty()
 
-                        join vanchuyen in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.VanChuyen) on m.LoaiHinhId equals vanchuyen.Id into vc
-                        from vanchuyen in vc.DefaultIfEmpty()
+                            //join vanchuyen in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.VanChuyen) on m.LoaiHinhId equals vanchuyen.Id into vc
+                            //from vanchuyen in vc.DefaultIfEmpty()
 
-                        join nhacungcap in _context.NhaCungCap on m.NhaCungCapId equals nhacungcap.Id into ncc
-                        from nhacungcap in ncc.DefaultIfEmpty()
+                            //join nhacungcap in _context.NhaCungCap on m.NhaCungCapId equals nhacungcap.Id into ncc
+                            //from nhacungcap in ncc.DefaultIfEmpty()
 
                         orderby m.Ten
                         where m.IsDelete == false && m.NgonNguId == langId
@@ -1174,7 +1190,7 @@ namespace TechLife.Service
                         && (request.namenhahang == -1 || m.Id == request.namenhahang)
                         && (request.namecsms == -1 || m.Id == request.namecsms)
                         && (request.nguon == -1 ? true : request.nguon == 0 ? m.NguonDongBo == null : m.NguonDongBo == request.nguon)
-                        select new { m, xa, huyen, loaihinh, nhacungcap, loainhahang, loaimuasam, loaidiemdulich, loaikhudulich, loaikhuvuichoi, loaithethao, loaicssk, loailuhanh, vanchuyen };
+                        select new { m };
 
             if (!string.IsNullOrEmpty(request.Keyword))
                 query = query.Where(x => x.m.Ten.Contains(request.Keyword));
@@ -1210,9 +1226,9 @@ namespace TechLife.Service
                     NgayQuyetDinh = x.m.NgayQuyetDinh,
                     PhongChayNo = x.m.PhongChayNo,
                     PhuongXaId = x.m.PhuongXaId,
-                    PhuongXa = x.xa.TenDiaPhuong,
+                    //PhuongXa = x.xa.TenDiaPhuong,
                     QuanHuyenId = x.m.QuanHuyenId,
-                    QuanHuyen = x.huyen.TenDiaPhuong,
+                    //QuanHuyen = x.huyen.TenDiaPhuong,
                     TinhThanh = "Thừa Thiên Huế",
                     SoDienThoai = x.m.SoDienThoai,
                     SoDienThoaiNguoiDaiDien = x.m.SoDienThoaiNguoiDaiDien,
@@ -1222,7 +1238,7 @@ namespace TechLife.Service
                     SoNha = x.m.SoNha,
                     SoQuyetDinh = x.m.SoQuyetDinh,
                     SoTang = x.m.SoTang,
-                    NhaCungCap = new NhaCungCapVm() { Ten = x.nhacungcap.Ten },
+                    //NhaCungCap = new NhaCungCapVm() { Ten = x.nhacungcap.Ten },
                     //TenCongTy = x.m.TenCongTy,
                     NhaCungCapId = x.m.NhaCungCapId,
                     ThoiDiemBatDauKinhDoanh = x.m.ThoiDiemBatDauKinhDoanh,
@@ -1233,16 +1249,16 @@ namespace TechLife.Service
                     Website = x.m.Website,
                     GioDongCua = x.m.GioDongCua,
                     GioMoCua = x.m.GioMoCua,
-                    LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? new LoaiHinhModel() { Id = x.loaihinh.Id, TenLoai = x.loaihinh.TenLoai }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? new LoaiHinhModel() { Id = x.loainhahang.Id, TenLoai = x.loainhahang.TenDichVu }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? new LoaiHinhModel() { Id = x.loaidiemdulich.Id, TenLoai = x.loaidiemdulich.Ten }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? new LoaiHinhModel() { Id = x.loaikhudulich.Id, TenLoai = x.loaikhudulich.Ten }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? new LoaiHinhModel() { Id = x.loaikhuvuichoi.Id, TenLoai = x.loaikhuvuichoi.Ten }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? new LoaiHinhModel() { Id = x.loaithethao.Id, TenLoai = x.loaithethao.Ten }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? new LoaiHinhModel() { Id = x.loaicssk.Id, TenLoai = x.loaicssk.Ten }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? new LoaiHinhModel() { Id = x.loailuhanh.Id, TenLoai = x.loailuhanh.Ten }
-                    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VanChuyen ? new LoaiHinhModel() { Id = x.vanchuyen.Id, TenLoai = x.vanchuyen.Ten }
-                    : new LoaiHinhModel() { Id = x.loaimuasam.Id, TenLoai = x.loaimuasam.TenLoai },
+                    //LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? new LoaiHinhModel() { Id = x.loaihinh.Id, TenLoai = x.loaihinh.TenLoai }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? new LoaiHinhModel() { Id = x.loainhahang.Id, TenLoai = x.loainhahang.TenDichVu }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? new LoaiHinhModel() { Id = x.loaidiemdulich.Id, TenLoai = x.loaidiemdulich.Ten }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? new LoaiHinhModel() { Id = x.loaikhudulich.Id, TenLoai = x.loaikhudulich.Ten }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? new LoaiHinhModel() { Id = x.loaikhuvuichoi.Id, TenLoai = x.loaikhuvuichoi.Ten }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? new LoaiHinhModel() { Id = x.loaithethao.Id, TenLoai = x.loaithethao.Ten }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? new LoaiHinhModel() { Id = x.loaicssk.Id, TenLoai = x.loaicssk.Ten }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? new LoaiHinhModel() { Id = x.loailuhanh.Id, TenLoai = x.loailuhanh.Ten }
+                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VanChuyen ? new LoaiHinhModel() { Id = x.vanchuyen.Id, TenLoai = x.vanchuyen.Ten }
+                    //: new LoaiHinhModel() { Id = x.loaimuasam.Id, TenLoai = x.loaimuasam.TenLoai },
                     SoLDGianTiep = x.m.SoLDGianTiep,
                     SoLDNamNgoaiNuoc = x.m.SoLDNamNgoaiNuoc,
                     SoLDNamTrongNuoc = x.m.SoLDNamTrongNuoc,
@@ -1254,9 +1270,24 @@ namespace TechLife.Service
                     GioiThieu = x.m.GioiThieu,
                     ToaDoX = x.m.ToaDoX,
                     ToaDoY = x.m.ToaDoY,
-                    Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
+                    //Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
                 }).ToListAsync();
 
+            foreach (var item in data)
+            {
+                item.LoaiHinh = item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? await _context.LoaiHinh.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenLoai }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? await _context.DichVu.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenDichVu }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.TheThao).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.CSSK).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.LuHanh).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : item.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VanChuyen ? await _context.DanhMuc.Where(x => x.Id == item.LoaiHinhId && x.LoaiId == (int)LinhVucKinhDoanh.VanChuyen).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.Ten }).FirstOrDefaultAsync()
+                : await _context.LoaiDichVu.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenLoai }).FirstOrDefaultAsync();
+                item.Images = await _fileUploadService.GetImageByHoSoId(item.Id, LoaiFile.hosodulich.ToString());
+                item.NhaCungCap = await _context.NhaCungCap.Where(x => x.Id == item.NhaCungCapId).Select(x => new NhaCungCapVm() { Ten = x.Ten }).FirstOrDefaultAsync();
+            };
             //4. Select and projection
             return new PagedResult<DuLieuDuLichModel>()
             {
@@ -2315,6 +2346,7 @@ namespace TechLife.Service
             else if (linhvucId == (int)LinhVucKinhDoanh.HuongDanVien)
             {
                 var query = from m in _context.HuongDanVien
+                            where m.NgayHetHan >= DateTime.Now
                             select new { m };
 
                 int totalRow = await query.CountAsync();
@@ -2325,6 +2357,8 @@ namespace TechLife.Service
                     {
                         Id = x.m.Id,
                         Ten = x.m.HoVaTen,
+                        SoDienThoai = x.m.SoDienThoai,
+                        DiaChi = x.m.DiaChi,
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.Type == LoaiFile.hosohuongdanvien.ToString()).Select(v => new ImageVm()
                         {
                             Name = v.FileName,
@@ -2384,7 +2418,7 @@ namespace TechLife.Service
                                 // join tn in _context.TienNghiHoSo on m.Id equals tn.HoSoId into tiennghihoso
                                 // from tn in tiennghihoso.DefaultIfEmpty()
 
-                            orderby m.Ten
+                            orderby m.HangSao descending, m.LoaiHinhId descending, m.Ten
                             where m.IsDelete == false && m.NgonNguId == langId
                             && (request.datchuan == -1 || m.IsDatChuan == (request.datchuan == 1 ? true : false))
                             && m.LinhVucKinhDoanhId == linhvucId
@@ -2408,6 +2442,9 @@ namespace TechLife.Service
 
                 //3. Paging
 
+                if (!string.IsNullOrEmpty(request.Keyword))
+                    query = query.Where(x => x.m.Ten.Contains(request.Keyword));
+
                 int totalRow = await query.CountAsync();
 
                 var data_paging = await query.Skip((request.PageIndex - 1) * request.PageSize)
@@ -2416,6 +2453,16 @@ namespace TechLife.Service
                      {
                          Id = x.m.Id,
                          DuongPho = x.m.DuongPho,
+                         LoaiHinhId = x.m.LoaiHinhId,
+                         LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? x.loai.TenLoai
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? x.loainhahang.TenDichVu
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? x.loaidiemdulich.Ten
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? x.loaikhudulich.Ten
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? x.loaikhuvuichoi.Ten
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? x.loaithethao.Ten
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? x.loaicssk.Ten
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? x.loailuhanh.Ten
+                            : x.loaimuasam.TenLoai,
                          Email = x.m.Email,
                          Fax = x.m.Fax,
                          HangSao = x.m.HangSao,

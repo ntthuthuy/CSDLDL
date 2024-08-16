@@ -39,18 +39,7 @@ namespace TechLife.Common
                 return request.HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
             else return "vi";
         }
-        public static UserModel GetUser(this HttpRequest request)
-        {
-            var data = request.HttpContext.Session.GetString(SystemConstants.AppSettings.UserInfo);
-            if (!String.IsNullOrEmpty(data))
-            {
-                return JsonConvert.DeserializeObject<UserModel>(data);
-            }
-            else
-            {
-                return null;
-            }
-        }
+      
         public static string GetRawUrl(this HttpRequest request, string url, bool IsQuery = true)
         {
             var httpContext = request.HttpContext;
