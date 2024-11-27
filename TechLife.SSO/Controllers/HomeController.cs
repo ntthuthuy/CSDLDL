@@ -62,7 +62,6 @@ namespace TechLife.SSO.Controllers
         }
         [HttpPost]
         [ValidateInput(false)]
-        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel request)
         {
             try
