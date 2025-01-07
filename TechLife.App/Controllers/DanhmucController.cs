@@ -180,7 +180,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
 
-            var result = await _diaPhuongApiClient.Create(request);
+            var result = await _diaPhuongService.Create(request);
 
             if (result.IsSuccessed)
             {
@@ -221,7 +221,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Sửa địa phương";
             ViewData["Title_parent"] = "Danh mục";
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _diaPhuongApiClient.GetById(Id);
+            var data = await _diaPhuongService.GetById(Id);
 
             await OptionDiaPhuong();
 
@@ -252,7 +252,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _diaPhuongApiClient.Update(id, request);
+            var result = await _diaPhuongService.Update(id, request);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -276,7 +276,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _diaPhuongApiClient.Delete(id);
+            var result = await _diaPhuongService.Delete(id);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()

@@ -220,7 +220,7 @@ namespace TechLife.App.Controllers
         }
         public async Task OptionDiaPhuong()
         {
-            var diaphuong = await _diaPhuongApiClient.GetAll();
+            var diaphuong = await _diaPhuongService.GetAll();
             listItem = new List<SelectListItem>();
             SelectListDiaPhuong(diaphuong);
         }
