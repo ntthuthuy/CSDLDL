@@ -30,18 +30,22 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+       
         <li class="nav-item dropdown">
             <form id="frmChangeLanguage" action="/Home/Language" method="post"
                   class="d-none d-md-inline-block form-inline ml-0 mr-0 mr-md-3 my-2 my-md-0">
                 <input type="hidden" name="ReturnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
                 <select class="form-control" onchange="this.form.submit()" asp-for="CurrentLanguageId" asp-items="Model.Languages">
                     @*<option value="vn">Tiếng Việt</option>
-                        <option value="en">Tiếng Anh</option>
-                        <option value="ja">Tiếng Nhật</option>*@
+                    <option value="en">Tiếng Anh</option>
+                    <option value="ja">Tiếng Nhật</option>*@
                 </select>
             </form>
         </li>
         <!-- Messages Dropdown Menu -->
+        <li class="nav-item dropdown">
+            <a href="@(Context.Request.PathBase)/User/ChangePass/?ReturnUrl=@Model.ReturnUrl" class="nav-link" title="Đổi mật khẩu"><i class="fa fa-key"></i> Đổi mật khẩu</a>
+        </li>
         <li class="nav-item">
             <a href="/User/Logout/?ReturnUrl=@Model.ReturnUrl" class="nav-link">
                 <span id="user_info"><i class="fas fa-sign-out-alt"></i> Thoát</span>

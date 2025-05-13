@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using TechLife.App.ApiClients;
 using TechLife.Common;
+using TechLife.Common.Extension;
 using TechLife.Model;
+using TechLife.Model.User;
 using TechLife.Service;
 
 namespace TechLife.App.Controllers
@@ -52,7 +54,6 @@ namespace TechLife.App.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Logout(string ReturnUrl)
         {
-
             await _userService.Logout();
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -60,10 +61,10 @@ namespace TechLife.App.Controllers
             HttpContext.Session.Remove(SystemConstants.AppSettings.UserInfo);
             return Redirect("/sso");
         }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-
             var request = new UserFromRequets()
             {
                 Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
@@ -81,6 +82,7 @@ namespace TechLife.App.Controllers
 
             return View(data.ResultObj);
         }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -104,7 +106,6 @@ namespace TechLife.App.Controllers
             return View(request);
         }
 
-
         public async Task<IActionResult> Role()
         {
             var request = new GetPagingRequest()
@@ -116,12 +117,13 @@ namespace TechLife.App.Controllers
             var data = await _roleService.GetRolesPaging(request);
             return View(data);
         }
+
         [HttpGet]
         public IActionResult CreateRole()
         {
-
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateRole(RoleModel request, string btn_submit)
         {
@@ -136,6 +138,7 @@ namespace TechLife.App.Controllers
                 {
                     case "Luu":
                         return RedirectToAction("Role");
+
                     default: return RedirectToAction("CreateRole");
                 }
             }
@@ -143,6 +146,7 @@ namespace TechLife.App.Controllers
             ModelState.AddModelError("", result.Message);
             return View(request);
         }
+
         [HttpGet]
         public async Task<IActionResult> EditRole(string id)
         {
@@ -162,6 +166,7 @@ namespace TechLife.App.Controllers
 
             return RedirectToAction("Error", "Home");
         }
+
         [HttpPost]
         public async Task<IActionResult> EditRole(RoleModel request)
         {
@@ -173,7 +178,6 @@ namespace TechLife.App.Controllers
             {
                 TempData["result"] = "Cập nhật quyền thành công";
                 return RedirectToAction("Role");
-
             }
 
             ModelState.AddModelError("", result.Message);
@@ -184,13 +188,11 @@ namespace TechLife.App.Controllers
         [HttpGet]
         public async Task<IActionResult> RoleAssign(Guid id, int groupId = 0)
         {
-
-
             var roleAssignRequest = await GetRoleAssignRequest(id, groupId);
-
 
             return View(roleAssignRequest);
         }
+
         [HttpPost]
         public async Task<IActionResult> RoleUnAssign(Guid id, Guid userId)
         {
@@ -228,7 +230,6 @@ namespace TechLife.App.Controllers
                 Value = s.Id.ToString(),
                 Text = s.Name,
                 Selected = userObj.ResultObj.Roles.Contains(s.Name)
-
             }).ToList() : new List<SelectListItem>();
 
             foreach (var role in roles)
@@ -242,6 +243,7 @@ namespace TechLife.App.Controllers
             }
             return roleAssignRequest;
         }
+
         [HttpPost]
         public async Task<IActionResult> RoleAssign(IFormCollection fc)
         {
@@ -265,7 +267,6 @@ namespace TechLife.App.Controllers
             {
                 TempData["result"] = "Cập nhật quyền thành công";
                 return RedirectToAction("RoleAssign", new { id = Id });
-
             }
 
             ModelState.AddModelError("", result.Message);
@@ -276,15 +277,16 @@ namespace TechLife.App.Controllers
         [HttpGet]
         public async Task<IActionResult> Group()
         {
-
             var data = await _groupApiClient.GetAll();
             return View(data);
         }
+
         [HttpGet]
         public IActionResult CreateGroup()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateGroup(GroupModel request)
         {
@@ -305,12 +307,14 @@ namespace TechLife.App.Controllers
 
             return View(request);
         }
+
         [HttpGet]
         public async Task<IActionResult> AssignRoleGroup(int id)
         {
             var groupRoleAssignRequest = await GetGroupRoleAssignRequest(id);
             return View(groupRoleAssignRequest);
         }
+
         private async Task<RoleAssignRequest> GetGroupRoleAssignRequest(int id)
         {
             var groupObj = await _groupApiClient.GetById(id);
@@ -328,10 +332,10 @@ namespace TechLife.App.Controllers
             }
             return roleAssignRequest;
         }
+
         [HttpPost]
         public async Task<IActionResult> AssignRoleGroup(IFormCollection fc)
         {
-
             int Id = Int32.Parse(fc["id"]);
             var request = new List<RoleModel>();
             string IdRoles = fc["roles"];
@@ -349,13 +353,13 @@ namespace TechLife.App.Controllers
             {
                 TempData["result"] = "Cập nhật quyền thành công";
                 return RedirectToAction("AssignRoleGroup", new { id = Id });
-
             }
 
             ModelState.AddModelError("", result.Message);
 
             return View(request);
         }
+
         [HttpPost]
         public async Task<IActionResult> RoleGroupUnAssign(Guid id, int groupId)
         {
@@ -367,9 +371,9 @@ namespace TechLife.App.Controllers
             ModelState.AddModelError("", result.Message);
             return View();
         }
+
         public async Task<IActionResult> Phongban()
         {
-
             ViewData["Title"] = "Phòng ban, trung tâm";
             ViewData["Title_parent"] = "Hệ thống";
 
@@ -385,29 +389,27 @@ namespace TechLife.App.Controllers
 
             return View(data);
         }
+
         [HttpPost]
         public async Task<IActionResult> Dongbo_phongban(int service_sso)
         {
-
             var resultApi = await _hscvApiClient.DSPhongBan(SystemConstants.AppSettings.UniqueCode);
 
             var result = await _phongBanService.CreateSso(resultApi);
 
             TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
 
-
             return Redirect(Request.GetBackUrl());
         }
+
         [HttpPost]
         public async Task<IActionResult> Dongbo(int service_sso)
         {
-
             var resultApi = await _hscvApiClient.DSTaiKhoan(SystemConstants.AppSettings.UniqueCode);
 
             var result = await _userService.CreateSSO(resultApi);
 
             TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
-
 
             return Redirect(Request.GetBackUrl());
         }
@@ -431,6 +433,7 @@ namespace TechLife.App.Controllers
 
             return RedirectToAction("Error", "Home");
         }
+
         [HttpPost]
         public async Task<IActionResult> EditGroup(GroupModel request)
         {
@@ -450,10 +453,10 @@ namespace TechLife.App.Controllers
 
             return View(request);
         }
+
         [HttpGet]
         public async Task<IActionResult> Tracking()
         {
-
             ViewData["Title"] = "Truy vết sử dụng";
             ViewData["Title_parent"] = "Hệ thống";
 
@@ -468,6 +471,23 @@ namespace TechLife.App.Controllers
             //var data = await _phongBanService.DSPhongBan(SystemConstants.AppSettings.UniqueCode);
 
             return View(data);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(string id)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Edit(string id, UserUpdateRequest request)
+        {
+            var result = await _userService.Update(Guid.Parse(id), request);
+
+            TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
+            return Redirect(Request.GetBackUrl());
         }
     }
 }
