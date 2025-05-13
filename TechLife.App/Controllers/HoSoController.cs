@@ -42,6 +42,7 @@ namespace TechLife.App.Controllers
         private readonly ITienNghiService _tienNghiService;
         private readonly IBoPhanService _boPhanService;
         private readonly IHuongDanVienService _huongDanVienService;
+        private readonly ILoaiDichVuService _loaiDichVuService;
         private readonly ILogger<HoSoController> _logger;
         //HueCIT
         private readonly IHoSoService _hoSoService;
@@ -80,6 +81,7 @@ namespace TechLife.App.Controllers
             , IBoPhanService boPhanService
             , IHuongDanVienService huongDanVienService
             , IHoSoService hoSoService
+            , ILoaiDichVuService  loaiDichVuService
             , ILogger<HoSoController> logger)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
@@ -104,6 +106,7 @@ namespace TechLife.App.Controllers
             _boPhanService = boPhanService;
             _huongDanVienService = huongDanVienService;
             _hoSoService = hoSoService;
+            _loaiDichVuService = loaiDichVuService;
             _config = configuration;
             _logger = logger;
         }
@@ -461,7 +464,17 @@ namespace TechLife.App.Controllers
                 int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
                 int namecslt = !String.IsNullOrEmpty(Request.Query["namecslt"]) ? Convert.ToInt32(Request.Query["namecslt"]) : -1;
 
-                await OptionLoaiHinhKinhDoanh(loaihinh);
+                var loaihinhkinhdoanh = await _loaiDichVuService.GetAll();
+
+                var list = loaihinhkinhdoanh.Select(x => new SelectListItem
+                {
+                    Text = x.TenLoai.ToString(),
+                    Value = x.Id.ToString(),
+                    Selected = (int)x.Id == loaihinh ? true : false
+                });
+
+                ViewBag.listLoaiHinhKD = list;
+
                 await OptionTieuChuanCoSo(hangsao);
                 await OptionHuyen(1, huyen);
                 await OptionGetAllCSLT(namecslt);
