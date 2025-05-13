@@ -43,6 +43,14 @@ namespace TechLife.App.Controllers
         private readonly IBoPhanService _boPhanService;
         private readonly IHuongDanVienService _huongDanVienService;
         private readonly ILoaiDichVuService _loaiDichVuService;
+
+        private readonly IDichVuService _dichVuService;
+        private readonly INgoaiNguService _ngoaiNguService;
+        private readonly ITrinhDoService _trinhDoService;
+        private readonly IMucDoThongThaoNgoaiNguService _mucDoThongThaoNgoaiNguService;
+        private readonly ILoaiPhongService _loaiPhongService;
+        private readonly ILoaiGiuongService _loaiGiuongService;
+        private readonly ILoaiHinhService _loaiHinhService;
         private readonly ILogger<HoSoController> _logger;
         //HueCIT
         private readonly IHoSoService _hoSoService;
@@ -82,7 +90,14 @@ namespace TechLife.App.Controllers
             , IHuongDanVienService huongDanVienService
             , IHoSoService hoSoService
             , ILoaiDichVuService  loaiDichVuService
-            , ILogger<HoSoController> logger)
+            , ILogger<HoSoController> logger,
+            IDichVuService dichVuService,
+            INgoaiNguService ngoaiNguService,
+            ITrinhDoService trinhDoService,
+            IMucDoThongThaoNgoaiNguService mucDoThongThaoNgoaiNguService,
+            ILoaiPhongService loaiPhongService,
+            ILoaiGiuongService loaiGiuongService,
+            ILoaiHinhService loaiHinhService)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
                   , dichVuApiClient, ngoaiNguApiClient
@@ -107,13 +122,20 @@ namespace TechLife.App.Controllers
             _huongDanVienService = huongDanVienService;
             _hoSoService = hoSoService;
             _loaiDichVuService = loaiDichVuService;
+            _dichVuService = dichVuService;
+            _ngoaiNguService = ngoaiNguService;
+            _trinhDoService = trinhDoService;
+            _mucDoThongThaoNgoaiNguService = mucDoThongThaoNgoaiNguService;
+            _loaiPhongService = loaiPhongService;
+            _loaiGiuongService = loaiGiuongService;
+            _loaiHinhService = loaiHinhService;
             _config = configuration;
             _logger = logger;
         }
 
         private async Task<List<DichVuHoSoModel>> ListDichVuHoSo(int hosoId = 0, List<DichVuHoSoModel> listValue = null)
         {
-            var list = await _dichVuApiClient.GetAll();
+            var list = await _dichVuService.GetAll();
             var listItem = new List<DichVuHoSoModel>();
             foreach (var x in list)
             {
@@ -132,7 +154,7 @@ namespace TechLife.App.Controllers
 
         private async Task<List<NgoaiNguHoSoModel>> ListNgoaiNguHoSo(int hosoId = 0, List<NgoaiNguHoSoModel> listValue = null)
         {
-            List<NgoaiNguModel> list = await _ngoaiNguApiClient.GetAll();
+            List<NgoaiNguModel> list = await _ngoaiNguService.GetAll();
             var listItem = new List<NgoaiNguHoSoModel>();
             foreach (var x in list)
             {
@@ -151,7 +173,7 @@ namespace TechLife.App.Controllers
 
         private async Task<List<TrinhDoHoSoModel>> ListTrinhDoHoSo(int hosoId = 0, List<TrinhDoHoSoModel> listValue = null)
         {
-            List<TrinhDoModel> list = await _trinhDoApiClient.GetAll();
+            List<TrinhDoModel> list = await _trinhDoService.GetAll();
             var listItem = new List<TrinhDoHoSoModel>();
             foreach (var x in list)
             {
@@ -189,7 +211,7 @@ namespace TechLife.App.Controllers
 
         private async Task<List<MucDoTTNNHoSoModel>> ListMucDoThongThaoHoSo(int hosoId = 0, List<MucDoTTNNHoSoModel> listValue = null)
         {
-            List<MucDoThongThaoNgoaiNguModel> list = await _mucDoThongThaoNgoaiNguApiClient.GetAll();
+            List<MucDoThongThaoNgoaiNguModel> list = await _mucDoThongThaoNgoaiNguService.GetAll();
 
             var listItem = new List<MucDoTTNNHoSoModel>();
             foreach (var x in list)
@@ -209,8 +231,8 @@ namespace TechLife.App.Controllers
 
         private async Task<List<LoaiPhongHoSoModel>> ListLoaiPhongHoSo(int hosoId = 0, List<LoaiPhongHoSoModel> listValue = null)
         {
-            List<LoaiPhongModel> list = await _loaiPhongApiClient.GetAll();
-            List<LoaiGiuongModel> listLoaiGiuong = await _loaiGiuongApiClient.GetAll();
+            List<LoaiPhongModel> list = await _loaiPhongService.GetAll(0);
+            List<LoaiGiuongModel> listLoaiGiuong = await _loaiGiuongService.GetAll();
 
             var listItem = new List<LoaiPhongHoSoModel>();
             foreach (var x in list)
@@ -464,7 +486,7 @@ namespace TechLife.App.Controllers
                 int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
                 int namecslt = !String.IsNullOrEmpty(Request.Query["namecslt"]) ? Convert.ToInt32(Request.Query["namecslt"]) : -1;
 
-                var loaihinhkinhdoanh = await _loaiDichVuService.GetAll();
+                var loaihinhkinhdoanh = await _loaiHinhService.GetAll();
 
                 var list = loaihinhkinhdoanh.Select(x => new SelectListItem
                 {
@@ -476,8 +498,31 @@ namespace TechLife.App.Controllers
                 ViewBag.listLoaiHinhKD = list;
 
                 await OptionTieuChuanCoSo(hangsao);
-                await OptionHuyen(1, huyen);
-                await OptionGetAllCSLT(namecslt);
+               // await OptionHuyen(1, huyen);
+                var huyenData= await _diaPhuongService.GetAllByParent(1);
+
+                var huyenItems = huyenData.Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong.ToString(),
+                    Value = x.Id.ToString(),
+                    Selected = (int)x.Id == huyen ? true : false
+                });
+
+                ViewBag.listHuyen = huyenItems;
+
+                /// await OptionGetAllCSLT(namecslt);
+
+
+                var csdlData = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
+
+                var csdlItems = csdlData.Select(x => new SelectListItem
+                {
+                    Text = x.Ten.ToString(),
+                    Value = x.Id.ToString(),
+                    Selected = (int)x.Id == namecslt ? true : false
+                });
+
+                ViewBag.listGetAllCSLT = csdlItems;
 
                 var pageRequest = new HoSoFromRequets()
                 {

@@ -10,15 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using Quartz.Impl;
-using Quartz.Spi;
 using System;
 using System.IO;
 using TechLife.App.ApiClients;
 using TechLife.App.ApiClients.HueCIT;
 using TechLife.App.Areas.HueCIT;
-using TechLife.App.Areas.HueCIT.Jobs;
-using TechLife.App.Areas.HueCIT.Schedules;
 using TechLife.App.Extensions.Authorizations;
 using TechLife.App.Extensions.FileLogger;
 using TechLife.Common;
@@ -65,21 +61,21 @@ namespace TechLife.App
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 
-                options.LoginPath = new PathString("/sso");
+                options.LoginPath = new PathString("/Login");
                 options.AccessDeniedPath = new PathString("/Logout");
                 options.AccessDeniedPath = new PathString("/AccessDenied");
 
                 options.SlidingExpiration = true;
             });
 
-            services.AddAuthentication(options => 
+            services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
              .AddCookie(options =>
              {
-                 options.LoginPath = new PathString($"/sso");
+                 options.LoginPath = new PathString($"/Login");
                  options.AccessDeniedPath = new PathString("/AccessDenied");
                  options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                  options.SlidingExpiration = true;
@@ -146,6 +142,7 @@ namespace TechLife.App
             services.AddTransient<IQuaTrinhHoatDongService, QuaTrinhHoatDongService>();
             services.AddTransient<INgonNguService, NgonNguService>();
             services.AddTransient<ILoaiPhongService, LoaiPhongService>();
+            services.AddTransient<ILoaiDichVuService, LoaiDichVuService>();
 
             services.AddTransient<IFileUploadService, FileUploadService>();
             services.AddTransient<IFileUploaderDongBoService, FileUploaderDongBoService>();
@@ -202,14 +199,14 @@ namespace TechLife.App
 
                 loggerFactory.AddFile(Directory.GetCurrentDirectory());
             }
-         
+
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
             app.UseSession();
-            
+
             //HueCIT
             app.UseEndpoints(endpoints =>
             {
