@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TechLife.App.ApiClients;
 using TechLife.Common;
-using TechLife.Common.Extension;
 using TechLife.Model;
 using TechLife.Model.User;
 using TechLife.Service;
@@ -86,7 +85,9 @@ namespace TechLife.App.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ViewBag.Group = await _groupApiClient.GetAll();
+            //ViewBag.Group = await _groupApiClient.GetAll();
+
+            ViewBag.Group = await _groupService.GetAll();
 
             return View();
         }
@@ -474,19 +475,37 @@ namespace TechLife.App.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(string id)
+        public async Task<IActionResult> Edit(string id)
         {
-            return View();
+            var data = await _userService.GetById(Guid.Parse(id));
+
+            //ViewBag.Group = await _groupService.GetAll();
+
+            var user = data.ResultObj;
+
+            var model = new UserUpdateRequest
+            {
+                Id = user.Id.ToString(),
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Dob = user.Dob,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Edit(string id, UserUpdateRequest request)
+        public async Task<IActionResult> Edit(UserUpdateRequest request)
         {
-            var result = await _userService.Update(Guid.Parse(id), request);
+            var result = await _userService.Update(Guid.Parse(request.Id), request);
 
             TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
+
             return Redirect(Request.GetBackUrl());
         }
     }

@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TechLife.Common;
 using TechLife.Common.Enums;
@@ -386,13 +387,51 @@ namespace TechLife.Service
                 return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
             var user = await _userManager.FindByIdAsync(id.ToString());
-            user.Dob = Functions.ConvertDateToSql(request.Dob);
+
+            if (user == null) return new ApiErrorResult<bool>("Tài khoản không tồn tại");
+
+            user.Dob = request.Dob;
             user.Email = request.Email;
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.PhoneNumber = request.PhoneNumber;
             user.FullName = request.FirstName + " " + request.LastName;
+
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                if (request.Password != request.ConfirmPassword)
+                {
+                    return new ApiErrorResult<bool>("Mật khẩu và mật khẩu xác nhận không trùng khớp");
+                }
+
+                string passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$";
+
+                Regex passwordRegex = new(passwordPattern);
+
+                if (!passwordRegex.IsMatch(request.Password))
+                {
+                    return new ApiErrorResult<bool>("Mật khẩu tối thiểu 8 ký tự gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt");
+                }
+
+                var success = await _userManager.RemovePasswordAsync(user);
+
+                if (success.Succeeded)
+                {
+                    success = await _userManager.AddPasswordAsync(user, request.Password);
+
+                    if(!success.Succeeded)
+                    {
+                        return new ApiErrorResult<bool>("Cập nhật không thành công");
+                    }
+                }
+                else
+                {
+                    return new ApiErrorResult<bool>("Cập nhật không thành công");
+                }
+            }
+
             var result = await _userManager.UpdateAsync(user);
+
             if (result.Succeeded)
             {
                 return new ApiSuccessResult<bool>(result.Succeeded, "Cập nhật thành công!");

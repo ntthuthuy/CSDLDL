@@ -14,12 +14,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
 using TechLife.App.ApiClients;
 using TechLife.App.Areas.HueCIT.Models;
 using TechLife.Common;
 using TechLife.Common.Enums;
-using TechLife.Data.Entities;
 using TechLife.Model;
 using TechLife.Model.BoPhan;
 using TechLife.Model.DuLieuDuLich;
@@ -51,7 +49,10 @@ namespace TechLife.App.Controllers
         private readonly ILoaiPhongService _loaiPhongService;
         private readonly ILoaiGiuongService _loaiGiuongService;
         private readonly ILoaiHinhService _loaiHinhService;
+        private readonly IDanhMucService _danhMucService;
+        private readonly IDonViTinhService _donViTinhService;
         private readonly ILogger<HoSoController> _logger;
+
         //HueCIT
         private readonly IHoSoService _hoSoService;
         private readonly IConfiguration _config;
@@ -89,15 +90,19 @@ namespace TechLife.App.Controllers
             , IBoPhanService boPhanService
             , IHuongDanVienService huongDanVienService
             , IHoSoService hoSoService
-            , ILoaiDichVuService  loaiDichVuService
-            , ILogger<HoSoController> logger,
-            IDichVuService dichVuService,
-            INgoaiNguService ngoaiNguService,
-            ITrinhDoService trinhDoService,
-            IMucDoThongThaoNgoaiNguService mucDoThongThaoNgoaiNguService,
-            ILoaiPhongService loaiPhongService,
-            ILoaiGiuongService loaiGiuongService,
-            ILoaiHinhService loaiHinhService)
+            , ILoaiDichVuService loaiDichVuService
+            , IDonViTinhService donViTinhService
+            , IDichVuService dichVuService
+            , INgoaiNguService ngoaiNguService
+            , ITrinhDoService trinhDoService
+            , IMucDoThongThaoNgoaiNguService mucDoThongThaoNgoaiNguService
+            , ILoaiPhongService loaiPhongService
+            , ILoaiGiuongService loaiGiuongService
+            , ILoaiHinhService loaiHinhService
+            , IDanhMucService danhMucService
+            , ILogger<HoSoController> logger
+
+            )
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
                   , dichVuApiClient, ngoaiNguApiClient
@@ -129,6 +134,8 @@ namespace TechLife.App.Controllers
             _loaiPhongService = loaiPhongService;
             _loaiGiuongService = loaiGiuongService;
             _loaiHinhService = loaiHinhService;
+            _danhMucService = danhMucService;
+            _donViTinhService = donViTinhService;
             _config = configuration;
             _logger = logger;
         }
@@ -473,6 +480,33 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
+        private async Task OptionDonViTinh(int seletedId = 0)
+        {
+            var donvitinh = await _donViTinhService.GetAll();
+
+            var list = donvitinh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listDonViTinh = list;
+        }
+
+        private async Task OptionLoaiHinhKinhDoanh(int seletedId = 0)
+        {
+            var loaihinhkinhdoanh = await _loaiHinhService.GetAll();
+
+            var list = loaihinhkinhdoanh.Select(x => new SelectListItem
+            {
+                Text = x.TenLoai.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiHinhKD = list;
+        }
         [Authorize(Roles = "view_luutru,root")]
         public async Task<IActionResult> Cosoluutru()
         {
@@ -498,8 +532,8 @@ namespace TechLife.App.Controllers
                 ViewBag.listLoaiHinhKD = list;
 
                 await OptionTieuChuanCoSo(hangsao);
-               // await OptionHuyen(1, huyen);
-                var huyenData= await _diaPhuongService.GetAllByParent(1);
+                // await OptionHuyen(1, huyen);
+                var huyenData = await _diaPhuongService.GetAllByParent(1);
 
                 var huyenItems = huyenData.Select(x => new SelectListItem
                 {
@@ -574,11 +608,11 @@ namespace TechLife.App.Controllers
                 csltModel.Amenities = amenities;
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhKinhDoanh();
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
+                await this.OptionLoaiHinhKinhDoanh();
+                await this.OptionDonViTinh(2);
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -624,10 +658,11 @@ namespace TechLife.App.Controllers
 
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhKinhDoanh();
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiHinhKinhDoanh();
+                    await this.OptionDonViTinh(2);
 
                     return View(request);
                 }
@@ -668,10 +703,11 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhKinhDoanh();
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiHinhKinhDoanh();
                 return View(request);
             }
         }
@@ -707,10 +743,11 @@ namespace TechLife.App.Controllers
                     csltModel.Amenities = amenities;
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhKinhDoanh();
-                    await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
+                    await OptionTieuChuanCoSo();
+
+                    await this.OptionDonViTinh(2);
+                    await this.OptionLoaiHinhKinhDoanh();
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -832,10 +869,11 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhKinhDoanh();
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
+
+                    await this.OptionDonViTinh(2);
+                    await this.OptionLoaiHinhKinhDoanh();
                     return View(request);
                 }
             }
@@ -845,10 +883,11 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhKinhDoanh();
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiHinhKinhDoanh();
                 return View(request);
             }
         }
@@ -876,6 +915,34 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
+        private async Task OptionLoaiNhaHang(int seletedId = 0)
+        {
+            var luhanh = await _dichVuService.GetAll();
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.TenDichVu.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiNhaHang = list;
+        }
+
+        private async Task OptionGetAllNhaHang(int seletedId = 0)
+        {
+            var luhanh = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.NhaHang);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listGetAllNhaHang = list;
+        }
+
         [Authorize(Roles = "view_nhahang,root")]
         public async Task<IActionResult> Nhahang()
         {
@@ -888,10 +955,11 @@ namespace TechLife.App.Controllers
                 int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
                 int namenhahang = !String.IsNullOrEmpty(Request.Query["namenhahang"]) ? Convert.ToInt32(Request.Query["namenhahang"]) : -1;
 
-                await OptionLoaiNhaHang(loaihinh);
                 await OptionTieuChuanCoSo(hangsao);
                 await OptionHuyen(1, huyen);
-                await OptionGetAllNhaHang(namenhahang);
+
+                await this.OptionLoaiNhaHang(loaihinh);
+                await this.OptionGetAllNhaHang(namenhahang);
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -936,12 +1004,11 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiNhaHang();
-
-
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiNhaHang();
+                await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
                 {
@@ -1012,9 +1079,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = false, Message = ex.Message });
             }
@@ -1044,10 +1112,11 @@ namespace TechLife.App.Controllers
                     csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSVanBan);
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiNhaHang();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiNhaHang();
+                    await this.OptionDonViTinh(2);
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -1165,11 +1234,12 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiNhaHang();
                 await OptionCoSoLuuTru();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiNhaHang();
+                await this.OptionDonViTinh(2);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = false, Message = ex.Message });
 
@@ -1199,6 +1269,33 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
+        private async Task OptionLoaiCTLuHanh(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.LuHanh);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiCTLH = list;
+        }
+
+        private async Task OptionGetAllLuHanh(int seletedId = 0)
+        {
+            var luhanh = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.LuHanh);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listGetAllLuHanh = list;
+        }
 
         [Authorize(Roles = "view_congtyluhanh,root")]
         public async Task<IActionResult> Congtyluhanh()
@@ -1213,10 +1310,11 @@ namespace TechLife.App.Controllers
                 int nameluhanh = !String.IsNullOrEmpty(Request.Query["nameluhanh"]) ? Convert.ToInt32(Request.Query["nameluhanh"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
-                await OptionLoaiCTLuHanh(loaihinh);
                 await OptionHuyen(1, huyen);
-                await OptionGetAllLuHanh(nameluhanh);
                 await OptionNguonDongBo(nguon);
+
+                await this.OptionGetAllLuHanh(nameluhanh);
+                await this.OptionLoaiCTLuHanh(loaihinh);
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -1256,10 +1354,12 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiCTLuHanh();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCTLuHanh();
+                await this.OptionDonViTinh(2);
+
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -1300,10 +1400,12 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(-1);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiCTLuHanh();
                     await OptionNhaCungCap();
+
+                    await this.OptionDonViTinh(2);
+                    await this.OptionLoaiCTLuHanh();
+
                     ModelState.AddModelError("", result.Message);
                     return View(request);
                 }
@@ -1334,10 +1436,11 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiCTLuHanh();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiCTLuHanh();
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -1365,10 +1468,11 @@ namespace TechLife.App.Controllers
 
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiCTLuHanh();
                     await OptionNhaCungCap();
+
+                    await this.OptionDonViTinh(2);
+                    await this.OptionLoaiCTLuHanh();
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -1433,10 +1537,12 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(-1);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiCTLuHanh();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCTLuHanh();
+                    await this.OptionDonViTinh(2);
+
                     ModelState.AddModelError("", result.Message);
                     return View(request);
                 }
@@ -1489,10 +1595,12 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiCTLuHanh();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCTLuHanh();
+                await this.OptionDonViTinh(2);
+
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
             }
@@ -1520,6 +1628,33 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
+        private async Task OptionLoaiCoSoMuaSam(int seletedId = 0)
+        {
+            var luhanh = await _loaiDichVuService.GetAll();
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.TenLoai.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiDichVu = list;
+        }
+
+        private async Task OptionGetAllCSMS(int seletedId = 0)
+        {
+            var luhanh = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.MuaSam);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listGetAllCSMS = list;
+        }
 
         [Authorize(Roles = "view_muasam,root")]
         public async Task<IActionResult> Cosomuasam()
@@ -1535,11 +1670,12 @@ namespace TechLife.App.Controllers
                 int namecsms = !String.IsNullOrEmpty(Request.Query["namecsms"]) ? Convert.ToInt32(Request.Query["namecsms"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
-                await OptionLoaiCoSoMuaSam(loaihinh);
                 await OptionTieuChuanCoSo(hangsao);
                 await OptionHuyen(1, huyen);
-                await OptionGetAllCSMS(namecsms);
                 await OptionNguonDongBo(nguon);
+
+                await this.OptionGetAllCSMS(namecsms);
+                await this.OptionLoaiCoSoMuaSam(loaihinh);
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -1581,11 +1717,12 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-
-                await OptionLoaiCoSoMuaSam();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCoSoMuaSam();
+                await this.OptionDonViTinh(2);
+
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -1625,10 +1762,11 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(-1);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiCoSoMuaSam();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCoSoMuaSam();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -1660,10 +1798,11 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiCoSoMuaSam();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCoSoMuaSam();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -1693,10 +1832,11 @@ namespace TechLife.App.Controllers
 
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiCoSoMuaSam();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCoSoMuaSam();
+                    await this.OptionDonViTinh(2);
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -1761,10 +1901,11 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
                     await OptionTieuChuanCoSo();
-                    await OptionLoaiCoSoMuaSam();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCoSoMuaSam();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -1824,10 +1965,11 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
                 await OptionTieuChuanCoSo();
-                await OptionLoaiCoSoMuaSam();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCoSoMuaSam();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -1856,6 +1998,34 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
+        private async Task OptionLoaiDiemDuLich(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiDDL = list;
+        }
+
+        private async Task OptionGetAllDDL(int seletedId = 0)
+        {
+            var luhanh = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listGetAllDDL = list;
+        }
+
         [Authorize(Roles = "view_diemdulich,root")]
         public async Task<IActionResult> Diemdulich()
         {
@@ -1870,10 +2040,11 @@ namespace TechLife.App.Controllers
                 int nameddl = !String.IsNullOrEmpty(Request.Query["nameddl"]) ? Convert.ToInt32(Request.Query["nameddl"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
-                await OptionLoaiDiemDuLich(loaihinh);
                 await OptionHuyen(1, huyen);
-                await OptionGetAllDDL(nameddl);
                 await OptionNguonDongBo(nguon);
+
+                await this.OptionGetAllDDL(nameddl);
+                await this.OptionLoaiDiemDuLich(loaihinh);
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -1916,9 +2087,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiDiemDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiDiemDuLich();
+                await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateExtRequest()
                 {
@@ -1959,9 +2131,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa();
-                    await OptionDonViTinh(2);
-                    await OptionLoaiDiemDuLich();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiDiemDuLich();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -1994,9 +2167,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiDiemDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiDiemDuLich();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -2024,9 +2198,10 @@ namespace TechLife.App.Controllers
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSTienNghi);
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiDiemDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiDiemDuLich();
+                await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichUpdateExtRequest()
                 {
@@ -2091,9 +2266,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiDiemDuLich();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiDiemDuLich();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -2155,9 +2331,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiDiemDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiDiemDuLich();
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -2218,6 +2395,34 @@ namespace TechLife.App.Controllers
             }
         }
 
+        private async Task OptionNgoaiNgu(int seletedId = 0)
+        {
+            var luhanh = await _ngoaiNguService.GetAll();
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.TenNgoaiNgu.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listNgoaiNgu = list;
+        }
+
+        private async Task OptionCongTyLuHanh(int seletedId = 0)
+        {
+            var luhanh = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.LuHanh);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listCongTyLuHanh = list;
+        }
+
         [Authorize(Roles = "create_huongdanvien,root")]
         public async Task<IActionResult> Themhuongdanvien()
         {
@@ -2228,10 +2433,11 @@ namespace TechLife.App.Controllers
             hdvModel.DSQuaTrinhHD = ListQuaTrinhHoatDong();
             hdvModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.HDV);
 
-            await OptionNgoaiNgu();
             await OptionLoaiTheHDV();
-            await OptionLoaiDiemDuLich();
-            await OptionCongTyLuHanh();
+
+            await this.OptionNgoaiNgu();
+            await this.OptionLoaiDiemDuLich();
+            await this.OptionCongTyLuHanh();
 
 
             var model = new HuongDanVienRequest()
@@ -2300,10 +2506,11 @@ namespace TechLife.App.Controllers
             hdvModel.DSQuaTrinhHD = ListQuaTrinhHoatDong(hdvModel.Id, hdvModel.DSQuaTrinhHD);
             hdvModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.HDV, hdvModel.Id, hdvModel.DSVanBan);
 
-            await OptionNgoaiNgu();
             await OptionLoaiTheHDV();
-            await OptionLoaiDiemDuLich();
-            await OptionCongTyLuHanh();
+
+            await this.OptionNgoaiNgu();
+            await this.OptionLoaiDiemDuLich();
+            await this.OptionCongTyLuHanh();
 
             var model = new HuongDanVienRequest()
             {
@@ -2450,7 +2657,7 @@ namespace TechLife.App.Controllers
                 _logger.LogError(ex, "Lỗi");
                 return View(pageError404);
             }
-          
+
         }
 
         [Authorize(Roles = "create_vesinhcongcong,root")]
@@ -2611,6 +2818,20 @@ namespace TechLife.App.Controllers
             }
         }
 
+        private async Task OptionLoaiKhuDuLich(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuDuLich);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiKhuDL = list;
+        }
+
         [Authorize(Roles = "create_khudulich,root")]
         public async Task<IActionResult> Themmoikhudulich()
         {
@@ -2631,9 +2852,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiKhuDuLich();
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -2673,9 +2895,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa();
-                    await OptionDonViTinh(2);
-                    await OptionLoaiKhuDuLich();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiKhuDuLich();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -2707,9 +2930,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuDuLich();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -2737,9 +2961,10 @@ namespace TechLife.App.Controllers
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSTienNghi);
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuDuLich();
+                await this.OptionDonViTinh(2);
                 var model = new DuLieuDuLichUpdateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -2798,9 +3023,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiKhuDuLich();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiKhuDuLich();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -2838,9 +3064,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuDuLich();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuDuLich();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -2864,6 +3091,20 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
+        private async Task OptionLoaiKhuVuiChoi(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuVuiChoi);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiKhuVuiChoi = list;
+        }
+
         [Authorize(Roles = "view_dichvuvuichoi,root")]
         public async Task<IActionResult> Vcgt()
         {
@@ -2877,9 +3118,10 @@ namespace TechLife.App.Controllers
                 int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
-                await OptionLoaiKhuVuiChoi(loaihinh);
                 await OptionHuyen(1, huyen);
                 await OptionNguonDongBo(nguon);
+
+                await this.OptionLoaiKhuVuiChoi(loaihinh);
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -2921,9 +3163,11 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuVuiChoi();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuVuiChoi();
+                await this.OptionDonViTinh(2);
+
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -2961,9 +3205,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa();
-                    await OptionDonViTinh(2);
-                    await OptionLoaiKhuVuiChoi();
                     await OptionNhaCungCap();
+
+                    await this.OptionDonViTinh(2);
+                    await this.OptionLoaiKhuVuiChoi();
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -2995,9 +3240,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuVuiChoi();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuVuiChoi();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -3028,9 +3274,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuVuiChoi();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuVuiChoi();
+                await this.OptionDonViTinh(2);
                 var model = new DuLieuDuLichUpdateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -3093,9 +3340,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiKhuVuiChoi();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiKhuVuiChoi();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -3155,9 +3403,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiKhuVuiChoi();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiKhuVuiChoi();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -3220,6 +3469,20 @@ namespace TechLife.App.Controllers
             }
         }
 
+        private async Task OptionLoaiHinhCSSK(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.CSSK);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiCSSK = list;
+        }
+
         [Authorize(Roles = "create_dichvucssk,root")]
         public async Task<IActionResult> Themmoicssk()
         {
@@ -3241,9 +3504,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhCSSK();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhCSSK();
+                await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
                 {
@@ -3281,9 +3545,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa();
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhCSSK();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiHinhCSSK();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -3315,9 +3580,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhCSSK();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhCSSK();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -3345,9 +3611,10 @@ namespace TechLife.App.Controllers
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSTienNghi);
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhCSSK();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhCSSK();
+                await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichUpdateRequest()
                 {
@@ -3412,9 +3679,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhCSSK();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiHinhCSSK();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -3474,9 +3742,11 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhCSSK();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhCSSK();
+                await this.OptionDonViTinh(2);
+
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
             }
@@ -3538,6 +3808,20 @@ namespace TechLife.App.Controllers
             }
         }
 
+        private async Task OptionLoaiHinhTheThao(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.TheThao);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiTheThao = list;
+        }
+
         [Authorize(Roles = "create_dichvuthethao,root")]
         public async Task<IActionResult> Themmoicstt()
         {
@@ -3559,9 +3843,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhTheThao();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhTheThao();
+                await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
                 {
@@ -3600,9 +3885,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa();
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhTheThao();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiHinhTheThao();
+                    await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -3634,9 +3920,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa();
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhTheThao();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhTheThao();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -3666,9 +3953,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhTheThao();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiHinhTheThao();
 
                 var model = new DuLieuDuLichUpdateRequest()
                 {
@@ -3733,9 +4021,10 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiHinhTheThao();
                     await OptionNhaCungCap();
+
+                    await this.OptionDonViTinh(2);
+                    await this.OptionLoaiHinhTheThao();
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -3795,9 +4084,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-                await OptionDonViTinh(2);
-                await OptionLoaiHinhTheThao();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiHinhTheThao();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -4055,6 +4345,20 @@ namespace TechLife.App.Controllers
             }
         }
 
+        private async Task OptionLoaiCTVanChuyen(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.VanChuyen);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiCTVC = list;
+        }
+
         [Authorize(Roles = "create_congtyvanchuyen,root")]
         public async Task<IActionResult> Themmoivanchuyen()
         {
@@ -4074,9 +4378,10 @@ namespace TechLife.App.Controllers
 
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
-                await OptionLoaiCTVanChuyen();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCTVanChuyen();
+                await this.OptionDonViTinh(2);
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -4114,9 +4419,11 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(-1);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiCTVanChuyen();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCTVanChuyen();
+                    await this.OptionDonViTinh(2);
+
                     ModelState.AddModelError("", result.Message);
                     return View(request);
                 }
@@ -4147,9 +4454,10 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
-                await OptionLoaiCTVanChuyen();
                 await OptionNhaCungCap();
+
+                await this.OptionLoaiCTVanChuyen();
+                await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
@@ -4178,9 +4486,10 @@ namespace TechLife.App.Controllers
 
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiCTVanChuyen();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCTVanChuyen();
+                    await this.OptionDonViTinh(2);
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -4224,9 +4533,11 @@ namespace TechLife.App.Controllers
                 {
                     await OptionHuyen();
                     await OptionXa(-1);
-                    await OptionDonViTinh(2);
-                    await OptionLoaiCTVanChuyen();
                     await OptionNhaCungCap();
+
+                    await this.OptionLoaiCTVanChuyen();
+                    await this.OptionDonViTinh(2);
+
                     ModelState.AddModelError("", result.Message);
                     return View(request);
                 }
@@ -4279,9 +4590,11 @@ namespace TechLife.App.Controllers
             {
                 await OptionHuyen();
                 await OptionXa(-1);
-                await OptionDonViTinh(2);
-                await OptionLoaiCTVanChuyen();
                 await OptionNhaCungCap();
+
+                await this.OptionDonViTinh(2);
+                await this.OptionLoaiCTVanChuyen();
+
                 ModelState.AddModelError("", ex.Message);
                 return View(request);
             }

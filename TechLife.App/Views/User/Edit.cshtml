@@ -1,7 +1,7 @@
-﻿@model TechLife.Model.UserModel
+﻿@model TechLife.Model.User.UserUpdateRequest
 
 @{
-    ViewData["Title"] = "Tạo tài khoản";
+    ViewData["Title"] = "Cập nhật tài khoản";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="content-wrapper" style="min-height: 1363.2px;">
@@ -27,9 +27,9 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-outline card-primary">
-                        <form asp-action="Create">
+                        <form id="form">
                             <div class="card-header">
-                                <h3 class="card-title">Thêm mới tài khoản</h3>
+                                <h3 class="card-title">Cập nhật tài khoản</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -75,19 +75,17 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr />
                                 <div class="form-row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Tài khoản</label>
-                                            <input asp-for="UserName" class="form-control" autocomplete="new-user" />
-                                            <span asp-validation-for="UserName" class="text-danger"></span>
+                                            <input asp-for="UserName" class="form-control" disabled style="cursor: not-allowed" />
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Mật khẩu</label>
-                                            <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                                            <input asp-for="Password" class="form-control" />
                                             <span asp-validation-for="Password" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -99,8 +97,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-row">
-                                    
+                                @* <div class="form-row">
+
                                     <div class="col-md-6">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Vai trò</label>
@@ -111,13 +109,13 @@
                                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                                         </div>
                                     </div>
-                                </div>
+                                </div> *@
                             </div>
                             <div class="card-footer">
                                 <div class="float-right">
-                                    <input type="hidden" asp-for="TypeId" value="@TechLife.Common.Enums.LoaiTaiKhoan.HeThong" />
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" asp-for="Id" />
                                     <button type="submit" class="btn btn-primary">Lưu</button>
-                                    <button type="submit" class="btn btn-primary">Lưu và thêm mới</button>
                                 </div>
                             </div>
                         </form>
@@ -132,7 +130,26 @@
 @section scripts
 {
     <script>
-        $('.select2').select2()
+        $('.select2').select2();
+
+        $('#form').on('submit', function(e){
+            e.preventDefault();
+            const data = new FormData(this);
+            console.log(this)
+            showLoading();
+            $.ajax({
+                url: '/User/Edit',
+                type: 'POST',
+                data: data,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    hideLoading();
+                },
+                error: function(xhr) {
+                    hideLoading();
+                }
+            })
+        });
     </script>
 }
-

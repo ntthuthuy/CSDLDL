@@ -227,7 +227,7 @@
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
                                                                 <label class="control-label">Công ty, đơn vị chủ quản </label>
-                                                                <select asp-for="DuLieuDuLich.NhaCungCapId" asp-items="ViewBag.listNhaCungCap" class="form-control ">
+                                                                <select asp-for="DuLieuDuLich.NhaCungCapId" asp-items="ViewBag.listNhaCungCap" class="form-control">
                                                                     <option value="0">Chọn</option>
                                                                 </select>
                                                                 <span asp-validation-for="DuLieuDuLich.NhaCungCapId" class="text-danger"></span>
@@ -406,7 +406,7 @@
                                                         <label class="control-label">Hồ sơ gồm có:</label>
                                                         <div class="row">
                                                             <div class="col-md-12">
-                                                                <table class="table table-bordered">
+                                                                <table class="table-bordered table">
                                                                     <thead>
                                                                         <tr>
                                                                             <th>Tên gọi</th>
@@ -453,7 +453,7 @@
                                                     @{
                                                         if (Model.DuLieuDuLich.DSNhaHang != null)
                                                         {
-                                                            <table class="table table-condensed table-bordered ">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Tên gọi</th>
@@ -513,7 +513,7 @@
                                                 @{
                                                 if (Model.DuLieuDuLich.DSTienNghi != null)
                                                 {
-                                                <table class="table table-condensed table-bordered">
+                                                <table class="table-condensed table-bordered table">
                                                 <thead>
                                                 <tr>
                                                 <th class="text-center" width="5%"><label><input class="ckAll" type="checkbox" /></label></th>
@@ -578,7 +578,7 @@
                                                 @{
                                                 if (Model.DuLieuDuLich.DSLoaiPhong != null)
                                                 {
-                                                <table class="table table-condensed table-bordered table-responsive">
+                                                <table class="table-condensed table-bordered table-responsive table">
                                                 <thead>
                                                 <tr>
                                                 <th width="5%">#</th>
@@ -604,7 +604,7 @@
                                                 @{
                                                 if (Model.DuLieuDuLich.DSLoaiPhong[i].DSLoaiGiuong != null)
                                                 {
-                                                <table class="table table-bordered">
+                                                <table class="table-bordered table">
                                                 @{
                                                 <thead>
                                                 <tr>
@@ -650,7 +650,7 @@
                                                 </div>*@
                                                 <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                                                     @{
-                                                        <table class="table table-condensed table-bordered">
+                                                        <table class="table-condensed table-bordered table">
                                                             <thead>
                                                                 <tr>
                                                                     <th>Tên gọi</th>
@@ -673,13 +673,13 @@
                                                                                 @*<span asp-validation-for="@Model.DSLoaiPhongGiuong[i].TenGoi" class="text-danger"></span>*@
                                                                             </td>
                                                                             <td style="vertical-align: middle;">
-                                                                                <input asp-for="@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].SoGiuong" class="form-control text-right " />
+                                                                                <input asp-for="@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].SoGiuong" class="form-control text-right" />
                                                                             </td>
                                                                             <td style="vertical-align: middle;">
-                                                                                <input asp-for="@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].GiaPhong" class="form-control text-right giaLoaiPhong" />
+                                                                                <input asp-for="@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].GiaPhong" class="form-control giaLoaiPhong text-right" />
                                                                             </td>
                                                                             <td style="vertical-align: middle;">
-                                                                                <input asp-for="@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].GiaGiuong" class="form-control text-right giaLoaiGiuong" />
+                                                                                <input asp-for="@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].GiaGiuong" class="form-control giaLoaiGiuong text-right" />
                                                                             </td>
                                                                             <td class="text-center">
                                                                                 <a onclick="$('#DuLieuDuLich_DSLoaiPhongGiuong_@(i)__IsDelete').val(true);$('#tr_@Model.DuLieuDuLich.DSLoaiPhongGiuong[i].Id').hide()" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
@@ -795,7 +795,7 @@
                                                         {
                                                             <strong>Số lượng lao động ở các bộ phận</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -841,7 +841,7 @@
                                                         {
                                                             <strong> Trình độ của lao động</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -886,7 +886,7 @@
                                                         {
                                                             <strong> Số lượng lao động sử dụng được các ngôn ngữ</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -909,10 +909,10 @@
                                                                                     <input type="hidden" asp-for="@Model.DuLieuDuLich.DSNgoaiNgu[i].NgoaiNgu.TenNgoaiNgu" class="form-control text-right" />
                                                                                 </td>
                                                                                 <td>
-                                                                                    <input asp-for="DuLieuDuLich.@Model.DuLieuDuLich.DSNgoaiNgu[i].SoLuong" class="form-control text-right" />
+                                                                                    <input asp-for="DuLieuDuLich.DSNgoaiNgu[i].SoLuong" class="form-control text-right" />
                                                                                 </td>
                                                                                 <td>
-                                                                                    <select class="form-control select2" asp-for="DuLieuDuLich.@Model.DuLieuDuLich.DSNgoaiNgu[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
+                                                                                    <select class="form-control select2" asp-for="DuLieuDuLich.DSNgoaiNgu[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
                                                                                         <option value="0">---</option>
                                                                                     </select>
                                                                                 </td>
@@ -931,7 +931,7 @@
                                                         {
                                                             <strong> Mức độ thành thạo ngôn ngữ của lao động</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -973,11 +973,11 @@
                                                     }
                                                 </div>
                                                 <!-- Thông tin hình ảnh -->
-                                                <div class="tab-pane fade  show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                <div class="tab-pane fade show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     @{
                                                         <div class="row">
                                                             <div class="col-md-12">
-                                                                <table class="table table-hover table-striped table-bordered">
+                                                                <table class="table-hover table-striped table-bordered table">
                                                                     <thead>
                                                                         <tr>
                                                                             <th width="5%" class="text-center">STT</th>
@@ -1029,7 +1029,7 @@
                                                     </div>
                                                 </div>
                                                 <!-- Thông tin map -->
-                                                <div class="tab-pane fade  show" id="custom-tabs-four-map" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                <div class="tab-pane fade show" id="custom-tabs-four-map" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="form-row">
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
@@ -1062,10 +1062,10 @@
                                                     </div>
                                                 </div>
                                                 <!-- Thông tin đánh giá -->
-                                                <div class="tab-pane fade  show" id="custom-tabs-four-danhgia" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                <div class="tab-pane fade show" id="custom-tabs-four-danhgia" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="row">
                                                         @{
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%" class="text-center">STT</th>
@@ -1306,8 +1306,8 @@
                 var html = '<tr id="tr_' + numCurent + '"><td style="vertical-align: middle;"><input type="hidden" class="form-control text-right" data-val="true" data-val-required="The Id field is required." id="DSLoaiPhongGiuong_0__Id" name="DuLieuDuLich.DSLoaiPhongGiuong[' + numCurent
                     + '].Id" value="0"><input type="text" required class="form-control valid" data-val="true" data-val-required="Vui lòng nhập tên " id="DSLoaiPhongGiuong_' + numCurent + '__TenGoi" name="DuLieuDuLich.DSLoaiPhongGiuong[' + numCurent + '].TenGoi" aria-describedby="DSLoaiPhongGiuong_' + numCurent + '__TenGoi-error" aria-invalid="false"></td><td style="vertical-align: middle;"><input class="form-control text-right" type="text" id="DSLoaiPhongGiuong_' + numCurent
                     + '__SoGiuong" type=number name="DuLieuDuLich.DSLoaiPhongGiuong[' + numCurent
-                    + '].SoGiuong" value="0"></td><td><input value="0" class="form-control text-right giaLoaiPhong" id="DSLoaiPhongGiuong_' + numCurent
-                    + '__GiaPhong" name="DuLieuDuLich.DSLoaiPhongGiuong[' + numCurent + '].GiaPhong"/></td><td><input value="0" class="form-control text-right giaLoaiGiuong" id="DSLoaiPhongGiuong_' + numCurent
+                    + '].SoGiuong" value="0"></td><td><input value="0" class="form-control giaLoaiPhong text-right" id="DSLoaiPhongGiuong_' + numCurent
+                    + '__GiaPhong" name="DuLieuDuLich.DSLoaiPhongGiuong[' + numCurent + '].GiaPhong"/></td><td><input value="0" class="form-control giaLoaiGiuong text-right" id="DSLoaiPhongGiuong_' + numCurent
                     + '__GiaGiuong" name="DuLieuDuLich.DSLoaiPhongGiuong[' + numCurent + '].GiaGiuong"/></td>'
                     + ' <td class="text-center"><a id="DSLoaiPhongGiuong_' + numCurent + 'nhaHang"  class="btn btn-danger btn-xs xoaNhaHang"><i class="fas fa-trash"></i></a></td></tr>';
 

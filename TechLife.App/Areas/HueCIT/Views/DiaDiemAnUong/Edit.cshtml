@@ -235,7 +235,7 @@
                                                         <div class="col-md-6">
                                                             <div class="position-relative form-group">
                                                                 <label class="control-label">Công ty, đơn vị chủ quản </label>
-                                                                <select asp-for="DuLieuDuLich.NhaCungCapId" asp-items="ViewBag.listNhaCungCap" class="form-control ">
+                                                                <select asp-for="DuLieuDuLich.NhaCungCapId" asp-items="ViewBag.listNhaCungCap" class="form-control">
                                                                     <option value="0">Chọn</option>
                                                                 </select>
                                                                 <span asp-validation-for="DuLieuDuLich.NhaCungCapId" class="text-danger"></span>
@@ -365,7 +365,7 @@
                                                         <label class="control-label">Hồ sơ gồm có:</label>
                                                         <div class="row">
                                                             <div class="col-md-12">
-                                                                <table class="table table-bordered">
+                                                                <table class="table-bordered table">
                                                                     <thead>
                                                                         <tr>
                                                                             <th class="tcenter" width="15%"></th>
@@ -410,7 +410,7 @@
                                                     @{
                                                         if (Model.DuLieuDuLich.DSTienNghi != null)
                                                         {
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th class="text-center" width="5%"><label><input class="ckAll" type="checkbox" /></label></th>
@@ -458,7 +458,7 @@
                                                     @{
                                                         if (Model.DuLieuDuLich.DSThucDon != null)
                                                         {
-                                                            <table class="table table-condensed table-bordered table-responsive">
+                                                            <table class="table-condensed table-bordered table-responsive table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Tên</th>
@@ -590,7 +590,7 @@
                                                         {
                                                             <strong>Số lượng lao động ở các bộ phận</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -635,7 +635,7 @@
                                                         {
                                                             <strong> Trình độ của lao động</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -680,7 +680,7 @@
                                                         {
                                                             <strong> Số lượng lao động sử dụng được các ngôn ngữ</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -703,7 +703,7 @@
                                                                                     <input type="hidden" asp-for="@Model.DuLieuDuLich.DSNgoaiNgu[i].NgoaiNgu.TenNgoaiNgu" class="form-control text-right" />
                                                                                 </td>
                                                                                 <td>
-                                                                                    <input asp-for="DuLieuDuLich.@Model.DuLieuDuLich.DSNgoaiNgu[i].SoLuong" class="form-control text-right" />
+                                                                                    <input asp-for="DuLieuDuLich.DSNgoaiNgu[i].SoLuong" class="form-control text-right" />
                                                                                 </td>
                                                                                 <td>
                                                                                     <select class="form-control select2" asp-for="@Model.DuLieuDuLich.DSNgoaiNgu[i].DonViTinhId" asp-items="ViewBag.listDonViTinh">
@@ -725,7 +725,7 @@
                                                         {
                                                             <strong> Mức độ thành thạo ngôn ngữ của lao động</strong>
                                                             <hr />
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%">#</th>
@@ -766,11 +766,11 @@
                                                     }
                                                 </div>
                                                 <!-- Thông tin hình ảnh -->
-                                                <div class="tab-pane fade  show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                <div class="tab-pane fade show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     @{
                                                         <div class="row">
                                                             <div class="col-md-12">
-                                                                <table class="table table-hover table-striped table-bordered">
+                                                                <table class="table-hover table-striped table-bordered table">
                                                                     <thead>
                                                                         <tr>
                                                                             <th width="5%" class="text-center">STT</th>
@@ -855,7 +855,7 @@
                                                     </div>
                                                 </div>
                                                 <!-- Thông tin map -->
-                                                <div class="tab-pane fade  show" id="custom-tabs-four-map" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                <div class="tab-pane fade show" id="custom-tabs-four-map" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="form-row">
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
@@ -879,10 +879,10 @@
                                                     </div>
                                                 </div>
                                                 <!-- Thông tin đánh giá -->
-                                                <div class="tab-pane fade  show" id="custom-tabs-four-danhgia" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                <div class="tab-pane fade show" id="custom-tabs-four-danhgia" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="row">
                                                         @{
-                                                            <table class="table table-condensed table-bordered">
+                                                            <table class="table-condensed table-bordered table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th width="5%" class="text-center">STT</th>

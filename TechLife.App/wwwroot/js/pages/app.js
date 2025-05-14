@@ -119,3 +119,18 @@ function modelPopup(reff) {
         }
     });
 }
+
+function showLoading() {
+    $('.wait').remove();
+    const wait = document.createElement('div');
+    wait.classList.add('wait');
+    const loader = document.createElement('div');
+    loader.classList.add('loader');
+    wait.appendChild(loader);
+    const body = document.querySelector('body');
+    body.appendChild(wait);
+}
+
+function hideLoading() {
+    $('.wait').remove();
+}
