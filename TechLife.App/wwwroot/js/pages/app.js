@@ -134,3 +134,16 @@ function showLoading() {
 function hideLoading() {
     $('.wait').remove();
 }
+
+function showNotification({ isSuccessed = false, message = "" }) {
+    toastr.options = {
+        "positionClass": "toast-top-right",
+        "timeOut": "3000"
+    }
+    if (isSuccessed) {
+        toastr.success(message);
+
+    } else {
+        toastr.error(message);
+    }
+}

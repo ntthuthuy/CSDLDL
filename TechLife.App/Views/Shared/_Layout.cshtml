@@ -56,15 +56,14 @@
         @await Component.InvokeAsync("MenuLeft")
 
         @RenderBody()
-        @await Html.PartialAsync("~/Views/Shared/_Message.cshtml")
-
+        
         @await Html.PartialAsync("~/Views/Shared/_ConfirmModal.cshtml")
 
         <partial name="_Modal" />
         <!-- Main Footer -->
         <footer class="main-footer">
             <strong>Copyright &copy; @DateTime.Now.Year <a href="#">Sở Du Lịch tỉnh Thừa Thiên Huế</a></strong>
-            <div class="float-right d-none d-sm-inline-block">
+            <div class="d-none d-sm-inline-block float-right">
                 Đăng nhập lúc: @DateTime.Now.ToString("hh:mm dd/MM/yyyy")
             </div>
         </footer>
@@ -135,6 +134,7 @@
     <script src="~/js/HueCIT/jquery.validate.unobtrusive.min.js"></script>
 
     @RenderSection("scripts", required: false)
-
+    <!-- Đưa xuống cuối đề chờ load jquery và js -->
+    @await Html.PartialAsync("~/Views/Shared/_Message.cshtml")
 </body>
 </html>

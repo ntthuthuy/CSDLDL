@@ -43,11 +43,18 @@
                                             <span asp-validation-for="LastName" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Tên</label>
                                             <input asp-for="FirstName" class="form-control" />
                                             <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Căn cước công dân</label>
+                                            <input asp-for="CanCuocCongDan" class="form-control" />
+                                            <span asp-validation-for="CanCuocCongDan" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -77,7 +84,7 @@
                                 </div>
                                 <hr />
                                 <div class="form-row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Tài khoản</label>
                                             <input asp-for="UserName" class="form-control" autocomplete="new-user" />

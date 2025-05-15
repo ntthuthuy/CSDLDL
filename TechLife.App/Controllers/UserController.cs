@@ -491,17 +491,19 @@ namespace TechLife.App.Controllers
                 LastName = user.LastName,
                 Dob = user.Dob,
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                CanCuocCongDan = user.CanCuocCongDan
             };
 
             return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Consumes("multipart/form-data")]
+        //[ValidateAntiForgeryToken]
+        //[Consumes("multipart/form-data")]
         public async Task<IActionResult> Edit(UserUpdateRequest request)
         {
+            if (!ModelState.IsValid) return View();
             var result = await _userService.Update(Guid.Parse(request.Id), request);
 
             TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });

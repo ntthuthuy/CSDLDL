@@ -24,6 +24,7 @@ using TechLife.Model.DuLieuDuLich;
 using TechLife.Model.GiayPhepChungChi;
 using TechLife.Model.HoSoVanBan;
 using TechLife.Model.HuongDanVien;
+using TechLife.Model.LichSuCapNhat;
 using TechLife.Model.NhaCungCap;
 using TechLife.Model.TienNghi;
 using TechLife.Service;
@@ -50,6 +51,7 @@ namespace TechLife.App.Controllers
         private readonly ILoaiGiuongService _loaiGiuongService;
         private readonly ILoaiHinhService _loaiHinhService;
         private readonly IDanhMucService _danhMucService;
+        private readonly ILichSuCapNhatService _lichSuCapNhatService;
         private readonly IDonViTinhService _donViTinhService;
         private readonly ILogger<HoSoController> _logger;
 
@@ -100,6 +102,7 @@ namespace TechLife.App.Controllers
             , ILoaiGiuongService loaiGiuongService
             , ILoaiHinhService loaiHinhService
             , IDanhMucService danhMucService
+            , ILichSuCapNhatService lichSuCapNhatService
             , ILogger<HoSoController> logger
 
             )
@@ -135,6 +138,7 @@ namespace TechLife.App.Controllers
             _loaiGiuongService = loaiGiuongService;
             _loaiHinhService = loaiHinhService;
             _danhMucService = danhMucService;
+            _lichSuCapNhatService = lichSuCapNhatService;
             _donViTinhService = donViTinhService;
             _config = configuration;
             _logger = logger;
@@ -777,9 +781,32 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Sửa cơ sở lưu trú";
                 ViewData["Title_parent"] = "Hồ sơ";
 
-                var csltModel = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
-                request.DuLieuDuLich.ToaDoX = csltModel.ToaDoX;
-                request.DuLieuDuLich.ToaDoY = csltModel.ToaDoY;
+                var oldValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                request.DuLieuDuLich.ToaDoX = oldValue.ToaDoX;
+                request.DuLieuDuLich.ToaDoY = oldValue.ToaDoY;
+
+                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
+
+                var amenities = tienNghi.Select(x => new AmenityVm()
+                {
+                    Id = x.Id,
+                    Name = x.Ten,
+                    IsSelect = oldValue.Amenities.Select(v => v.Id).Contains(x.Id)
+                }).ToList();
+
+                if (oldValue != null)
+                {
+                    oldValue.DSLoaiPhong = await ListLoaiPhongHoSo(oldValue.Id, oldValue.DSLoaiPhong);
+                    oldValue.DSDichVu = await ListDichVuHoSo(oldValue.Id, oldValue.DSDichVu);
+                    oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
+                    oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
+                    oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSBoPhan);
+                    oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
+                    oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSTienNghi);
+                    oldValue.DSNhaHang = ListNhaHangLuuTru(oldValue.Id, oldValue.DSNhaHang);
+                    oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSVanBan);
+                    oldValue.Amenities = amenities;
+                }
 
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
 
@@ -811,6 +838,41 @@ namespace TechLife.App.Controllers
                 }
 
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
+
+                if (result.IsSuccessed)
+                {
+                    var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                    amenities = tienNghi.Select(x => new AmenityVm()
+                    {
+                        Id = x.Id,
+                        Name = x.Ten,
+                        IsSelect = newValue.Amenities.Select(v => v.Id).Contains(x.Id)
+                    }).ToList();
+                    if (newValue != null)
+                    {
+                        newValue.DSLoaiPhong = await ListLoaiPhongHoSo(newValue.Id, newValue.DSLoaiPhong);
+                        newValue.DSDichVu = await ListDichVuHoSo(newValue.Id, newValue.DSDichVu);
+                        newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
+                        newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
+                        newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSBoPhan);
+                        newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
+                        newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSTienNghi);
+                        newValue.DSNhaHang = ListNhaHangLuuTru(newValue.Id, newValue.DSNhaHang);
+                        newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSVanBan);
+                        newValue.Amenities = amenities;
+                    }
+
+                    var history = new LichSuCapNhatCreateRequest
+                    {
+                        HoSoId = newValue.Id,
+                        OldValue = oldValue,
+                        NewValue = newValue,
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                    };
+
+                    await _lichSuCapNhatService.Create(history);
+                }
+
                 if (result.IsSuccessed)
                 {
                     if (request.Images != null)

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TechLife.Data.Entities
 {
@@ -16,5 +14,6 @@ namespace TechLife.Data.Entities
         public bool IsDelete { get; set; }
         public bool IsStatus { get; set; }
         public DateTime Dob { get; set; }
+        public string CanCuocCongDan { get; set; }
     }
 }

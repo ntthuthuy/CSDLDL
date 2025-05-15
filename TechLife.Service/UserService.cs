@@ -167,7 +167,7 @@ namespace TechLife.Service
                 PhoneNumber = request.PhoneNumber,
                 GroupId = request.GroupId,
                 TypeId = request.TypeId,
-
+                CanCuocCongDan = request.CanCuocCongDan?.Trim(),
                 AvataUrl = request.AvataUrl
             };
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -271,7 +271,8 @@ namespace TechLife.Service
                 UserName = user.UserName,
                 Roles = roles,
                 AvataUrl = user.AvataUrl,
-                TypeId = user.TypeId
+                TypeId = user.TypeId,
+                CanCuocCongDan = user.CanCuocCongDan
             };
             return new ApiSuccessResult<UserModel>(userVm);
         }
@@ -396,6 +397,7 @@ namespace TechLife.Service
             user.LastName = request.LastName;
             user.PhoneNumber = request.PhoneNumber;
             user.FullName = request.FirstName + " " + request.LastName;
+            user.CanCuocCongDan = request.CanCuocCongDan?.Trim();
 
             if (!string.IsNullOrEmpty(request.Password))
             {
@@ -419,7 +421,7 @@ namespace TechLife.Service
                 {
                     success = await _userManager.AddPasswordAsync(user, request.Password);
 
-                    if(!success.Succeeded)
+                    if (!success.Succeeded)
                     {
                         return new ApiErrorResult<bool>("Cập nhật không thành công");
                     }

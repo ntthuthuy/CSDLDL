@@ -61,3 +61,12 @@
         transform: rotate(.5turn)
     }
 }
+
+#toast-container > div {
+    opacity: 1;
+}
+
+.toast-top-right {
+    right: 12px;
+    top: 60px;
+}

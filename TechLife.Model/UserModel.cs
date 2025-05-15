@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace TechLife.Model
 {
@@ -44,6 +43,10 @@ namespace TechLife.Model
         public int GroupId { get; set; } = 0;
 
         public IList<string> Roles { get; set; }
+
+        [Display(Name = "Căn cước công dân")]
+        [Required(ErrorMessage = "Vui lòng nhập căn cước công dân")]
+        public string CanCuocCongDan { get; set; }
     }
-  
+
 }

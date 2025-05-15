@@ -34,6 +34,10 @@ namespace TechLife.Model.User
         [Display(Name = "Tài khoản")]
         public string UserName { get; set; }
 
+        [Display(Name = "Căn cước công dân")]
+        [Required(ErrorMessage = "Vui lòng nhập căn cước công dân")]
+        public string CanCuocCongDan { get; set; }
+
         //public int GroupId { get; set; } = 0;
     }
 }

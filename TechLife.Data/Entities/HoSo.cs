@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TechLife.Data.Entities
 {
@@ -36,7 +35,7 @@ namespace TechLife.Data.Entities
         public decimal DienTichMatBang { get; set; }
         public decimal DienTichMatBangXayDung { get; set; }
         public decimal DienTichXayDung { get; set; }
-     
+
         public int SoTang { get; set; }
         public int TongSoPhong { get; set; }
         public int TongSoGiuong { get; set; }
@@ -111,5 +110,8 @@ namespace TechLife.Data.Entities
         public int? DongBoID { get; set; }
         public string GiaThamKhaoTu { get; set; }
         public string GiaThamKhaoDen { get; set; }
+
+        // Lịch sử cập nhật
+        public virtual List<LichSuCapNhat> LichSuCapNhat { get; set; }
     }
 }

@@ -5,7 +5,6 @@ using System;
 using TechLife.Data.Configurations;
 using TechLife.Data.Entities;
 using TechLife.Data.Extensions;
-using TechLife.Model.DuLieuDuLich;
 
 namespace TechLife.Data
 {
@@ -169,6 +168,6 @@ namespace TechLife.Data
         //HueCIT
         public DbSet<LoaiDiaDiemAnUong> LoaiDiaDiemAnUong { get; set; }
         public DbSet<LoaiAmThucDiaDiemAnUong> LoaiAmThucDiaDiemAnUong { get; set; }
-
+        public DbSet<LichSuCapNhat> LichSuCapNhat { get; set; }
     }
 }
