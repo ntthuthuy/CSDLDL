@@ -137,13 +137,15 @@ function hideLoading() {
 
 function showNotification({ isSuccessed = false, message = "" }) {
     toastr.options = {
-        "positionClass": "toast-top-right",
-        "timeOut": "3000"
+        positionClass: "toast-top-right",
+        timeOut: 5000
     }
+
     if (isSuccessed) {
         toastr.success(message);
 
     } else {
         toastr.error(message);
     }
+
 }

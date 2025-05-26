@@ -1561,9 +1561,18 @@ namespace TechLife.App.Controllers
             {
                 ModelState.Remove("DuLieuDuLich.Id");
 
-                var csltModel = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
-                request.DuLieuDuLich.ToaDoX = csltModel.ToaDoX;
-                request.DuLieuDuLich.ToaDoY = csltModel.ToaDoY;
+                var oldValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                request.DuLieuDuLich.ToaDoX = oldValue.ToaDoX;
+                request.DuLieuDuLich.ToaDoY = oldValue.ToaDoY;
+
+                if (oldValue != null)
+                {
+                    oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
+                    oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
+                    oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, oldValue.Id, oldValue.DSBoPhan);
+                    oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
+                    oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, oldValue.Id, oldValue.DSVanBan);
+                }
 
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
 
@@ -1607,6 +1616,26 @@ namespace TechLife.App.Controllers
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
+                }
+                else
+                {
+                    var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+
+                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
+                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
+                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, newValue.Id, newValue.DSBoPhan);
+                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
+                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, newValue.Id, newValue.DSVanBan);
+
+                    var history = new LichSuCapNhatCreateRequest
+                    {
+                        HoSoId = newValue.Id,
+                        OldValue = oldValue,
+                        NewValue = newValue,
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                    };
+
+                    await _lichSuCapNhatService.Create(history);
                 }
 
                 if (request.Images != null && request.Images != null)
@@ -2290,11 +2319,20 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Sửa thông tin điểm du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
 
-                var csltModel = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
-                request.DuLieuDuLich.ToaDoX = csltModel.ToaDoX;
-                request.DuLieuDuLich.ToaDoY = csltModel.ToaDoY;
+                var oldValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                request.DuLieuDuLich.ToaDoX = oldValue.ToaDoX;
+                request.DuLieuDuLich.ToaDoY = oldValue.ToaDoY;
 
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
+
+                oldValue.DSVeDichVu = ListVeDichVuHoSo(oldValue.Id, oldValue.DSVeDichVu);
+                oldValue.DSThucDon = ListThucDonHoSo(oldValue.Id, oldValue.DSThucDon);
+                oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
+                oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
+                oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSBoPhan);
+                oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
+                oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSVanBan);
+                oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSTienNghi);
 
                 if (request.DuLieuDuLich.DSVanBan != null)
                 {
@@ -2335,6 +2373,28 @@ namespace TechLife.App.Controllers
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
+                }
+                else
+                {
+                    var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                    newValue.DSVeDichVu = ListVeDichVuHoSo(newValue.Id, newValue.DSVeDichVu);
+                    newValue.DSThucDon = ListThucDonHoSo(newValue.Id, newValue.DSThucDon);
+                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
+                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
+                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSBoPhan);
+                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
+                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSVanBan);
+                    newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSTienNghi);
+
+                    var history = new LichSuCapNhatCreateRequest
+                    {
+                        HoSoId = newValue.Id,
+                        OldValue = oldValue,
+                        NewValue = newValue,
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                    };
+
+                    await _lichSuCapNhatService.Create(history);
                 }
 
                 if (request.Images != null && request.Images != null)
@@ -3051,6 +3111,17 @@ namespace TechLife.App.Controllers
             {
                 ViewData["Title"] = "Sửa thông tin khu du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
+
+                var oldValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                oldValue.DSVeDichVu = ListVeDichVuHoSo(oldValue.Id, oldValue.DSVeDichVu);
+                oldValue.DSThucDon = ListThucDonHoSo(oldValue.Id, oldValue.DSThucDon);
+                oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
+                oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
+                oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSBoPhan);
+                oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
+                oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSVanBan);
+                oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSTienNghi);
+
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
 
                 if (request.DuLieuDuLich.DSVanBan != null)
@@ -3092,6 +3163,28 @@ namespace TechLife.App.Controllers
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
+                }
+                else
+                {
+                    var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
+                    newValue.DSVeDichVu = ListVeDichVuHoSo(newValue.Id, newValue.DSVeDichVu);
+                    newValue.DSThucDon = ListThucDonHoSo(newValue.Id, newValue.DSThucDon);
+                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
+                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
+                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSBoPhan);
+                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
+                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSVanBan);
+                    newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSTienNghi);
+
+                    var history = new LichSuCapNhatCreateRequest
+                    {
+                        HoSoId = newValue.Id,
+                        OldValue = oldValue,
+                        NewValue = newValue,
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                    };
+
+                    await _lichSuCapNhatService.Create(history);
                 }
 
                 if (request.Images != null && request.Images != null)
@@ -4188,7 +4281,7 @@ namespace TechLife.App.Controllers
         {
 
             var model = await _duLieuDuLichService.GetById(Convert.ToInt32(HashUtil.DecodeID(id)));
-
+            ViewBag.LichSuCapNhat = (await _lichSuCapNhatService.GetByHoSoId(Convert.ToInt32(HashUtil.DecodeID(id)))).ResultObj;
             if (model != null)
             {
                 ViewData["Title"] = "Thông tin hồ sơ " + model.Ten;

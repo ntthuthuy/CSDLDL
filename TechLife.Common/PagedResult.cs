@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace TechLife.Common
 {
@@ -50,7 +48,7 @@ namespace TechLife.Common
         public int HoSoId { get; set; }
         public int KetLuanId { get; set; }
         public string Keyword { get; set; }
-       
+
     }
     public class HoSoFromRequets : GetPagingRequest
     {
@@ -97,5 +95,9 @@ namespace TechLife.Common
 
         public List<T> Items { set; get; }
     }
-   
+
+    public class DanhMucDuLieuThongKeFromRequets : PagingRequestBase
+    {
+        public string Search { get; set; }
+    }
 }

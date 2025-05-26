@@ -49,7 +49,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-outline card-primary">
-                        <form asp-action="Suacosoluutru" method="post" enctype="multipart/form-data">
+                        <form id="SuaCoSoLuuTru" asp-action="Suacosoluutru" method="post" enctype="multipart/form-data">
                             <input type="hidden" asp-for="DuLieuDuLich.Id" />
                             <input type="hidden" asp-for="DuLieuDuLich.LinhVucKinhDoanhId" value="@Convert.ToInt32(LinhVucKinhDoanh.CoSoLuuTru)" />
                             <div class="card-header">
@@ -1146,6 +1146,10 @@
                 }
             }));
 
+            // $('#SuaCoSoLuuTru').on('submit', function(e) {
+            //     showLoading();
+            // })
+
             $(".add-rows").off("click").on("click", function () {
                 var numCurent = parseInt($("#rownum").val()) + 1;
 
@@ -1285,7 +1289,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#toast-container").fadeOut(2500);
+            // $("#toast-container").fadeOut(2500);
             $('#readMessage').on('click', function () {
                 $('.unRead').empty();
             })

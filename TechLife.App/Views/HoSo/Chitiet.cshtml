@@ -4,6 +4,8 @@
 @{
     ViewData["Title"] = ViewData["Title"];
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var lichSuCapNhat = (List<TechLife.Model.LichSuCapNhat.LichSuCapNhatModel>)ViewBag.LichSuCapNhat;
+    int stt = 0;
 }
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -11,7 +13,6 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -241,7 +242,7 @@
                                                             {
                                                                 <tr>
                                                                     <td class="tcenter">
-                                                                        @(i+1)
+                                                                        @(i + 1)
                                                                     </td>
                                                                     <td>
                                                                         @list[i].TenGoi
@@ -574,9 +575,10 @@
                                             </thead>
                                             <tbody>
                                                 @{
+
                                                     if (Model != null && Model.Tours != null && Model.Tours.Count > 0)
                                                     {
-                                                        int stt = 0;
+                                                        stt = 0;
                                                         foreach (var d in Model.Tours)
                                                         {
                                                             stt++;
@@ -614,13 +616,23 @@
                                     <table class="table-bordered table">
                                         <thead>
                                             <tr>
-                                                <th width="5%" class="text-center">STT</th>
-                                                <th width="15%" class="text-center">Mã</th>
-                                                <th>Tên</th>
+                                                <th width="12%" class="text-center">STT</th>
+                                                <th width="20%" class="text-center">Ngày cập nhật</th>
+                                                <th>Người cập nhật</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+                                            @{
+                                                stt = 0;
+                                                foreach (var item in lichSuCapNhat)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center">@(++stt)</td>
+                                                        <td class="text-center">@Functions.GetTimeToVn((DateTime)item.UpdatedAt)</td>
+                                                        <td class="text-left">@item.UpdateByUser.FullName</td>
+                                                    </tr>
+                                                }
+                                            }
                                         </tbody>
                                     </table>
                                 </div>

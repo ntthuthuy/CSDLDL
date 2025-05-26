@@ -146,6 +146,7 @@ namespace TechLife.App
             services.AddTransient<IDonViTinhService, DonViTinhService>();
             services.AddTransient<IDanhMucService, DanhMucService>();
             services.AddTransient<ILichSuCapNhatService, LichSuCapNhatService>();
+            services.AddTransient<IDanhMucDuLieuThongKeService, DanhMucDuLieuThongKeService>();
 
             services.AddTransient<IFileUploadService, FileUploadService>();
             services.AddTransient<IFileUploaderDongBoService, FileUploaderDongBoService>();

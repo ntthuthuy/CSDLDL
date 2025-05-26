@@ -14,7 +14,9 @@ namespace TechLife.Data.Entities
 
         public DateTime? UpdatedAt { get; set; }
 
-        public string UpdateByUserId { get; set; }
+        public Guid UpdateByUserId { get; set; }
+
+        public bool IsDelete { get; set; }
 
         public virtual HoSo HoSo { get; set; }
     }
