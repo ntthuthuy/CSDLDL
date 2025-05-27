@@ -10,5 +10,7 @@
         public bool IsParent { get; set; }
         public bool IsDelete { get; set; }
         public int Level { get; set; }
+        public int Order { get; set; }
+        public string Parents { get; set; }
     }
 }

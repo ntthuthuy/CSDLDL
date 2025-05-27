@@ -38,6 +38,9 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Danh mục";
                 ViewData["Title_parent"] = "Dữ liệu thống kê";
 
+                requets.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
+                requets.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+
                 var data = await _danhMucDuLieuThongKeService.GetPaging(requets);
 
                 return View(data);

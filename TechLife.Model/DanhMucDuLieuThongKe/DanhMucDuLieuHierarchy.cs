@@ -7,5 +7,6 @@
         public string IdString { get; set; }
         public string Parents { get; set; }
         public int Level { get; set; }
+        public int Order { get; set; }
     }
 }

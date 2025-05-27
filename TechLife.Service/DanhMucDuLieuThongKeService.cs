@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +28,15 @@ namespace TechLife.Service
     {
         private readonly TLDbContext _context;
         private readonly IDbConnectionService _dbConnectionService;
+        private readonly ILogger<DanhMucDuLieuThongKeService> _logger;
 
-        public DanhMucDuLieuThongKeService(TLDbContext context, IDbConnectionService dbConnectionService)
+        public DanhMucDuLieuThongKeService(TLDbContext context
+            , IDbConnectionService dbConnectionService
+            , ILogger<DanhMucDuLieuThongKeService> logger)
         {
             _context = context;
             _dbConnectionService = dbConnectionService;
+            _logger = logger;
         }
 
         public async Task<bool> CheckIsParent(int id)
@@ -43,13 +48,16 @@ namespace TechLife.Service
         {
             int? parentId = !string.IsNullOrEmpty(request.ParentId) ? Convert.ToInt32(HashUtil.DecodeID(request.ParentId)) : null;
 
+            int nextOrder = await _context.DanhMucDuLieuThongKe.Where(x => x.ParentId == parentId).Select(x => x.Order).MaxAsync();
+
             var data = new DanhMucDuLieuThongKe
             {
                 Code = request.Code?.Trim(),
                 Name = request.Name?.Trim(),
                 DVT = request.DVT?.Trim(),
                 ParentId = parentId,
-                IsDelete = false
+                IsDelete = false,
+                Order = ++nextOrder
             };
 
             await _context.DanhMucDuLieuThongKe.AddAsync(data);
@@ -107,24 +115,26 @@ namespace TechLife.Service
 
             string query = @"WITH DanhMuc AS
             (
-	            SELECT Id, Name = COALESCE(Code + '. ', '') + Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0') 
+	            SELECT Id, Name = COALESCE(Code + '. ', '') + Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0'), [Order]
 	            FROM DanhMucDuLieuThongKe
 	            WHERE IsDelete = 0
             ),
-            DanhMucRecursive(Id, Name, IdString, Parents, Level) AS
+            DanhMucRecursive(Id, Name, IdString, Parents, Level, [Order]) AS
             (
-	            SELECT Id, Name, IdString, CAST(IdString AS VARCHAR(1000)), 0 AS Level
+	            SELECT Id, Name, IdString, CAST(IdString AS VARCHAR(1000)), 0 AS Level, [Order]
 	            FROM DanhMuc
 	            WHERE DanhMuc.ParentId IS NULL
 	            UNION ALL
-	            SELECT b.Id, b.Name, b.IdString, CAST((CONCAT(a.Parents + ',', COALESCE(b.IdString, ','))) AS VARCHAR(1000)), a.level  + 1
+	            SELECT b.Id, b.Name, b.IdString, CAST((CONCAT(a.Parents + ',', COALESCE(b.IdString, ','))) AS VARCHAR(1000)), a.Level + 1, b.[Order]
 	            FROM DanhMucRecursive AS a INNER JOIN DanhMuc AS b ON a.Id = b.ParentId
             )
             SELECT *
             FROM DanhMucRecursive
             ORDER BY DanhMucRecursive.Parents";
 
-            var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuHierarchy>(connection, query);
+            var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuThongKeVm>(connection, query);
+
+            data = SortHierarchy(data);
 
             foreach (var item in data)
             {
@@ -138,54 +148,85 @@ namespace TechLife.Service
                 }
             }
 
-            return data.Select(x => new DanhMucDuLieuThongKeVm
-            {
-                Id = x.Id,
-                Name = x.Name,
-            }).ToList();
+            return data;
         }
 
         public async Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFormRequets requets)
         {
-            using var connection = await _dbConnectionService.GetConnectionAsync();
-
-            string search = string.IsNullOrWhiteSpace(requets.Search) ? "" : requets.Search.Trim();
-
-            var parameters = new Dictionary<string, object>()
+            try
             {
-                { "Search", search }
-            };
+                using var connection = await _dbConnectionService.GetConnectionAsync();
 
-            string query = @"WITH DanhMuc AS
-            (
-	            SELECT Id, Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0') 
-	            FROM csdldl.DanhMucDuLieuThongKe
-	            WHERE IsDelete = 0 AND (@Search = '' OR Name LIKE N'%' + @Search + '%' OR Code LIKE N'%' + @Search + '%')
-            ),
-            DanhMucRecursive(Id, Name, IdString, Parents, Level) AS
-            (
-	            SELECT Id, Name, IdString, CAST(IdString AS VARCHAR(1000)), 0 AS Level
-	            FROM DanhMuc
-	            WHERE DanhMuc.ParentId IS NULL
-	            UNION ALL
-	            SELECT b.Id, b.Name, b.IdString, CAST((CONCAT(a.Parents + ',', COALESCE(b.IdString, ','))) AS VARCHAR(1000)), a.level  + 1
-	            FROM DanhMucRecursive AS a INNER JOIN DanhMuc AS b ON a.Id = b.ParentId
-            )
-            SELECT dm.*, cte.Level
-            FROM DanhMucRecursive cte INNER JOIN DanhMucDuLieuThongKe dm ON dm.Id = cte.Id
-            ORDER BY cte.Parents";
+                string search = string.IsNullOrWhiteSpace(requets.Search) ? "" : requets.Search.Trim();
 
-            var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuThongKeVm>(connection, query, parameters);
+                var parameters = new Dictionary<string, object>()
+                {
+                    { "Search", search }
+                };
 
-            int totalRow = data.Count;
+                string query = @"
+                WITH DanhMuc AS
+                (
+	                SELECT Id, Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0'), [Order]
+	                FROM csdldl.DanhMucDuLieuThongKe
+	                WHERE IsDelete = 0 AND (@Search = '' OR Name LIKE N'%' + @Search + '%' OR Code LIKE N'%' + @Search + '%')
+                ),
+                DanhMucRecursive(Id, Name, IdString, Parents, Level, [Order]) AS
+                (
+	                SELECT Id, Name, IdString, CAST(IdString AS VARCHAR(1000)), 0 AS Level, [Order]
+	                FROM DanhMuc
+	                WHERE DanhMuc.ParentId IS NULL
+	                UNION ALL
+	                SELECT b.Id, b.Name, b.IdString, CAST((CONCAT(a.Parents + ',', COALESCE(b.IdString, ','))) AS VARCHAR(1000)), a.Level + 1, b.[Order]
+	                FROM DanhMucRecursive AS a INNER JOIN DanhMuc AS b ON a.Id = b.ParentId
+                )
+                SELECT dm.*, cte.Level, cte.Parents
+                FROM DanhMucRecursive cte INNER JOIN DanhMucDuLieuThongKe dm ON dm.Id = cte.Id
+                ORDER BY cte.Parents";
 
-            return new PagedResult<DanhMucDuLieuThongKeVm>
+                var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuThongKeVm>(connection, query, parameters);
+
+                int totalRow = data.Count;
+
+                var result = SortHierarchy(data);
+
+                return new PagedResult<DanhMucDuLieuThongKeVm>
+                {
+                    TotalRecords = totalRow,
+                    Items = result.Skip((requets.PageIndex - 1) * requets.PageSize).Take(requets.PageSize).ToList(),
+                    PageIndex = requets.PageIndex,
+                    PageSize = requets.PageSize,
+                };
+            }
+            catch (Exception ex)
             {
-                TotalRecords = totalRow,
-                Items = data,
-                PageIndex = requets.PageIndex,
-                PageSize = requets.PageSize,
-            };
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+
+        private static List<DanhMucDuLieuThongKeVm> SortHierarchy(List<DanhMucDuLieuThongKeVm> items)
+        {
+            var lookup = items.ToLookup(item =>
+            {
+                var parentIds = item.Parents.Split(',').Select(int.Parse).ToList();
+                return parentIds.Count > 1 ? parentIds[^2] : (int?)null;
+            });
+
+            List<DanhMucDuLieuThongKeVm> result = new();
+
+            void AddChildren(int? parentId, int level)
+            {
+                foreach (var child in lookup[parentId].OrderBy(x => x.Order))
+                {
+                    result.Add(child);
+                    AddChildren(child.Id, level + 1);
+                }
+            }
+
+            AddChildren(null, 0);
+
+            return result;
         }
 
         public async Task<List<int>> ListParent()

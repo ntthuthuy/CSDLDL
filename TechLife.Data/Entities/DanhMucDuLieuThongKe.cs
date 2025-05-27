@@ -8,5 +8,6 @@
         public string DVT { get; set; }
         public int? ParentId { get; set; }
         public bool IsDelete { get; set; }
+        public int Order { get; set; }
     }
 }
