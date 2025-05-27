@@ -1,0 +1,95 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.DanhMucDuLieuThongKe
+@using TechLife.Common.Extension;
+@model PagedResult<DanhMucDuLieuThongKeVm>
+
+@{
+    ViewData["Title"] = ViewData["Title"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-outline card-primary">
+                        <form id="form" method="get" style="width:100%">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                    <a href="#" data-url="/DuLieuThongKe/ThemDanhMucDuLieuThongKe/" class="btn btn-xs btn-success modal-popup">
+                                        <i class="fas fa-plus-circle"></i> Thêm mới
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table-hover table-striped table-bordered table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Tên</th>
+                                                    <th class="text-center" width="10%">Chức năng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.Items != null && Model.Items.Count > 0)
+                                                {
+                                                    foreach (var item in Model.Items)
+                                                    {
+                                                        <tr>
+                                                            <th class="text-left">
+                                                                @for(int i = 0; i < item.Level; i++)
+                                                                {
+                                                                    <span>&nbsp; &nbsp;</span>
+                                                                }
+                                                                @($"{item.Code + (!string.IsNullOrEmpty(item.Code) ? ". " : "")}{item.Name}")
+                                                            </th>
+                                                            <td class="text-center">
+                                                                <a title="Sửa danh mục" href="#" data-url="/DuLieuThongKe/SuaDanhMucDuLieuThongKe/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-warning btn-xs modal-popup"><i class="fas fa-edit"></i> Sửa</a>
+                                                                <a title="Xóa danh mục" data-title="Bạn muốn xóa danh mục @item.Name ?" data-url="/DuLieuThongKe/XoaDanhMucDuLieuThongKe/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (Model.TotalRecords > Model.PageSize)
+                            {
+                                <div class="card-footer">
+                                    @await Component.InvokeAsync("Paging", new { page = Model })
+                                </div>
+                            }
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

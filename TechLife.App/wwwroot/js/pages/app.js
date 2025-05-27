@@ -14,8 +14,15 @@
     //    $('button').attr('disabled', 'disabled');
     //});
     $(".popup").on('click', function (e) {
+        e.preventDefault();
         modelPopup(this);
     });
+
+    $(".modal-popup").on('click', function (e) {
+        e.preventDefault();
+        modelPopup(this);
+    });
+
     var navaCookie = getCookie("nava");
     if (!IsNullOrEmpty(navaCookie)) {
         var IsShow = navaCookie == "true" ? true : false;
@@ -101,10 +108,35 @@ function getUrlVars(url) {
     }
     return myJson;
 }
+
+function defaultConfig(parent) {
+
+    parent?.querySelectorAll('.datepicker').forEach(function (e) {
+        $(e).datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+    })
+    parent?.querySelectorAll('.select2').forEach(function (e) {
+        $(e).select2({
+            width: "100%"
+        });
+    })
+    parent?.querySelectorAll('.modal-popup').forEach(function (e) {
+        $(e).click(function (event) {
+            event.preventDefault();
+            modelPopup(this);
+        })
+    })
+}
+
 function modelPopup(reff) {
     var url = $(reff).data('url');
     var input = $('#pageCurent').val();
     var data = getUrlVars(decodeURIComponent(input));
+    var type = $(reff).data('type');
+    $('#modal .modal-dialog').removeClass('modal-sm modal-lg modal-xl');
+    $('#modal .modal-dialog').html('');
 
     $.ajax({
         url: url,
@@ -114,6 +146,8 @@ function modelPopup(reff) {
             if (data != null) {
                 $('#modal .modal-dialog').html(data);
                 $('#modal').modal("show");
+                if (type)
+                    $('#modal .modal-dialog').addClass(type)
             }
             hideLoading();
         }
@@ -148,4 +182,31 @@ function showNotification({ isSuccessed = false, message = "" }) {
         toastr.error(message);
     }
 
+}
+
+function dropModal() {
+    $('#modal').modal('hide');
+    $('#modal .modal-dialog').removeClass('modal-sm modal-lg modal-xl');
+    $('#modal .modal-dialog').html('');
+}
+
+function loadContent(url, element, callback = null) {
+    showLoading();
+    if (!isNullOrWhiteSpace(url)) {
+        $.ajax({
+            url: decodeURIComponent(url),
+            type: "GET",
+            success: function (data) {
+                hideLoading();
+                if (!isNullOrWhiteSpace(data)) {
+
+                    $(element).html(data);
+                    defaultConfig(element);
+                }
+                if (callback) {
+                    callback();
+                }
+            }
+        });
+    }
 }

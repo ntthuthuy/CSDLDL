@@ -12,21 +12,31 @@ namespace TechLife.Service
 {
     public interface IDanhMucDuLieuThongKeService
     {
-        Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFromRequets requets);
+        Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFormRequets requets);
         Task<Result<bool>> Create(DanhMucDuLieuThongKeCreateRequest request);
         Task<Result<bool>> Update(DanhMucDuLieuThongKeUpdateRequest request);
         Task<Result<bool>> Delete(int id);
         Task<List<DanhMucDuLieuThongKeVm>> GetAll();
+        Task<List<DanhMucDuLieuThongKeVm>> GetHierarchy();
         Task<DanhMucDuLieuThongKeVm> GetById(int id);
+        Task<bool> CheckIsParent(int id);
+        Task<List<int>> ListParent();
     }
 
     public class DanhMucDuLieuThongKeService : IDanhMucDuLieuThongKeService
     {
         private readonly TLDbContext _context;
+        private readonly IDbConnectionService _dbConnectionService;
 
-        public DanhMucDuLieuThongKeService(TLDbContext context)
+        public DanhMucDuLieuThongKeService(TLDbContext context, IDbConnectionService dbConnectionService)
         {
             _context = context;
+            _dbConnectionService = dbConnectionService;
+        }
+
+        public async Task<bool> CheckIsParent(int id)
+        {
+            return await _context.DanhMucDuLieuThongKe.AnyAsync(x => x.ParentId == id);
         }
 
         public async Task<Result<bool>> Create(DanhMucDuLieuThongKeCreateRequest request)
@@ -91,30 +101,83 @@ namespace TechLife.Service
             };
         }
 
-        public async Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFromRequets requets)
+        public async Task<List<DanhMucDuLieuThongKeVm>> GetHierarchy()
         {
-            var query = _context.DanhMucDuLieuThongKe.Where(x => !x.IsDelete);
+            using var connection = await _dbConnectionService.GetConnectionAsync();
 
-            if (!string.IsNullOrWhiteSpace(requets.Search))
+            string query = @"WITH DanhMuc AS
+            (
+	            SELECT Id, Name = COALESCE(Code + '. ', '') + Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0') 
+	            FROM DanhMucDuLieuThongKe
+	            WHERE IsDelete = 0
+            ),
+            DanhMucRecursive(Id, Name, IdString, Parents, Level) AS
+            (
+	            SELECT Id, Name, IdString, CAST(IdString AS VARCHAR(1000)), 0 AS Level
+	            FROM DanhMuc
+	            WHERE DanhMuc.ParentId IS NULL
+	            UNION ALL
+	            SELECT b.Id, b.Name, b.IdString, CAST((CONCAT(a.Parents + ',', COALESCE(b.IdString, ','))) AS VARCHAR(1000)), a.level  + 1
+	            FROM DanhMucRecursive AS a INNER JOIN DanhMuc AS b ON a.Id = b.ParentId
+            )
+            SELECT *
+            FROM DanhMucRecursive
+            ORDER BY DanhMucRecursive.Parents";
+
+            var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuHierarchy>(connection, query);
+
+            foreach (var item in data)
             {
-                requets.Search = requets.Search.Trim();
+                if (item.Level > 0)
+                {
+                    string space = "";
 
-                query = query.Where(x => requets.Search.Contains(x.Name, StringComparison.OrdinalIgnoreCase) || requets.Search.Contains(x.Code, StringComparison.OrdinalIgnoreCase));
+                    for (int i = 0; i < item.Level; i++) space += "- ";
+
+                    item.Name = space + item.Name;
+                }
             }
 
-            int totalRow = await query.CountAsync();
-
-            var data = await query
-            .Skip((requets.PageIndex - 1) * requets.PageSize)
-            .Take(requets.PageSize)
-            .Select(x => new DanhMucDuLieuThongKeVm
+            return data.Select(x => new DanhMucDuLieuThongKeVm
             {
                 Id = x.Id,
-                Code = x.Code,
                 Name = x.Name,
-                DVT = x.DVT,
-                ParentId = x.ParentId,
-            }).ToListAsync();
+            }).ToList();
+        }
+
+        public async Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFormRequets requets)
+        {
+            using var connection = await _dbConnectionService.GetConnectionAsync();
+
+            string search = string.IsNullOrWhiteSpace(requets.Search) ? "" : requets.Search.Trim();
+
+            var parameters = new Dictionary<string, object>()
+            {
+                { "Search", search }
+            };
+
+            string query = @"WITH DanhMuc AS
+            (
+	            SELECT Id, Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0') 
+	            FROM csdldl.DanhMucDuLieuThongKe
+	            WHERE IsDelete = 0 AND (@Search = '' OR Name LIKE N'%' + @Search + '%' OR Code LIKE N'%' + @Search + '%')
+            ),
+            DanhMucRecursive(Id, Name, IdString, Parents, Level) AS
+            (
+	            SELECT Id, Name, IdString, CAST(IdString AS VARCHAR(1000)), 0 AS Level
+	            FROM DanhMuc
+	            WHERE DanhMuc.ParentId IS NULL
+	            UNION ALL
+	            SELECT b.Id, b.Name, b.IdString, CAST((CONCAT(a.Parents + ',', COALESCE(b.IdString, ','))) AS VARCHAR(1000)), a.level  + 1
+	            FROM DanhMucRecursive AS a INNER JOIN DanhMuc AS b ON a.Id = b.ParentId
+            )
+            SELECT dm.*, cte.Level
+            FROM DanhMucRecursive cte INNER JOIN DanhMucDuLieuThongKe dm ON dm.Id = cte.Id
+            ORDER BY cte.Parents";
+
+            var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuThongKeVm>(connection, query, parameters);
+
+            int totalRow = data.Count;
 
             return new PagedResult<DanhMucDuLieuThongKeVm>
             {
@@ -123,6 +186,12 @@ namespace TechLife.Service
                 PageIndex = requets.PageIndex,
                 PageSize = requets.PageSize,
             };
+        }
+
+        public async Task<List<int>> ListParent()
+        {
+            var data = await _context.DanhMucDuLieuThongKe.Where(x => !x.IsDelete && x.ParentId != null).Select(x => (int)x.ParentId).ToListAsync();
+            return data.Distinct().ToList();
         }
 
         public async Task<Result<bool>> Update(DanhMucDuLieuThongKeUpdateRequest request)

@@ -96,7 +96,12 @@ namespace TechLife.Common
         public List<T> Items { set; get; }
     }
 
-    public class DanhMucDuLieuThongKeFromRequets : PagingRequestBase
+    public class DanhMucDuLieuThongKeFormRequets : PagingRequestBase
+    {
+        public string Search { get; set; }
+    }
+
+    public class HoatDongKinhDoanhFormRequest : PagingRequestBase
     {
         public string Search { get; set; }
     }

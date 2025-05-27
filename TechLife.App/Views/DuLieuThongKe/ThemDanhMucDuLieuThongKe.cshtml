@@ -1,0 +1,80 @@
+﻿@model TechLife.Model.DanhMucDuLieuThongKe.DanhMucDuLieuThongKeCreateRequest
+
+<form id="modal-form">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title text-blue">
+                <strong>Thêm mới</strong>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Code" class="control-label"></label>
+                        <input asp-for="Code" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label> <span class="text-danger"> *</span>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <label class="control-label">Thuộc danh mục gốc</label>
+                    <select class="form-control select2" asp-for="ParentId" asp-items="ViewBag.Options">
+                        <option value="">-Gốc-</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer float-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
+                Hủy
+            </button>
+            <button type="submit" class="btn btn-primary" id="btn-submit">Xác nhận</button>
+        </div>
+    </div>
+</form>
+<script src="@(Context.Request.PathBase)/plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="@(Context.Request.PathBase)/plugins/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    defaultConfig(document.querySelector('#modal-form'));
+
+    $('#modal-form').on('submit', function(e) {
+        e.preventDefault();
+        console.log($(this).valid())
+        if(!$(this).valid()) {
+            showNotification({isSuccessed: false, message: "Vui lòng nhập đầy đủ thông tin"})
+            return;
+        }else {
+            let formData = new FormData(this);
+            showLoading();
+            $.ajax({
+                url: '/DuLieuThongKe/ThemDanhMucDuLieuThongKe',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    if (data.isSuccessed) {
+                        dropModal();
+                        window.location.reload();
+                    }else {
+                        showNotification(data);
+                    }
+                },
+                error: function(xhr) {
+                    hideLoading();
+                    var err = eval("(" + xhr.responseText + ")");
+                    showNotification({ isSuccessed: false, message: err });
+                }
+            })
+        }
+    })
+</script>
