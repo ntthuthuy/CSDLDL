@@ -13,5 +13,7 @@
         public int? ParentId { get; set; }
         public bool IsParent { get; set; }
         public bool IsDelete { get; set; }
+        public int Thang { get; set; }
+        public int Nam { get; set; }
     }
 }

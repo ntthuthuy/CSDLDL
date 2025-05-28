@@ -172,7 +172,7 @@ function hideLoading() {
 function showNotification({ isSuccessed = false, message = "" }) {
     toastr.options = {
         positionClass: "toast-top-right",
-        timeOut: 5000
+        timeOut: 3000
     }
 
     if (isSuccessed) {
@@ -208,5 +208,44 @@ function loadContent(url, element, callback = null) {
                 }
             }
         });
+    }
+}
+
+function isNullOrWhiteSpace(str) {
+    return str === undefined
+        || str === null
+        || typeof str !== 'string'
+        || str.match(/^\s*$/) !== null;
+}
+
+function submitData(postUrl, data, callback = null) {
+    showLoading();
+    $.ajax({
+        url: postUrl,
+        type: "POST",
+        data: data,
+        success: function (data) {
+            hideLoading();
+            showNotification(data);
+            if (callback) {
+                callback();
+            }
+        }
+    });
+}
+
+function debounce(fn, ms) {
+    let timer;
+
+    return function () {
+        // Nhận các đối số
+        const args = arguments;
+        const context = this;
+
+        if (timer) clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            fn.apply(context, args);
+        }, ms)
     }
 }

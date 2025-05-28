@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,22 @@ namespace TechLife.Service
         Task<Result<bool>> Delete(int id);
         Task<List<HoatDongKinhDoanhVm>> GetAll();
         Task<HoatDongKinhDoanhVm> GetById(int id);
+        Task<Result<bool>> Import(List<ImporFileVm> items, int month);
     }
 
     public class HoatDongKinhDoanhService : IHoatDongKinhDoanhService
     {
         private readonly TLDbContext _context;
+        private readonly ILogger<HoatDongKinhDoanhService> _logger;
+        private readonly IDanhMucDuLieuThongKeService _danhMucService;
 
-        public HoatDongKinhDoanhService(TLDbContext context)
+        public HoatDongKinhDoanhService(TLDbContext context
+            , ILogger<HoatDongKinhDoanhService> logger
+            , IDanhMucDuLieuThongKeService danhMucService)
         {
             _context = context;
+            _logger = logger;
+            _danhMucService = danhMucService;
         }
 
         public async Task<Result<bool>> Create(HoatDongKinhDoanhCreateRequest request)
@@ -79,7 +87,9 @@ namespace TechLife.Service
                 ChinhThucThangTruoc = x.ChinhThucThangTruoc,
                 UocThangHienTai = x.UocThangHienTai,
                 DuTinhUocThangSau = x.DuTinhUocThangSau,
-                LuyKeTuDauNam = x.LuyKeTuDauNam
+                LuyKeTuDauNam = x.LuyKeTuDauNam,
+                Thang = x.Thang,
+                Nam = x.Nam
             }).ToList();
         }
 
@@ -105,7 +115,7 @@ namespace TechLife.Service
 
         public async Task<PagedResult<HoatDongKinhDoanhVm>> GetPaging(HoatDongKinhDoanhFormRequest request)
         {
-            var query = _context.HoatDongKinhDoanh.Where(x => !x.IsDelete);
+            var query = _context.HoatDongKinhDoanh.Where(x => !x.IsDelete && x.Thang == request.Thang);
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
@@ -129,7 +139,9 @@ namespace TechLife.Service
                     ChinhThucThangTruoc = x.ChinhThucThangTruoc,
                     UocThangHienTai = x.UocThangHienTai,
                     DuTinhUocThangSau = x.DuTinhUocThangSau,
-                    LuyKeTuDauNam = x.LuyKeTuDauNam
+                    LuyKeTuDauNam = x.LuyKeTuDauNam,
+                    Thang = x.Thang,
+                    Nam = x.Nam
                 }).ToListAsync();
 
             return new PagedResult<HoatDongKinhDoanhVm>
@@ -139,6 +151,74 @@ namespace TechLife.Service
                 PageIndex = request.PageIndex,
                 PageSize = request.PageSize
             };
+        }
+
+        public async Task<Result<bool>> Import(List<ImporFileVm> items, int month)
+        {
+            try
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                var hierarchy = await _danhMucService.GetHierarchy();
+
+                if (hierarchy.Count != items.Count) return new Result<bool>() { IsSuccessed = false, Message = "Import thất bại" };
+
+                var data = new List<HoatDongKinhDoanh>();
+
+                int i = 0;
+
+                //string dateString = $"{DateTime.Now.Date}/{month}/{DateTime.Now.Year}";
+
+                foreach (var item in items)
+                {
+                    data.Add(new HoatDongKinhDoanh
+                    {
+                        DVT = item?.DVT,
+                        ChinhThucThangTruoc = decimal.Parse(item.ChinhThucThangTruoc),
+                        UocThangHienTai = decimal.Parse(item.UocThangHienTai),
+                        LuyKeTuDauNam = decimal.Parse(item.LuyKeTuDauNam),
+                        DuTinhUocThangSau = decimal.Parse(item.DuTinhUocThangSau),
+                        DanhMucId = hierarchy[i].Id,
+                        Thang = month,
+                        Nam = DateTime.Now.Year,
+                        IsDelete = false
+                    });
+
+                    i++;
+                }
+
+                await _context.HoatDongKinhDoanh.AddRangeAsync(data);
+
+                await _context.SaveChangesAsync();
+
+                i = 0;
+                foreach (var item in hierarchy)
+                {
+                    var parentIds = item.Parents.Split(',').Select(int.Parse).ToList();
+                    int parentId = parentIds.Count > 1 ? parentIds[^2] : 0;
+
+                    if (parentId != 0)
+                    {
+                        int d = data.FirstOrDefault(x => x.DanhMucId == parentId).Id;
+
+                        data[i].ParentId = d;
+
+                        i++;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new Result<bool>() { IsSuccessed = true, Message = "Import thành công" };
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return new Result<bool>() { IsSuccessed = false, Message = "Import thất bại" };
+            }
         }
 
         public async Task<Result<bool>> Update(HoatDongKinhDoanhUpdateRequest request)

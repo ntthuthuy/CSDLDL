@@ -38,7 +38,7 @@
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
-            <button type="submit" class="btn btn-primary" id="btn-submit">Xác nhận</button>
+            <button type="submit" class="btn btn-success">Xác nhận</button>
         </div>
     </div>
 </form>
@@ -61,9 +61,13 @@
                 contentType: false,
                 processData: false,
                 success: function(data) {
+                    hideLoading();
                     if (data.isSuccessed) {
                         dropModal();
-                        window.location.reload();
+                        showNotification(data);
+                        let element = document.getElementById('view-content');
+                        let params = window.location.search;
+                        loadContent(`/DuLieuThongKe/DanhMucDuLieuThongKeList/${params}`, element);
                     }else {
                         showNotification(data);
                     }

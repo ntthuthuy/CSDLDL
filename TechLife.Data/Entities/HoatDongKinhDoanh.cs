@@ -12,5 +12,8 @@
         public decimal DuTinhUocThangSau { get; set; }
         public int? ParentId { get; set; }
         public bool IsDelete { get; set; }
+        public int Thang { get; set; }
+        public int Nam { get; set; }
+        public int DanhMucId { get; set; }
     }
 }

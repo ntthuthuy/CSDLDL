@@ -22,6 +22,7 @@ namespace TechLife.Service
         Task<DanhMucDuLieuThongKeVm> GetById(int id);
         Task<bool> CheckIsParent(int id);
         Task<List<int>> ListParent();
+        Task<Result<bool>> UpdateOrder(int id, int value);
     }
 
     public class DanhMucDuLieuThongKeService : IDanhMucDuLieuThongKeService
@@ -46,25 +47,33 @@ namespace TechLife.Service
 
         public async Task<Result<bool>> Create(DanhMucDuLieuThongKeCreateRequest request)
         {
-            int? parentId = !string.IsNullOrEmpty(request.ParentId) ? Convert.ToInt32(HashUtil.DecodeID(request.ParentId)) : null;
-
-            int nextOrder = await _context.DanhMucDuLieuThongKe.Where(x => x.ParentId == parentId).Select(x => x.Order).MaxAsync();
-
-            var data = new DanhMucDuLieuThongKe
+            try
             {
-                Code = request.Code?.Trim(),
-                Name = request.Name?.Trim(),
-                DVT = request.DVT?.Trim(),
-                ParentId = parentId,
-                IsDelete = false,
-                Order = ++nextOrder
-            };
+                int? parentId = !string.IsNullOrEmpty(request.ParentId) ? Convert.ToInt32(HashUtil.DecodeID(request.ParentId)) : null;
 
-            await _context.DanhMucDuLieuThongKe.AddAsync(data);
+                int nextOrder = await _context.DanhMucDuLieuThongKe.Where(x => x.ParentId == parentId).Select(x => (int?)x.Order).MaxAsync() ?? 0;
 
-            await _context.SaveChangesAsync();
+                var data = new DanhMucDuLieuThongKe
+                {
+                    Code = request.Code?.Trim(),
+                    Name = request.Name?.Trim(),
+                    DVT = request.DVT?.Trim(),
+                    ParentId = parentId,
+                    IsDelete = false,
+                    Order = ++nextOrder
+                };
 
-            return new Result<bool>() { IsSuccessed = true, Message = "Thêm danh mục thành công" };
+                await _context.DanhMucDuLieuThongKe.AddAsync(data);
+
+                await _context.SaveChangesAsync();
+
+                return new Result<bool>() { IsSuccessed = true, Message = "Thêm danh mục thành công" };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
 
         public async Task<Result<bool>> Delete(int id)
@@ -113,7 +122,8 @@ namespace TechLife.Service
         {
             using var connection = await _dbConnectionService.GetConnectionAsync();
 
-            string query = @"WITH DanhMuc AS
+            string query = @"
+            WITH DanhMuc AS
             (
 	            SELECT Id, Name = COALESCE(Code + '. ', '') + Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0'), [Order]
 	            FROM DanhMucDuLieuThongKe
@@ -135,18 +145,6 @@ namespace TechLife.Service
             var data = await _dbConnectionService.ExecuteToListAsync<DanhMucDuLieuThongKeVm>(connection, query);
 
             data = SortHierarchy(data);
-
-            foreach (var item in data)
-            {
-                if (item.Level > 0)
-                {
-                    string space = "";
-
-                    for (int i = 0; i < item.Level; i++) space += "- ";
-
-                    item.Name = space + item.Name;
-                }
-            }
 
             return data;
         }
@@ -255,6 +253,21 @@ namespace TechLife.Service
             await _context.SaveChangesAsync();
 
             return new Result<bool>() { IsSuccessed = true, Message = "Cập nhật thành công" };
+        }
+
+        public async Task<Result<bool>> UpdateOrder(int id, int value)
+        {
+            var data = await _context.DanhMucDuLieuThongKe.FindAsync(id);
+
+            if (data == null || data.IsDelete) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
+
+            data.Order = value;
+
+            _context.DanhMucDuLieuThongKe.Update(data);
+
+            await _context.SaveChangesAsync();
+
+            return new Result<bool>() { IsSuccessed = true, Message = "Cập nhật vị trí thành công" };
         }
     }
 }

@@ -1,0 +1,102 @@
+﻿@model TechLife.Model.HoatDongKinhDoanh.ImportRequest
+
+<style>
+    .custom-file-label:after {
+        display: none;
+    }
+</style>
+<form id="modal-form">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title text-blue">
+                <strong>Thêm mới</strong>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Month"></label> <span class="text-danger"> *</span>
+                        <select class="form-control select2" asp-for="Month" asp-items="ViewBag.MonthOptions"></select>
+                        <span asp-validation-for="Month" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div><label class="control-label">File</label> <span class="text-danger">*</span></div>
+                        <label class="w-100 mb-0" for="File">
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" asp-for="File">
+                                    <span class="custom-file-label"></span>
+                                </div>
+                                <div class="input-group-append">
+                                    <span class="btn btn-primary px-3"><i class="fas fa-upload"></i></span>
+                                </div>
+                            </div>
+                        </label>
+                        <div>
+                            <span asp-validation-for="File" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer float-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
+                Hủy
+            </button>
+            <button type="submit" class="btn btn-success">Xác nhận</button>
+        </div>
+    </div>
+</form>
+
+<script src="@(Context.Request.PathBase)/plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="@(Context.Request.PathBase)/plugins/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    defaultConfig(document.querySelector('#modal-form'))
+
+    $('#File').on('change', function(e) {
+       const input = e.target;
+       const file = input.files[0];
+       const fileName = file.name;
+       $(this).closest('.form-group').find('.custom-file-label').html(fileName)
+    });
+
+    $('#modal-form').on('submit', function(e) {
+        e.preventDefault();
+        console.log($(this).valid())
+        if(!$(this).valid()) {
+            showNotification({isSuccessed: false, message: "Vui lòng nhập đầy đủ thông tin"})
+            return;
+        }else {
+            let formData = new FormData(this);
+            showLoading();
+            $.ajax({
+                url: '/DuLieuThongKe/ImportHoatDongKinhDoanh',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data, status, xhr) {
+                    hideLoading();
+                    dropModal();
+                    showNotification(data);
+                    let element = document.getElementById('view-content');
+                    let params = window.location.search;
+                    loadContent(`/DuLieuThongKe/HoatDongKinhDoanhList/${params}`, element);
+                },
+                error: function (xhr, status, error) {
+                    hideLoading();
+                    showNotification({ isSuccessed: false, message: error });
+                },
+                complete: function (xhr, status) {
+                    hideLoading();
+                }
+            })
+        }
+    });
+</script>

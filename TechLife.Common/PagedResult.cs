@@ -104,5 +104,6 @@ namespace TechLife.Common
     public class HoatDongKinhDoanhFormRequest : PagingRequestBase
     {
         public string Search { get; set; }
+        public int Thang { get; set; }
     }
 }

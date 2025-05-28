@@ -1,4 +1,6 @@
-﻿@model TechLife.Model.DanhMucDuLieuThongKe.DanhMucDuLieuThongKeCreateRequest
+﻿@using TechLife.Common;
+@using TechLife.Common.Extension;
+@model TechLife.Model.DanhMucDuLieuThongKe.DanhMucDuLieuThongKeCreateRequest
 
 <form id="modal-form">
     <div class="modal-content">
@@ -37,7 +39,7 @@
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
-            <button type="submit" class="btn btn-primary" id="btn-submit">Xác nhận</button>
+            <button type="submit" class="btn btn-success">Xác nhận</button>
         </div>
     </div>
 </form>
@@ -48,7 +50,6 @@
 
     $('#modal-form').on('submit', function(e) {
         e.preventDefault();
-        console.log($(this).valid())
         if(!$(this).valid()) {
             showNotification({isSuccessed: false, message: "Vui lòng nhập đầy đủ thông tin"})
             return;
@@ -62,9 +63,13 @@
                 contentType: false,
                 processData: false,
                 success: function(data) {
+                    hideLoading();
                     if (data.isSuccessed) {
                         dropModal();
-                        window.location.reload();
+                        showNotification(data);
+                        let element = document.getElementById('view-content');
+                        let params = window.location.search;
+                        loadContent(`/DuLieuThongKe/DanhMucDuLieuThongKeList/${params}`, element);
                     }else {
                         showNotification(data);
                     }
