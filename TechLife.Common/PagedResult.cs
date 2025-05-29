@@ -105,5 +105,6 @@ namespace TechLife.Common
     {
         public string Search { get; set; }
         public int Thang { get; set; }
+        public int Nam { get; set; }
     }
 }

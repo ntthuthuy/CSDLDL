@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TechLife.Common;
 using TechLife.Model.DanhMucDuLieuThongKe;
@@ -69,6 +70,8 @@ namespace TechLife.App.Controllers
 
             foreach (var item in options)
             {
+                item.Name = (item.Code != null ? item.Code + ". " : "") + item.Name;
+
                 if (item.Level > 0)
                 {
                     string space = "";
@@ -126,6 +129,8 @@ namespace TechLife.App.Controllers
 
                 foreach (var item in hierarchy)
                 {
+                    item.Name = (item.Code != null ? item.Code + ". " : "") + item.Name;
+
                     if (item.Level > 0)
                     {
                         string space = "";
@@ -136,13 +141,15 @@ namespace TechLife.App.Controllers
                     }
                 }
 
+                var childrents = hierarchy.Where(x => x.Parents.Split(',').Select(int.Parse).Contains(Id)).ToList();
+
                 var options = hierarchy
                     .Select(x => new SelectListItem
                     {
                         Text = x.Name,
                         Value = HashUtil.EncodeID(x.Id.ToString()),
                         Selected = x.Id == (data.ParentId == null ? 0 : data.ParentId),
-                        Disabled = x.Id == data.Id
+                        Disabled = childrents.Contains(x)
                     });
 
                 ViewBag.Options = options;
@@ -227,13 +234,32 @@ namespace TechLife.App.Controllers
 
                 var months = Enumerable.Range(1, 12).ToList();
 
+                int minYear = await _hoatDongKinhDoanhService.MinYear();
+
                 request.Thang = (request.Thang < 1 || request.Thang > 12) ? DateTime.Now.Month : request.Thang;
+                request.Nam = (request.Nam < minYear - 5 || request.Nam > DateTime.Now.Year) ? DateTime.Now.Year : request.Nam;
 
                 ViewBag.MonthOptions = months.Select(x => new SelectListItem
                 {
                     Text = $"Tháng {x}",
                     Value = x.ToString(),
                     Selected = request.Thang == x
+                });
+
+                ViewBag.Month = request.Thang;
+
+                List<int> years = new();
+
+                for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+                {
+                    years.Add(i);
+                }
+
+                ViewBag.YearOptions = years.Select(x => new SelectListItem
+                {
+                    Text = $"Năm {x}",
+                    Value = x.ToString(),
+                    Selected = request.Nam == x
                 });
 
                 var data = await _hoatDongKinhDoanhService.GetPaging(request);
@@ -248,7 +274,7 @@ namespace TechLife.App.Controllers
         }
 
         [HttpGet]
-        public IActionResult ImportHoatDongKinhDoanh()
+        public async Task<IActionResult> ImportHoatDongKinhDoanh()
         {
             var months = Enumerable.Range(1, 12).ToList();
 
@@ -257,6 +283,22 @@ namespace TechLife.App.Controllers
                 Text = $"Tháng {x}",
                 Value = x.ToString(),
                 Selected = DateTime.Now.Month == x
+            });
+
+            int minYear = await _hoatDongKinhDoanhService.MinYear();
+
+            List<int> years = new();
+
+            for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+            {
+                years.Add(i);
+            }
+
+            ViewBag.YearOptions = years.Select(x => new SelectListItem
+            {
+                Text = $"Năm {x}",
+                Value = x.ToString(),
+                Selected = DateTime.Now.Year == x
             });
 
             return PartialView();
@@ -295,7 +337,6 @@ namespace TechLife.App.Controllers
                 {
                     var item = new ImporFileVm();
 
-                    item.DVT = worksheet.Cell(i, 4).Value.ToString().Trim();
                     item.ChinhThucThangTruoc = decimal.TryParse(worksheet.Cell(i, 5).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 5).Value.ToString().Trim() : "0";
                     item.UocThangHienTai = decimal.TryParse(worksheet.Cell(i, 6).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 6).Value.ToString().Trim() : "0";
                     item.LuyKeTuDauNam = decimal.TryParse(worksheet.Cell(i, 7).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 7).Value.ToString().Trim() : "0";
@@ -304,7 +345,7 @@ namespace TechLife.App.Controllers
                     fileImport.Add(item);
                 }
 
-                var result = await _hoatDongKinhDoanhService.Import(fileImport, request.Month);
+                var result = await _hoatDongKinhDoanhService.Import(fileImport, request.Month, request.Year);
 
                 await Tracking(result.Message);
 
@@ -314,6 +355,71 @@ namespace TechLife.App.Controllers
             {
                 _logger.LogError(ex, "Import file thất bại");
                 return Ok(new Result<string>() { IsSuccessed = false, Message = "Import file thất bại" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SuaHoatDongKinhDoanh(string id)
+        {
+            try
+            {
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var data = await _hoatDongKinhDoanhService.GetById(Id);
+
+                if (data == null) return BadRequest(new Result<string>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" });
+
+                var model = new HoatDongKinhDoanhUpdateRequest
+                {
+                    Id = id,
+                    ChinhThucThangTruoc = Functions.ConvertDecimalVND(data.ChinhThucThangTruoc),
+                    UocThangHienTai = Functions.ConvertDecimalVND(data.UocThangHienTai),
+                    LuyKeTuDauNam = Functions.ConvertDecimalVND(data.LuyKeTuDauNam),
+                    DuTinhUocThangSau = Functions.ConvertDecimalVND(data.DuTinhUocThangSau),
+                    Thang = data.Thang,
+                    Nam = data.Nam
+                };
+
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem cập nhật báo cáo hoạt động kinh doanh");
+                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SuaHoatDongKinhDoanh(HoatDongKinhDoanhUpdateRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return Ok(new Result<string>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin" });
+
+                request.ChinhThucThangTruoc = Regex.Replace(request.ChinhThucThangTruoc.Trim(), "[,.]", "");
+                request.UocThangHienTai = Regex.Replace(request.UocThangHienTai.Trim(), "[,.]", "");
+                request.LuyKeTuDauNam = Regex.Replace(request.LuyKeTuDauNam.Trim(), "[,.]", "");
+                request.DuTinhUocThangSau = Regex.Replace(request.DuTinhUocThangSau.Trim(), "[,.]", "");
+
+                if (!decimal.TryParse(request.ChinhThucThangTruoc, out _)
+                || !decimal.TryParse(request.UocThangHienTai, out _)
+                || !decimal.TryParse(request.LuyKeTuDauNam, out _)
+                || !decimal.TryParse(request.DuTinhUocThangSau, out _))
+                {
+                    return Ok(new Result<string>() { IsSuccessed = false, Message = "Vui lòng kiểm tra lại thông tin" });
+                }
+
+                var result = await _hoatDongKinhDoanhService.Update(request);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi cập nhật hoạt động kinh doanh");
+                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
             }
         }
     }

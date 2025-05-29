@@ -10,16 +10,25 @@ namespace TechLife.Model.HoatDongKinhDoanh
         public string Code { get; set; }
 
         [Display(Name = "Tên")]
-        [Required(ErrorMessage = "Vui lòng nhập tên")]
         public string Name { get; set; }
 
         [Display(Name = "Đơn vị tính")]
         public string DVT { get; set; }
 
+        [Required]
         public string ChinhThucThangTruoc { get; set; }
+
+        [Required]
         public string UocThangHienTai { get; set; }
+
+        [Required]
         public string LuyKeTuDauNam { get; set; }
+
+        [Required]
         public string DuTinhUocThangSau { get; set; }
         public string ParentId { get; set; }
+
+        public int Thang { get; set; }
+        public int Nam { get; set; }
     }
 }

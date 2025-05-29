@@ -12,17 +12,23 @@
         </div>
         <div class="modal-body">
             <div class="form-row">
-                <div class="col-md-4">
+                <div class="col-md-12">
                     <div class="form-group">
                         <label asp-for="Code" class="control-label"></label>
                         <input asp-for="Code" class="form-control" />
                     </div>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="form-group">
                         <label asp-for="Name" class="control-label"></label> <span class="text-danger"> *</span>
-                        <input asp-for="Name" class="form-control" />
+                        <input asp-for="Name" class="form-control" required />
                         <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="DVT" class="control-label"></label>
+                        <input asp-for="DVT" class="form-control" />
                     </div>
                 </div>
                 <div class="col-md-12">
@@ -48,6 +54,7 @@
     defaultConfig(document.querySelector('#modal-form'));
     $('#modal-form').on('submit', function(e) {
         e.preventDefault();
+        $(this).addClass('was-validated')
         if(!$(this).valid()) {
             showNotification({isSuccessed: false, message: "Vui lòng nhập đầy đủ thông tin"})
             return;

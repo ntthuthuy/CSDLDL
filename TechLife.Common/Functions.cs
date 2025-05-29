@@ -27,7 +27,7 @@ namespace TechLife.Common
                     str += ", " + xa;
                 else str += xa;
 
-              
+
             }
             if (!String.IsNullOrEmpty(huyen))
             {
@@ -93,7 +93,7 @@ namespace TechLife.Common
             if (value == 0) return "0";
             var cul = CultureInfo.GetCultureInfo("en-us");
 
-            return Convert.ToDecimal(value).ToString("#,### ", cul.NumberFormat);
+            return Convert.ToDecimal(value).ToString("#,###", cul.NumberFormat);
 
         }
         public static string ConvertTimeVn(int gio, int phut)

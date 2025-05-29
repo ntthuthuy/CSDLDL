@@ -146,7 +146,29 @@ namespace TechLife.Service
 
             data = SortHierarchy(data);
 
-            return data;
+            var categories = await _context.DanhMucDuLieuThongKe.Where(x => !x.IsDelete).ToListAsync();
+
+            var result = new List<DanhMucDuLieuThongKeVm>();
+
+            foreach (var d in data)
+            {
+                var c = categories.FirstOrDefault(x => x.Id == d.Id);
+
+                if (c == null) continue;
+
+                result.Add(new()
+                {
+                    Id = d.Id,
+                    Code = c.Code,
+                    Name = c.Name,
+                    Parents = d.Parents,
+                    Level = d.Level,
+                    Order = d.Order,
+                    DVT = c.DVT
+                });
+            }
+
+            return result;
         }
 
         public async Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFormRequets requets)

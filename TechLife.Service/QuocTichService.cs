@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,35 +47,28 @@ namespace TechLife.Service
             if (result > 0)
             {
                 request.Id = QuocTich.Id;
-                return new ApiSuccessResult<QuocTichModel>(request);
+                return new ApiSuccessResult<QuocTichModel>(request, "Thêm thành công");
             }
             return new ApiErrorResult<QuocTichModel>("Thêm lỗi!");
         }
 
         public async Task<ApiResult<int>> Delete(int id)
         {
-            var QuocTich = await _context.QuocTich.Where(x => x.Id == id).ToListAsync();
-            if (QuocTich == null || QuocTich.Count() <= 0)
-            {
-                return new ApiErrorResult<int>("Không tìm thấy!");
-            }
+            var data = await _context.QuocTich.FindAsync(id);
 
-            var obj = QuocTich.FirstOrDefault();
-            obj.IsDelete = true;
+            if (data == null || data.IsDelete) return new ApiErrorResult<int>("Dữ liệu không tồn tại");
 
-            _context.QuocTich.Update(obj);
+            data.IsDelete = true;
 
-            var result = await _context.SaveChangesAsync();
-            if (result > 0)
-            {
-                return new ApiSuccessResult<int>(id);
-            }
-            return new ApiErrorResult<int>("Xóa lỗi!");
+            _context.QuocTich.Update(data);
+
+            await _context.SaveChangesAsync();
+
+            return new ApiSuccessResult<int>(id, "Xóa thành công");
         }
 
         public async Task<List<QuocTichModel>> GetAll()
         {
-
             var query = from m in _context.QuocTich
                         where m.IsDelete == false
                         select new QuocTichModel
@@ -92,19 +84,15 @@ namespace TechLife.Service
 
         public async Task<QuocTichModel> GetById(int id)
         {
-            var quoctich = await _context.QuocTich.Where(x => x.Id == id).ToListAsync();
-            if (quoctich == null || quoctich.Count() <= 0)
-            {
-                throw new TLException($"Không tìm thấy bảng ghi nào với id = {id}");
-            }
+            var data = await _context.QuocTich.FindAsync(id);
 
-            var obj = quoctich.FirstOrDefault();
+            if (data == null || data.IsDelete) return null;
 
             return new QuocTichModel()
             {
-                MoTa = obj.MoTa,
-                TenQuocTich = obj.TenQuocTich,
-                Id = obj.Id
+                MoTa = data.MoTa,
+                TenQuocTich = data.TenQuocTich,
+                Id = data.Id
             };
 
         }
@@ -143,23 +131,19 @@ namespace TechLife.Service
 
         public async Task<ApiResult<int>> Update(int id, QuocTichModel request)
         {
-            var QuocTich = await _context.QuocTich.Where(x => x.Id == id).ToListAsync();
-            if (QuocTich == null || QuocTich.Count() <= 0)
-            {
-                return new ApiErrorResult<int>("Không tìm thấy!");
-            }
+            var data = await _context.QuocTich.FindAsync(id);
 
-            var model = QuocTich.FirstOrDefault();
+            if (data == null || data.IsDelete) return new ApiErrorResult<int>("Dữ liệu không tồn tại");
 
-            model.MoTa = request.MoTa;
-            model.TenQuocTich = request.TenQuocTich;
+            data.MoTa = request.MoTa;
+            data.TenQuocTich = request.TenQuocTich;
 
-            _context.QuocTich.Update(model);
+            _context.QuocTich.Update(data);
 
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
-                return new ApiSuccessResult<int>(id);
+                return new ApiSuccessResult<int>(id, "Cập nhật thành công");
             }
             return new ApiErrorResult<int>("Sửa lỗi!");
         }

@@ -1,12 +1,10 @@
-﻿@using TechLife.Common;
-@using TechLife.Common.Extension;
-@model TechLife.Model.DanhMucDuLieuThongKe.DanhMucDuLieuThongKeCreateRequest
+﻿@model TechLife.Model.HoatDongKinhDoanh.HoatDongKinhDoanhUpdateRequest
 
-<form id="modal-form">
+<form id="modal-form" class="">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title text-blue">
-                <strong>Thêm mới</strong>
+                <strong>Cập nhật</strong>
             </h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
@@ -16,32 +14,32 @@
             <div class="form-row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label asp-for="Code" class="control-label"></label>
-                        <input asp-for="Code" class="form-control" />
+                        <label asp-for="ChinhThucThangTruoc" class="control-label">Chính thức tháng @(Model.Thang - 1)</label> <span class="text-danger"> *</span>
+                        <input asp-for="ChinhThucThangTruoc" class="form-control input-money" required />
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label asp-for="Name" class="control-label"></label> <span class="text-danger"> *</span>
-                        <input asp-for="Name" class="form-control" required />
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <label asp-for="UocThangHienTai" class="control-label">Ước tháng @Model.Thang</label> <span class="text-danger"> *</span>
+                        <input asp-for="UocThangHienTai" class="form-control input-money" required />
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label asp-for="DVT" class="control-label"></label>
-                        <input asp-for="DVT" class="form-control" />
+                        <label asp-for="LuyKeTuDauNam" class="control-label">Lũy kế từ đầu năm</label>  <span class="text-danger"> *</span>
+                        <input asp-for="LuyKeTuDauNam" class="form-control input-money" required />
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <label class="control-label">Thuộc danh mục gốc</label>
-                    <select class="form-control select2" asp-for="ParentId" asp-items="ViewBag.Options">
-                        <option value="">-Gốc-</option>
-                    </select>
+                    <div class="form-group">
+                        <label asp-for="DuTinhUocThangSau" class="control-label">Dự tính ước tháng @(Model.Thang + 1)</label>  <span class="text-danger"> *</span>
+                        <input asp-for="DuTinhUocThangSau" class="form-control input-money" />
+                    </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer float-right">
+            <input type="hidden" asp-for="Id" />
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
@@ -54,17 +52,23 @@
 <script>
     defaultConfig(document.querySelector('#modal-form'));
 
+    $('.input-money').on('input', function(e) {
+        let value = checkInputMoney(e.target);
+        ConvertMoneyByThis(value, e.target);
+    })
+
+
     $('#modal-form').on('submit', function(e) {
         e.preventDefault();
-        $(this).addClass('was-validated')
         if(!$(this).valid()) {
             showNotification({isSuccessed: false, message: "Vui lòng nhập đầy đủ thông tin"})
             return;
         }else {
             let formData = new FormData(this);
+            let form = this;
             showLoading();
             $.ajax({
-                url: '/DuLieuThongKe/ThemDanhMucDuLieuThongKe',
+                url: '/DuLieuThongKe/SuaHoatDongKinhDoanh',
                 type: 'POST',
                 data: formData,
                 contentType: false,
@@ -76,9 +80,11 @@
                         showNotification(data);
                         let element = document.getElementById('view-content');
                         let params = window.location.search;
-                        loadContent(`/DuLieuThongKe/DanhMucDuLieuThongKeList/${params}`, element);
+                        loadContent(`/DuLieuThongKe/HoatDongKinhDoanhList/${params}`, element);
                     }else {
                         showNotification(data);
+                        const elements = form.querySelectorAll('.input-money');
+                        elements.forEach((element) => checkInputMoney(element));
                     }
                 },
                 error: function(xhr) {
@@ -89,4 +95,5 @@
             })
         }
     })
+
 </script>

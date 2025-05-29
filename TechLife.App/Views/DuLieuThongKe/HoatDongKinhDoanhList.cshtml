@@ -3,7 +3,7 @@
 @using TechLife.Common.Extension;
 @model PagedResult<HoatDongKinhDoanhVm>
 @{
-    int month = DateTime.Now.Month;
+    int month = ViewBag.Month;
 }
 
 <div class="container-fluid">
@@ -17,9 +17,9 @@
                             <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
                                 <i class="fas fa-arrow-circle-left"></i> Quay lại
                             </a>
-                            <a href="/DuLieuThongKe/ThemHoatDongKinhDoanh/" class="btn btn-xs btn-success">
+                            @* <a href="/DuLieuThongKe/ThemHoatDongKinhDoanh/" class="btn btn-xs btn-success">
                                 <i class="fas fa-plus-circle"></i> Thêm mới
-                            </a>
+                            </a> *@
                             <a href="#" data-url="/DuLieuThongKe/ImportHoatDongKinhDoanh/" class="btn btn-xs btn-primary modal-popup">
                                 <i class="fas fa-file-import"></i> Thêm từ Excel
                             </a>
@@ -28,9 +28,14 @@
 
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-2 mb-3">
                                 <div class="">
                                     <select class="form-control select2 form-value" asp-items="ViewBag.MonthOptions" name="Thang"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="">
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.YearOptions" name="Nam"></select>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -39,10 +44,10 @@
                                         <tr>
                                             <th class="text-center align-middle">PHẦN BÁO CÁO HÀNG THÁNG</th>
                                             <th class="text-center align-middle" width="8%">ĐVT</th>
-                                            <th class="text-center align-middle" width="10%">Chính thức tháng</th>
-                                            <th class="text-center align-middle" width="10%">Ước tháng</th>
-                                            <th class="text-center align-middle" width="10%">Lũy kế từ đầu năm</th>
-                                            <th class="text-center align-middle" width="10%">Dự tính ước tháng</th>
+                                            <th class="text-center align-middle" width="12%">Chính thức tháng @(month - 1)</th>
+                                            <th class="text-center align-middle" width="12%">Ước tháng @month</th>
+                                            <th class="text-center align-middle" width="12%">Lũy kế từ đầu năm</th>
+                                            <th class="text-center align-middle" width="12%">Dự tính ước tháng @(month + 1)</th>
                                             <th class="text-center align-middle" width="10%">Chức năng</th>
                                         </tr>
                                     </thead>
@@ -52,15 +57,21 @@
                                             foreach (var item in Model.Items)
                                             {
                                                 <tr>
-                                                    <th class="text-left">@($"{item.Code} {(item.IsParent ? "." : "")} {item.Name}")</th>
+                                                    <th class="text-left">
+                                                        @for (int i = 0; i < item.Level; i++)
+                                                        {
+                                                            <span>&nbsp; &nbsp;</span>
+                                                        }
+                                                        @($"{item.Code + (!string.IsNullOrEmpty(item.Code) ? ". " : "")}{item.Name}")
+                                                    </th>
                                                     <td class="text-center">@item.DVT</td>
                                                     <td class="text-right">@Functions.ConvertDecimalVND(item.ChinhThucThangTruoc)</td>
                                                     <td class="text-right">@Functions.ConvertDecimalVND(item.UocThangHienTai)</td>
                                                     <td class="text-right">@Functions.ConvertDecimalVND(item.LuyKeTuDauNam)</td>
                                                     <td class="text-right">@Functions.ConvertDecimalVND(item.DuTinhUocThangSau)</td>
                                                     <td class="text-center">
-                                                        <a title="Sửa hoạt động" href="/DuLieuThongKe/SuaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
-                                                        <a title="Xóa hoạt động" data-title="Bạn muốn xóa hoạt động @item.Name ?" data-url="/DuLieuThongKe/XoaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                        <a title="Sửa hoạt động" href="#" data-url="/DuLieuThongKe/SuaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-warning btn-xs modal-popup"><i class="fas fa-edit"></i> Sửa</a>
+                                                        @* <a title="Xóa hoạt động" data-title="Bạn muốn xóa hoạt động @item.Name ?" data-url="/DuLieuThongKe/XoaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a> *@
                                                     </td>
                                                 </tr>
                                             }

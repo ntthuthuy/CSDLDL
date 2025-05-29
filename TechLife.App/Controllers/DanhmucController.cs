@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using TechLife.App.ApiClients;
 using TechLife.App.Areas.HueCIT.Interface;
 using TechLife.App.Areas.HueCIT.Interface.Schedules;
 using TechLife.App.Areas.HueCIT.Models;
+using TechLife.App.Models;
 using TechLife.Common;
 using TechLife.Common.Enums;
 using TechLife.Common.Enums.HueCIT;
-using TechLife.Data.Entities;
 using TechLife.Model;
 using TechLife.Model.BoPhan;
 using TechLife.Model.GiayPhepChungChi;
@@ -32,8 +33,9 @@ namespace TechLife.App.Controllers
         private readonly IDanhMucDongBoRepository _danhMucDongBoRepository;
         private readonly IDanhMucDongBoService _danhMucDongBoService;
         private readonly ILoaiDichVuDongBoService _loaiDichVuDongBoService;
+        private readonly IQuocTichService _quocTichService;
         private readonly IDanhMucScheduleRepository _danhMucScheduleRepository;
-
+        private readonly ILogger<DanhmucController> _logger;
         private const string SERVICE_ID_NHA_HANG = "7NL8tqxUups3P0nh9xI2+w==";
         private const string SERVICE_ID_LU_HANH = "1uDmGjtxCbkEyePdF1lYVQ==";
         private const string SERVICE_ID_DIEM_DU_LICH = "wMhgvtnwerKMAUlFfzNE4w==";
@@ -76,7 +78,9 @@ namespace TechLife.App.Controllers
             , IDanhMucDongBoRepository danhMucDongBoRepository
             , IDanhMucDongBoService danhMucDongBoService
             , ILoaiDichVuDongBoService loaiDichVuDongBoService
-            , IDanhMucScheduleRepository danhMucScheduleRepository)
+            , IQuocTichService quocTichService
+            , IDanhMucScheduleRepository danhMucScheduleRepository
+            , ILogger<DanhmucController> logger)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
                   , dichVuApiClient, ngoaiNguApiClient
@@ -100,7 +104,9 @@ namespace TechLife.App.Controllers
             _danhMucDongBoRepository = danhMucDongBoRepository;
             _danhMucDongBoService = danhMucDongBoService;
             _loaiDichVuDongBoService = loaiDichVuDongBoService;
+            _quocTichService = quocTichService;
             _danhMucScheduleRepository = danhMucScheduleRepository;
+            _logger = logger;
         }
 
         #region ĐỊA PHƯƠNG
@@ -299,119 +305,115 @@ namespace TechLife.App.Controllers
         #endregion
 
         #region QUỐC TỊCH
-        public async Task<IActionResult> Quoctich()
+        public IActionResult Quoctich()
         {
 
             ViewData["Title"] = "Quốc tịch";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _quocTichApiClient.GetAll();
-
-            return View(data);
+            return View();
         }
+
+        public async Task<IActionResult> Quoctichlist()
+        {
+            ViewData["Title"] = "Quốc tịch";
+
+            var data = await _quocTichService.GetAll();
+
+            return PartialView(data);
+        }
+
         [HttpGet]
         public IActionResult Themquoctich()
         {
-
-            ViewData["Title"] = "Thêm quốc tịch";
-            ViewData["Title_parent"] = "Danh mục";
-
-            return View();
+            return PartialView();
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Themquoctich(QuocTichModel request)
         {
-
-            ViewData["Title"] = "Thêm bộ phận";
-            ViewData["Title_parent"] = "Danh mục";
-            if (!ModelState.IsValid)
+            try
             {
-                TempData.AddAlert(new Result<string>()
+                if (!ModelState.IsValid)
                 {
-                    IsSuccessed = false,
-                    Message = "Vui lòng nhập đầy đủ thông tin bắt buộc!"
-                });
+                    return Ok(new ApiResult<bool>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin" });
+                }
+                var result = await _quocTichService.Create(request);
 
-                return View(request);
+                await Tracking(result.Message);
+
+                return Ok(result);
             }
-            var result = await _quocTichApiClient.Create(request);
-
-            if (result.IsSuccessed)
+            catch (Exception ex)
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = "Thêm mới thành công",
-                });
-
-                return Redirect("/Danhmuc/Quoctich");
+                _logger.LogError(ex, "Lỗi thêm mới quốc tịch");
+                return Ok(new ApiResult<bool>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
             }
-            else
-            {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = result.Message
-                });
-            }
-            return View(request);
         }
         [HttpGet]
         public async Task<IActionResult> Suaquoctich(string id = "")
         {
-            ViewData["Title"] = "Sửa quốc tịch";
-            ViewData["Title_parent"] = "Danh mục";
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _quocTichApiClient.GetById(Id);
-            return View(data);
+            var data = await _quocTichService.GetById(Id);
+            return PartialView(data);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Suaquoctich(string Id, QuocTichModel request)
         {
-            ViewData["Title"] = "Sửa quốc tịch";
-            ViewData["Title_parent"] = "Danh mục";
-            ModelState.Remove("Id");
-            if (!ModelState.IsValid)
+            try
             {
-                TempData.AddAlert(new Result<string>()
+                ModelState.Remove("Id");
+                if (!ModelState.IsValid)
                 {
-                    IsSuccessed = false,
-                    Message = "Vui lòng nhập đầy đủ thông tin bắt buộc!"
-                });
+                    return Ok(new ApiErrorResult<bool>("Vui lòng nhập đầy đủ thông tin"));
+                }
 
-                return View(request);
-            }
+                int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            int id = Convert.ToInt32(HashUtil.DecodeID(Id));
-            var result = await _quocTichApiClient.Update(id, request);
-            if (result.IsSuccessed)
-            {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = "Cập nhật thành công",
-                });
-                return Redirect("/Danhmuc/Quoctich");
+                var result = await _quocTichService.Update(id, request);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
             }
-            else
+            catch (Exception ex)
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = result.Message
-                });
+                _logger.LogError(ex, "Đã có lỗi xảy ra");
+                return Ok(new ApiErrorResult<bool>("Cập nhật không thành công"));
             }
-            return View(request);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Xoaquoctich(string id)
+        {
+            int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+            var data = await _quocTichService.GetById(Id);
+
+            if (data == null) return BadRequest(new ApiErrorResult<bool>("Dữ liệu không tồn tại"));
+
+            var formRequest = new FormRequest
+            {
+                Id = id,
+                Title = "Cảnh báo",
+                Caption = $"Bạn chắc chắn muốn xóa quốc tịch {data.TenQuocTich}",
+                Url = "/Danhmuc/Xoaquoctich",
+                UrlBack = "/Danhmuc/Quoctichlist",
+                IsLoadPage = false
+            };
+            return PartialView("_ModalConfirm", formRequest);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Xoaquoctich(string Id)
+        public async Task<IActionResult> Xoaquoctich(FormRequest request)
         {
 
-            int id = Convert.ToInt32(HashUtil.DecodeID(Id));
+            int id = Convert.ToInt32(HashUtil.DecodeID(request.Id));
 
             var result = await _quocTichApiClient.Delete(id);
             if (result.IsSuccessed)

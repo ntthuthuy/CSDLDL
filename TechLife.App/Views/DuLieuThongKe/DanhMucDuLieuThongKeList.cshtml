@@ -27,6 +27,7 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center">Tên</th>
+                                            <th class="text-center" width="10%">Đơn vị tính</th>
                                             <th class="text-center" width="10%">Vị trí</th>
                                             <th class="text-center" width="10%">Chức năng</th>
                                         </tr>
@@ -44,6 +45,7 @@
                                                         }
                                                         @($"{item.Code + (!string.IsNullOrEmpty(item.Code) ? ". " : "")}{item.Name}")
                                                     </th>
+                                                    <td class="text-center">@item.DVT</td>
                                                     <td class="text-center">
                                                         <input class="update-order form-control text-center" type="number" value="@item.Order" data-id="@HashUtil.EncodeID(item.Id.ToString())" />
                                                     </td>
