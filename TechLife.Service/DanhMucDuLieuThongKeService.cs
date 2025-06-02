@@ -13,7 +13,7 @@ namespace TechLife.Service
 {
     public interface IDanhMucDuLieuThongKeService
     {
-        Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFormRequets requets);
+        Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(GetPagingFormRequest requets);
         Task<Result<bool>> Create(DanhMucDuLieuThongKeCreateRequest request);
         Task<Result<bool>> Update(DanhMucDuLieuThongKeUpdateRequest request);
         Task<Result<bool>> Delete(int id);
@@ -171,7 +171,7 @@ namespace TechLife.Service
             return result;
         }
 
-        public async Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(DanhMucDuLieuThongKeFormRequets requets)
+        public async Task<PagedResult<DanhMucDuLieuThongKeVm>> GetPaging(GetPagingFormRequest requets)
         {
             try
             {

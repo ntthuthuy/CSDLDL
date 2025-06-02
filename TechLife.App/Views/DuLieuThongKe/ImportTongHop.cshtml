@@ -1,4 +1,4 @@
-﻿@model TechLife.Model.HoatDongKinhDoanh.ImportHoatDongKinhDoanhRequest
+﻿@model TechLife.Model.TongHop.ImportTongHopRequest
 
 <style>
     .custom-file-label:after {
@@ -9,7 +9,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title text-blue">
-                <strong>Thêm mới</strong>
+                <strong>Thêm từ file Excel</strong>
             </h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
@@ -82,7 +82,7 @@
             let formData = new FormData(this);
             showLoading();
             $.ajax({
-                url: '/DuLieuThongKe/ImportHoatDongKinhDoanh',
+                url: '/DuLieuThongKe/ImportTongHop',
                 type: 'POST',
                 data: formData,
                 contentType: false,
@@ -93,7 +93,7 @@
                     showNotification(data);
                     let element = document.getElementById('view-content');
                     let params = window.location.search;
-                    loadContent(`/DuLieuThongKe/HoatDongKinhDoanhList/${params}`, element);
+                    loadContent(`/DuLieuThongKe/TongHopList/${params}`, element);
                 },
                 error: function (xhr, status, error) {
                     hideLoading();

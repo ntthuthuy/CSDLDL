@@ -13,12 +13,13 @@
             <div class="form-row">
                 <div class="col-md-12">
                     <div class="form-group text-center">
-                        <strong class="text-danger">@Model.Caption</strong>
+                        <strong>@Model.Caption</strong>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer float-right">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy

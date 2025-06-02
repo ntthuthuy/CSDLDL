@@ -314,11 +314,14 @@ namespace TechLife.App.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Quoctichlist()
+        public async Task<IActionResult> Quoctichlist(GetPagingFormRequest request)
         {
             ViewData["Title"] = "Quốc tịch";
 
-            var data = await _quocTichService.GetAll();
+            request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
+            request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+
+            var data = await _quocTichService.GetPaging(request);
 
             return PartialView(data);
         }
@@ -412,28 +415,21 @@ namespace TechLife.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Xoaquoctich(FormRequest request)
         {
-
-            int id = Convert.ToInt32(HashUtil.DecodeID(request.Id));
-
-            var result = await _quocTichApiClient.Delete(id);
-            if (result.IsSuccessed)
+            try
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = "Xóa thành công",
-                });
+                int id = Convert.ToInt32(HashUtil.DecodeID(request.Id));
 
+                var result = await _quocTichService.Delete(id);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
             }
-            else
+            catch (Exception ex)
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = result.Message
-                });
+                _logger.LogError(ex, "Xóa không thành công");
+                return Ok(new ApiErrorResult<bool>("Đã có lỗi xảy ra"));
             }
-            return Redirect("/Danhmuc/Quoctich");
         }
         #endregion
 

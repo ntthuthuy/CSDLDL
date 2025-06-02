@@ -180,6 +180,7 @@ namespace TechLife.App.Component
                         model.Add(new MenuViewModel() { Id = 300, Name = "Dữ liệu thống kê", Url = "#", Icon = "fa-database" });
                         model.Add(new MenuViewModel() { Id = 301, Name = "Hoạt động kinh doanh", Url = "/DuLieuThongKe/HoatDongKinhDoanh/", Icon = "fa-circle", GroupId = 300 });
                         model.Add(new MenuViewModel() { Id = 302, Name = "Danh mục", Url = "/DuLieuThongKe/DanhMucDuLieuThongKe/", Icon = "fa-circle", GroupId = 300 });
+                        model.Add(new MenuViewModel() { Id = 303, Name = "Tổng hợp", Url = "/DuLieuThongKe/TongHop", Icon = "fa-circle", GroupId = 300 });
                     }
 
                     if (User.IsInRole("root"))

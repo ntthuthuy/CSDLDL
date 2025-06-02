@@ -1,5 +1,5 @@
 ﻿@using TechLife.Common
-@model List<TechLife.Model.QuocTichModel>
+@model PagedResult<TechLife.Model.QuocTichModel>
 
 <div class="container-fluid">
     <div class="row">
@@ -28,10 +28,9 @@
                             @{
                                 if (Model != null && Model != null)
                                 {
-                                    int stt = 0;
-                                    foreach (var d in Model)
+                                    int stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                                    foreach (var d in Model.Items)
                                     {
-                                        stt++;
                                         <tr>
                                             <td class="text-center">@stt</td>
                                             <td>@d.TenQuocTich</td>
@@ -41,6 +40,7 @@
                                                 <a title="Xóa quốc tịch" data-url="/Danhmuc/Xoaquoctich/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-danger btn-xs modal-popup"><i class="fas fa-trash"></i> Xóa</a>
                                             </td>
                                         </tr>
+                                        stt++;
                                     }
                                 }
                             }
@@ -48,7 +48,12 @@
                     </table>
                 </div>
                 <!-- /.card-body -->
-
+                @if (Model.TotalRecords > Model.PageSize)
+                {
+                    <div class="card-footer">
+                        @await Component.InvokeAsync("Paging", new { page = Model })
+                    </div>
+                }
             </div>
             <!-- /.card -->
         </div>

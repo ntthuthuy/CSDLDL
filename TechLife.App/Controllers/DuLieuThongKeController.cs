@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using TechLife.Common;
 using TechLife.Model.DanhMucDuLieuThongKe;
 using TechLife.Model.HoatDongKinhDoanh;
+using TechLife.Model.TongHop;
 using TechLife.Service;
 
 namespace TechLife.App.Controllers
@@ -20,11 +21,13 @@ namespace TechLife.App.Controllers
     {
         private readonly IHoatDongKinhDoanhService _hoatDongKinhDoanhService;
         private readonly IDanhMucDuLieuThongKeService _danhMucDuLieuThongKeService;
+        private readonly ITongHopService _tongHopService;
         private readonly ILogger<DuLieuThongKeController> _logger;
 
         public DuLieuThongKeController(IUserService userService
             , IHoatDongKinhDoanhService hoatDongKinhDoanhService
             , IDanhMucDuLieuThongKeService danhMucDuLieuThongKeService
+            , ITongHopService tongHopService
             , IConfiguration configuration
             , ILogger<DuLieuThongKeController> logger
             , ITrackingService trackingService = null)
@@ -32,6 +35,7 @@ namespace TechLife.App.Controllers
         {
             _hoatDongKinhDoanhService = hoatDongKinhDoanhService;
             _danhMucDuLieuThongKeService = danhMucDuLieuThongKeService;
+            _tongHopService = tongHopService;
             _logger = logger;
         }
 
@@ -52,7 +56,7 @@ namespace TechLife.App.Controllers
             }
         }
 
-        public async Task<IActionResult> DanhMucDuLieuThongKeList(DanhMucDuLieuThongKeFormRequets request)
+        public async Task<IActionResult> DanhMucDuLieuThongKeList(GetPagingFormRequest request)
         {
             ViewData["Title"] = "Danh mục";
             request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
@@ -305,7 +309,7 @@ namespace TechLife.App.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportHoatDongKinhDoanh([FromForm] ImportRequest request)
+        public async Task<IActionResult> ImportHoatDongKinhDoanh([FromForm] ImportHoatDongKinhDoanhRequest request)
         {
             try
             {
@@ -420,6 +424,147 @@ namespace TechLife.App.Controllers
             {
                 _logger.LogError(ex, "Lỗi cập nhật hoạt động kinh doanh");
                 return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
+            }
+        }
+
+        public IActionResult TongHop()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> TongHopList(TongHopFormRequest request)
+        {
+            request.Nam = request.Nam == 0 ? DateTime.Now.Year : request.Nam;
+
+            var months = Enumerable.Range(1, 12).ToList();
+
+            ViewBag.MonthOptions = months.Select(x => new SelectListItem
+            {
+                Text = $"Tháng {x}",
+                Value = x.ToString(),
+                Selected = x == request.Thang
+            });
+
+            int minYear = await _hoatDongKinhDoanhService.MinYear();
+
+            List<int> years = new();
+
+            for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+            {
+                years.Add(i);
+            }
+
+            ViewBag.YearOptions = years.Select(x => new SelectListItem
+            {
+                Text = $"Năm {x}",
+                Value = x.ToString(),
+                Selected = x == request.Nam
+            });
+
+            ViewData["Title"] = $"Tổng hợp thị trường lưu trú và lượt khách các tháng năm {request.Nam}";
+            request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
+            request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+
+            var result = await _tongHopService.GetPaging(request);
+
+            return PartialView(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ImportTongHop()
+        {
+            var months = Enumerable.Range(1, 12).ToList();
+
+            ViewBag.MonthOptions = months.Select(x => new SelectListItem
+            {
+                Text = $"Tháng {x}",
+                Value = x.ToString(),
+                Selected = DateTime.Now.Month == x
+            });
+
+            int minYear = await _hoatDongKinhDoanhService.MinYear();
+
+            List<int> years = new();
+
+            for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+            {
+                years.Add(i);
+            }
+
+            ViewBag.YearOptions = years.Select(x => new SelectListItem
+            {
+                Text = $"Năm {x}",
+                Value = x.ToString(),
+                Selected = DateTime.Now.Year == x
+            });
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportTongHop([FromForm] ImportTongHopRequest request)
+        {
+            try
+            {
+                if (request.File == null)
+                {
+                    return Ok(new Result<string>() { IsSuccessed = false, Message = "Vui lòng chọn file" });
+                }
+
+                var allowedExtensions = new List<string> { ".xls", ".xlsx" };
+
+                var extension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    return Ok(new Result<string>() { IsSuccessed = false, Message = "File không hợp lệ. Chỉ cho phép file Excel." });
+                }
+
+                var stream = request.File.OpenReadStream();
+
+                var fileImport = new TongHopImportRequest();
+
+                fileImport.Thang = request.Month;
+                fileImport.Nam = request.Year;
+                fileImport.Items = new();
+
+                using var workbook = new XLWorkbook(stream);
+
+                IXLWorksheet worksheet = workbook.Worksheet(1);
+                var lastCol = worksheet.LastColumnUsed().ColumnNumber();
+                var lastRow = worksheet.LastRowUsed().RowNumber();
+
+                for (int i = 2; i <= lastRow - 1; i++)
+                {
+                    var item = new TongHopImportVm();
+
+                    item.TenQuocTich = worksheet.Cell(i, 2).Value.ToString().Trim();
+
+                    item.SoLieu = worksheet.Cell(i, 3).Value.ToString().Trim();
+                    item.SoLieu = Regex.Replace(item.SoLieu, "[,.]", "");
+                    item.SoLieu = decimal.TryParse(item.SoLieu, out _) ? item.SoLieu : "0";
+
+                    item.CongDon = worksheet.Cell(i, 4).Value.ToString().Trim();
+                    item.CongDon = Regex.Replace(item.CongDon, "[,.]", "");
+                    item.CongDon = decimal.TryParse(item.CongDon, out _) ? item.CongDon : "0";
+
+                    item.ThiPhan = worksheet.Cell(i, 5).Value.ToString().Trim();
+                    item.ThiPhan = Regex.Replace(item.ThiPhan, "[,%]", "");
+                    item.ThiPhan = decimal.TryParse(item.ThiPhan, out _) ? item.ThiPhan : "0";
+
+                    fileImport.Items.Add(item);
+                }
+
+                var result = await _tongHopService.Import(fileImport);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Import file thất bại");
+                return Ok(new Result<string>() { IsSuccessed = false, Message = "Import file thất bại" });
             }
         }
     }

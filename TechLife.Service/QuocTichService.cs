@@ -13,7 +13,7 @@ namespace TechLife.Service
     {
         Task<List<QuocTichModel>> GetAll();
 
-        Task<PagedResult<QuocTichModel>> GetPaging(GetPagingRequest request);
+        Task<PagedResult<QuocTichModel>> GetPaging(GetPagingFormRequest request);
 
         Task<ApiResult<QuocTichModel>> Create(QuocTichModel request);
 
@@ -97,14 +97,14 @@ namespace TechLife.Service
 
         }
 
-        public async Task<PagedResult<QuocTichModel>> GetPaging(GetPagingRequest request)
+        public async Task<PagedResult<QuocTichModel>> GetPaging(GetPagingFormRequest request)
         {
             var query = from m in _context.QuocTich
                         where m.IsDelete == false
                         select new { m };
 
-            if (!string.IsNullOrEmpty(request.Keyword))
-                query = query.Where(x => x.m.TenQuocTich.Contains(request.Keyword));
+            if (!string.IsNullOrEmpty(request.Search))
+                query = query.Where(x => x.m.TenQuocTich.Contains(request.Search));
             //3. Paging
             int totalRow = query.Count();
 

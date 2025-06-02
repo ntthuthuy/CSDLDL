@@ -1,0 +1,88 @@
+﻿@using TechLife.Common;
+@using TechLife.Model.TongHop
+@using TechLife.Common.Extension;
+@model PagedResult<TongHopVm>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <form id="form" method="get" style="width:100%">
+                    <div class="card-header">
+                        <h3 class="card-title">@ViewData["Title"]</h3>
+                        <div class="card-tools">
+                            <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                <i class="fas fa-arrow-circle-left"></i> Quay lại
+                            </a>
+                            <a href="#" data-url="/DuLieuThongKe/ImportTongHop/" class="btn btn-xs btn-primary modal-popup">
+                                <i class="fas fa-file-import"></i> Thêm từ Excel
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <div class="">
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.MonthOptions" name="Thang">
+                                        <option value="0">Tất cả</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="">
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.YearOptions" name="Nam"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <table class="table-hover table-striped table-bordered table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center align-middle" width="4%">TT</th>
+                                            <th class="text-center align-middle" width="10%">Quốc tịch</th>
+                                            @for (int i = 1; i <= 12; i++)
+                                            {
+                                                <th class="text-center align-middle" width="@(70 / 12)%">@($"Th {i}")</th>
+                                            }
+                                            <th class="text-center align-middle" width="8%">Cộng dồn</th>
+                                            <th class="text-center align-middle" width="8%">Thị phần</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Items != null && Model.Items.Count > 0)
+                                        {
+                                            int thang = Model.Items.SelectMany(x => x.List).Max(x => x.Thang);
+                                            int stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                                            foreach (var item in Model.Items)
+                                            {
+                                                <tr>
+                                                    <td class="text-right align-middle">@(stt > Model.Items.Count ? "" : stt)</td>
+                                                    <td class="text-left align-middle">@item.TenQuocTich</td>
+                                                    @for(int i = 1; i <= 12; i++)
+                                                    {
+                                                        decimal soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu ?? 0;
+                                                        <td class="text-right align-middle">@Functions.ConvertDecimalVND(soLieu)</td>
+                                                    }
+                                                    <td class="text-right align-middle">@Functions.ConvertDecimalVND(item.List.First(x => x.Thang == thang).CongDon)</td>
+                                                    <td class="text-right align-middle">@Functions.ConvertDecimalVND(item.List.First(x => x.Thang == thang).ThiPhan)%</td>
+                                                </tr>
+                                                stt++;
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.TotalRecords > Model.PageSize)
+                    {
+                        <div class="card-footer">
+                            @await Component.InvokeAsync("Paging", new { page = Model })
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

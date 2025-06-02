@@ -171,5 +171,6 @@ namespace TechLife.Data
         public DbSet<LichSuCapNhat> LichSuCapNhat { get; set; }
         public DbSet<DanhMucDuLieuThongKe> DanhMucDuLieuThongKe { get; set; }
         public DbSet<HoatDongKinhDoanh> HoatDongKinhDoanh { get; set; }
+        public DbSet<TongHop> TongHop { get; set; }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TechLife.Model.HoatDongKinhDoanh
+namespace TechLife.Model.TongHop
 {
-    public class ImportRequest
+    public class ImportTongHopRequest
     {
         [Display(Name = "Tháng")]
         [Range(1, 12, ErrorMessage = "Tháng không hợp lệ")]
