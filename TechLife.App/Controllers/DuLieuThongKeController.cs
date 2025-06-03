@@ -22,12 +22,14 @@ namespace TechLife.App.Controllers
         private readonly IHoatDongKinhDoanhService _hoatDongKinhDoanhService;
         private readonly IDanhMucDuLieuThongKeService _danhMucDuLieuThongKeService;
         private readonly ITongHopService _tongHopService;
+        private readonly IQuocTichService _quocTichService;
         private readonly ILogger<DuLieuThongKeController> _logger;
 
         public DuLieuThongKeController(IUserService userService
             , IHoatDongKinhDoanhService hoatDongKinhDoanhService
             , IDanhMucDuLieuThongKeService danhMucDuLieuThongKeService
             , ITongHopService tongHopService
+            , IQuocTichService quocTichService
             , IConfiguration configuration
             , ILogger<DuLieuThongKeController> logger
             , ITrackingService trackingService = null)
@@ -36,6 +38,7 @@ namespace TechLife.App.Controllers
             _hoatDongKinhDoanhService = hoatDongKinhDoanhService;
             _danhMucDuLieuThongKeService = danhMucDuLieuThongKeService;
             _tongHopService = tongHopService;
+            _quocTichService = quocTichService;
             _logger = logger;
         }
 
@@ -429,6 +432,8 @@ namespace TechLife.App.Controllers
 
         public IActionResult TongHop()
         {
+            ViewData["Title"] = "Tổng hợp";
+            ViewData["Title_parent"] = "Dữ liệu thống kê";
             return View();
         }
 
@@ -465,6 +470,9 @@ namespace TechLife.App.Controllers
             request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
             request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
 
+            ViewBag.Month = request.Thang;
+            ViewBag.Year = request.Nam;
+
             var result = await _tongHopService.GetPaging(request);
 
             return PartialView(result);
@@ -479,7 +487,6 @@ namespace TechLife.App.Controllers
             {
                 Text = $"Tháng {x}",
                 Value = x.ToString(),
-                Selected = DateTime.Now.Month == x
             });
 
             int minYear = await _hoatDongKinhDoanhService.MinYear();
@@ -565,6 +572,84 @@ namespace TechLife.App.Controllers
             {
                 _logger.LogError(ex, "Import file thất bại");
                 return Ok(new Result<string>() { IsSuccessed = false, Message = "Import file thất bại" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SuaTongHop(int thang, int nam)
+        {
+            var listQuocTich = await _quocTichService.GetAll();
+
+            ViewBag.QuocTichOptions = listQuocTich.Select(x => new SelectListItem
+            {
+                Text = x.TenQuocTich,
+                Value = HashUtil.EncodeID(x.Id.ToString())
+            });
+
+            var model = new TongHopUpdateRequest
+            {
+                CongDon = "",
+                SoLieu = "",
+                ThiPhan = 0,
+                Month = thang,
+                Year = nam
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SuaTongHop(TongHopUpdateRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return Ok(new Result<bool>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin" });
+
+                request.SoLieu = Regex.Replace(request.SoLieu.Trim(), "[,.]", "");
+                request.CongDon = Regex.Replace(request.CongDon.Trim(), "[,.]", "");
+
+                if (!decimal.TryParse(request.SoLieu, out _) || !decimal.TryParse(request.CongDon, out _) || request.ThiPhan < 0 || request.ThiPhan > 100)
+                {
+                    return Ok(new Result<bool>() { IsSuccessed = false, Message = "Vui lòng kiểm tra lại thông tin" });
+                }
+
+                var result = await _tongHopService.Update(request);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi cập nhật");
+                return BadRequest("Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult XoaTongHop(int thang, int nam)
+        {
+            ViewBag.Thang = thang;
+            ViewBag.Nam = nam;
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaTongHop(TongHopDeleteRequest request)
+        {
+            try
+            {
+                var result = await _tongHopService.Delete(request);
+                await Tracking(result.Message);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xóa tổng hợp thị trường");
+                return BadRequest("Đã có lỗi xảy ra");
             }
         }
     }

@@ -18,7 +18,7 @@ namespace TechLife.Service
         Task<TongHopVm> GetById(int id);
         Task<Result<bool>> Create(TongHopCreateRequest request);
         Task<Result<bool>> Update(TongHopUpdateRequest request);
-        Task<Result<bool>> Delete(int id);
+        Task<Result<bool>> Delete(TongHopDeleteRequest request);
         Task<Result<bool>> Import(TongHopImportRequest request);
     }
 
@@ -39,9 +39,30 @@ namespace TechLife.Service
             throw new System.NotImplementedException();
         }
 
-        public Task<Result<bool>> Delete(int id)
+        public async Task<Result<bool>> Delete(TongHopDeleteRequest request)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var data = await _context.TongHop.Where(x => !x.IsDelete && x.Thang == request.Thang && x.Nam == request.Nam).ToListAsync();
+
+                if (data.Count == 0) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
+
+                foreach (var item in data)
+                {
+                    item.IsDelete = true;
+                }
+
+                _context.TongHop.UpdateRange(data);
+
+                await _context.SaveChangesAsync();
+
+                return new Result<bool>() { IsSuccessed = true, Message = "Xóa thành công" };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
 
         public Task<List<TongHopVm>> GetAll()
@@ -49,9 +70,27 @@ namespace TechLife.Service
             throw new System.NotImplementedException();
         }
 
-        public Task<TongHopVm> GetById(int id)
+        public async Task<TongHopVm> GetById(int id)
         {
-            throw new System.NotImplementedException();
+            var data = await _context.TongHop.Include(x => x.QuocTich).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (data == null || data.IsDelete) return null;
+
+            return new TongHopVm
+            {
+                Id = id,
+                QuocTichId = data.QuocTichId,
+                TenQuocTich = data.QuocTich.TenQuocTich,
+                List = new()
+                {
+                    new()
+                    {
+                        SoLieu = data.SoLieu,
+                        CongDon = data.CongDon,
+                        ThiPhan = data.ThiPhan
+                    }
+                }
+            };
         }
 
         public async Task<PagedResult<TongHopVm>> GetPaging(TongHopFormRequest request)
@@ -65,9 +104,7 @@ namespace TechLife.Service
                     query = query.Where(x => x.QuocTich.TenQuocTich.Contains(request.Search, StringComparison.OrdinalIgnoreCase));
                 }
 
-                var data = new List<TongHopVm>();
-
-                var group = await query
+                var data = await query
                     .GroupBy(g => new
                     {
                         g.QuocTichId
@@ -86,7 +123,42 @@ namespace TechLife.Service
                         }).ToList()
                     }).ToListAsync();
 
+                if (data.Count > 0)
+                {
+                    data.Add(new TongHopVm
+                    {
+                        TenQuocTich = "Tổng cộng",
+                        List = data.SelectMany(x => x.List)
+                        .GroupBy(g => new { g.Thang, g.Nam })
+                        .Select(x => new ListSoLieu
+                        {
+                            Thang = x.Key.Thang,
+                            Nam = x.Key.Nam,
+                            SoLieu = x.Sum(v => v.SoLieu),
+                            CongDon = x.Sum(v => v.CongDon),
+                            ThiPhan = 100
+                        }).ToList()
+                    });
+                }
+                else
+                {
+                    var listQuocTich = await _context.QuocTich.Where(x => !x.IsDelete && x.IsStatus).ToListAsync();
 
+                    foreach (var item in listQuocTich)
+                    {
+                        data.Add(new()
+                        {
+                            TenQuocTich = item.TenQuocTich,
+                            List = new()
+                        });
+                    }
+
+                    data.Add(new()
+                    {
+                        TenQuocTich = "Tổng cộng",
+                        List = new()
+                    });
+                }
 
                 return new PagedResult<TongHopVm>
                 {
@@ -98,7 +170,7 @@ namespace TechLife.Service
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex, ex.Message);
                 throw;
             }
         }
@@ -147,7 +219,7 @@ namespace TechLife.Service
                             Thang = request.Thang,
                             Nam = request.Nam,
                             CongDon = decimal.Parse(item.CongDon),
-                            ThiPhan = decimal.Parse(item.ThiPhan),
+                            ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m,
                             QuocTich = quocTich
                         };
 
@@ -158,7 +230,7 @@ namespace TechLife.Service
                     {
                         entity.SoLieu = decimal.Parse(item.SoLieu);
                         entity.CongDon = decimal.Parse(item.CongDon);
-                        entity.ThiPhan = decimal.Parse(item.ThiPhan);
+                        entity.ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m;
 
                         existData.Add(entity);
                     }
@@ -181,9 +253,28 @@ namespace TechLife.Service
             }
         }
 
-        public Task<Result<bool>> Update(TongHopUpdateRequest request)
+        public async Task<Result<bool>> Update(TongHopUpdateRequest request)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                int quocTichId = Convert.ToInt32(HashUtil.DecodeID(request.QuocTichId));
+                var data = await _context.TongHop.FirstOrDefaultAsync(x => x.Thang == request.Month && x.Nam == request.Year && x.QuocTichId == quocTichId);
+                if (data == null || data.IsDelete) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
+
+                data.SoLieu = decimal.Parse(request.SoLieu);
+                data.CongDon = decimal.Parse(request.CongDon);
+                data.ThiPhan = request.ThiPhan;
+
+                _context.TongHop.Update(data);
+                await _context.SaveChangesAsync();
+
+                return new Result<bool>() { IsSuccessed = true, Message = "Cập nhật thành công" };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
     }
 }

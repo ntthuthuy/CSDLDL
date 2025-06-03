@@ -1,0 +1,64 @@
+﻿<form id="modal-form">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title text-red">
+                <strong>Cảnh báo!</strong>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="col-md-12">
+                    <div class="form-group text-center">
+                        <strong>Xóa toàn bộ dữ liệu tháng @ViewBag.Thang năm @ViewBag.Nam</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer float-right">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="thang" value="@ViewBag.Thang" />
+            <input type="hidden" name="nam" value="@ViewBag.Nam" />
+            <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
+                Hủy
+            </button>
+            <button type="submit" class="btn btn-success">Xác nhận</button>
+        </div>
+    </div>
+</form>
+<script>
+    $('#modal-form').on('submit', function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);
+        $.ajax({
+            url: '/DuLieuThongKe/XoaTongHop',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                hideLoading();
+                if (data.isSuccessed) {
+                    dropModal();
+                    showNotification(data);
+                    if(isReload) {
+                        window.location.reload();
+                    } else {
+                        let element = document.getElementById('view-content');
+                        let params = window.location.search;
+                        loadContent(`/DuLieuThongKe/XoaTongHop/${params}`, element);
+                    }
+                } else {
+                    showNotification(data);
+                }
+            },
+            error: function(xhr) {
+                hideLoading();
+                var err = eval("(" + xhr.responseText + ")");
+                showNotification({ isSuccessed: false, message: err });
+            }
+        })
+    })
+</script>

@@ -320,6 +320,5 @@ function checkInputMoney(element) {
         element.classList.add('is-valid');
         element.classList.remove("is-invalid");
     }
-
     return value;
 }

@@ -2,6 +2,10 @@
 @using TechLife.Model.TongHop
 @using TechLife.Common.Extension;
 @model PagedResult<TongHopVm>
+@{
+    int month = ViewBag.Month;
+    int year = ViewBag.Year;
+}
 
 <div class="container-fluid">
     <div class="row">
@@ -11,10 +15,19 @@
                     <div class="card-header">
                         <h3 class="card-title">@ViewData["Title"]</h3>
                         <div class="card-tools">
-                            <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                            <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-primary">
                                 <i class="fas fa-arrow-circle-left"></i> Quay lại
                             </a>
-                            <a href="#" data-url="/DuLieuThongKe/ImportTongHop/" class="btn btn-xs btn-primary modal-popup">
+                            @if(month >= 1 && month <= 12)
+                            {
+                                <a href="#" data-url="/DuLieuThongKe/SuaTongHop/?thang=@month&nam=@year" class="btn btn-xs btn-warning modal-popup">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <a href="#" data-url="/DuLieuThongKe/XoaTongHop?thang=@month&nam=@year" class="btn btn-xs btn-danger modal-popup">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </a>
+                            }
+                            <a href="#" data-url="/DuLieuThongKe/ImportTongHop/" class="btn btn-xs btn-success modal-popup">
                                 <i class="fas fa-file-import"></i> Thêm từ Excel
                             </a>
                         </div>
@@ -23,15 +36,15 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-2 mb-3">
-                                <div class="">
-                                    <select class="form-control select2 form-value" asp-items="ViewBag.MonthOptions" name="Thang">
-                                        <option value="0">Tất cả</option>
-                                    </select>
+                                <div class="form-group">
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.YearOptions" name="Nam"></select>
                                 </div>
                             </div>
                             <div class="col-md-2 mb-3">
-                                <div class="">
-                                    <select class="form-control select2 form-value" asp-items="ViewBag.YearOptions" name="Nam"></select>
+                                <div class="form-group">
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.MonthOptions" name="Thang">
+                                        <option value="0">Tất cả</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -40,33 +53,51 @@
                                         <tr>
                                             <th class="text-center align-middle" width="4%">TT</th>
                                             <th class="text-center align-middle" width="10%">Quốc tịch</th>
-                                            @for (int i = 1; i <= 12; i++)
+                                            @if (month == 0)
                                             {
-                                                <th class="text-center align-middle" width="@(70 / 12)%">@($"Th {i}")</th>
+                                                for (int i = 1; i <= 12; i++)
+                                                {
+                                                    <th class="text-center align-middle" width="@(70 / 12)%">@($"Th {i}")</th>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <th class="text-center align-middle" width="70%">@($"Th {month}")</th>
                                             }
                                             <th class="text-center align-middle" width="8%">Cộng dồn</th>
                                             <th class="text-center align-middle" width="8%">Thị phần</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if (Model != null && Model.Items != null && Model.Items.Count > 0)
+                                        @if (Model != null && Model.Items != null)
                                         {
-                                            int thang = Model.Items.SelectMany(x => x.List).Max(x => x.Thang);
+                                            int? thang = Model.Items.SelectMany(x => x.List).Max(x => (int?)x.Thang);
                                             int stt = (Model.PageIndex - 1) * Model.PageSize + 1;
-                                            foreach (var item in Model.Items)
+                                            if (Model.Items.Count > 0)
                                             {
-                                                <tr>
-                                                    <td class="text-right align-middle">@(stt > Model.Items.Count ? "" : stt)</td>
-                                                    <td class="text-left align-middle">@item.TenQuocTich</td>
-                                                    @for(int i = 1; i <= 12; i++)
-                                                    {
-                                                        decimal soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu ?? 0;
-                                                        <td class="text-right align-middle">@Functions.ConvertDecimalVND(soLieu)</td>
-                                                    }
-                                                    <td class="text-right align-middle">@Functions.ConvertDecimalVND(item.List.First(x => x.Thang == thang).CongDon)</td>
-                                                    <td class="text-right align-middle">@Functions.ConvertDecimalVND(item.List.First(x => x.Thang == thang).ThiPhan)%</td>
-                                                </tr>
-                                                stt++;
+                                                foreach (var item in Model.Items)
+                                                {
+                                                    <tr>
+                                                        <td class="text-right align-middle">@(stt == Model.TotalRecords ? "" : stt)</td>
+                                                        <td class="text-left align-middle">@item.TenQuocTich</td>
+                                                        @if (month == 0)
+                                                        {
+                                                            for (int i = 1; i <= 12; i++)
+                                                            {
+                                                                decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu;
+                                                                <td class="text-right align-middle">@(soLieu == null ? "-" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == month)?.SoLieu;
+                                                            <td class="text-right align-middle">@(soLieu == null ? "-" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
+                                                        }
+                                                        <td class="text-right align-middle">@Functions.ConvertDecimalVND(item.List.FirstOrDefault(x => x.Thang == (int)thang)?.CongDon ?? 0)</td>
+                                                        <td class="text-right align-middle">@(item.List.FirstOrDefault(x => x.Thang == (int)thang)?.ThiPhan ?? 0)%</td>
+                                                    </tr>
+                                                    stt++;
+                                                }
                                             }
                                         }
                                     </tbody>
@@ -86,3 +117,8 @@
         </div>
     </div>
 </div>
+<script>
+    $('.form-value').change(() => {
+        $('#form').submit();
+    })
+</script>

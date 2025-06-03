@@ -20,7 +20,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label" asp-for="Month"></label> <span class="text-danger"> *</span>
-                        <select class="form-control select2" asp-for="Month" asp-items="ViewBag.MonthOptions"></select>
+                        <select class="form-control select2" asp-for="Month" asp-items="ViewBag.MonthOptions">
+                            <option value="0">Chọn</option>
+                        </select>
                         <span asp-validation-for="Month" class="text-danger"></span>
                     </div>
                 </div>

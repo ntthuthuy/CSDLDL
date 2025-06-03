@@ -19,7 +19,6 @@ namespace TechLife.Model.TongHop
         public int Nam { get; set; }
         public decimal SoLieu { get; set; }
         public decimal CongDon { get; set; }
-
         public decimal ThiPhan { get; set; }
     }
 }

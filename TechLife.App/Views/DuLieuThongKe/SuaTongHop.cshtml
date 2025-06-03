@@ -1,0 +1,109 @@
+﻿@model TechLife.Model.TongHop.TongHopUpdateRequest
+
+<form id="modal-form">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title text-blue">
+                <strong>Cập nhật</strong>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="QuocTichId"></label> <span class="text-danger"> *</span>
+                        <select class="form-control select2" asp-for="QuocTichId" asp-items="ViewBag.QuocTichOptions">
+                            <option value="">Chọn</option>
+                        </select>
+                        <span asp-validation-for="QuocTichId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="SoLieu" class="control-label"></label>
+                        <input asp-for="SoLieu" class="form-control input-money" required />
+                        <span asp-validation-for="SoLieu" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="CongDon" class="control-label"></label>
+                        <input asp-for="CongDon" class="form-control input-money" required />
+                        <span asp-validation-for="CongDon" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="ThiPhan" class="control-label">Thị phần (%)</label>
+                        <input asp-for="ThiPhan" class="form-control" min="0" max="100" type="number" step="0.01" required/>
+                        @* <span asp-validation-for="ThiPhan" class="text-danger"></span> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer float-right">
+            <input type="hidden" asp-for="Month" />
+            <input type="hidden" asp-for="Year" />
+            @Html.AntiForgeryToken()
+            <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
+                Hủy
+            </button>
+            <button type="submit" class="btn btn-success">Xác nhận</button>
+        </div>
+    </div>
+</form>
+
+<script src="@(Context.Request.PathBase)/plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="@(Context.Request.PathBase)/plugins/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    defaultConfig(document.querySelector('#modal-form'));
+
+    $('.input-money').on('input', function(e) {
+        let value = checkInputMoney(e.target);
+        if(value) ConvertMoneyByThis(value, e.target);
+    })
+
+    $('#modal-form').on('submit', function(e) {
+        e.preventDefault(); 
+        $(this).addClass('was-validated')
+
+        if(!$(this).valid()) {
+            showNotification({isSuccessed: false, message: "Vui lòng nhập đầy đủ thông tin"})
+            return;
+        }
+
+        let formData = new FormData(this);
+        let form = this;
+        showLoading();
+
+        $.ajax({
+            url: '/DuLieuThongKe/SuaTongHop',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                hideLoading();
+                if (data.isSuccessed) {
+                    dropModal();
+                    showNotification(data);
+                    let element = document.getElementById('view-content');
+                    let params = window.location.search;
+                    loadContent(`/DuLieuThongKe/TongHopList/${params}`, element);
+                }else {
+                    showNotification(data);
+                    const elements = form.querySelectorAll('.input-money');
+                    elements.forEach((element) => checkInputMoney(element));
+                }
+            },
+            error: function(xhr) {
+                hideLoading();
+                var err = eval("(" + xhr.responseText + ")");
+                showNotification({ isSuccessed: false, message: err });
+            }
+        })
+    })
+</script>
