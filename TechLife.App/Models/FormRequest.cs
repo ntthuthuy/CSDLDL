@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TechLife.App.Models
+﻿namespace TechLife.App.Models
 {
     public class FormRequest
     {
@@ -16,5 +11,6 @@ namespace TechLife.App.Models
         public string CallFuntion { get; set; }
         public bool IsLoadPage { get; set; } = true;
         public bool IsMessage { get; set; } = true;
+        public string Note { get; set; }
     }
 }

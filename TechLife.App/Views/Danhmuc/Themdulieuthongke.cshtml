@@ -1,10 +1,12 @@
-﻿@model TechLife.Model.DanhMucDuLieuThongKe.DanhMucDuLieuThongKeUpdateRequest
+﻿@using TechLife.Common;
+@using TechLife.Common.Extension;
+@model TechLife.Model.DanhMucDuLieuThongKe.DanhMucDuLieuThongKeCreateRequest
 
 <form id="modal-form">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title text-blue">
-                <strong>Cập nhật</strong>
+                <strong>Thêm mới</strong>
             </h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
@@ -40,7 +42,7 @@
             </div>
         </div>
         <div class="modal-footer float-right">
-            <input type="hidden" asp-for="Id" />
+            @Html.AntiForgeryToken()
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
@@ -52,6 +54,7 @@
 <script src="@(Context.Request.PathBase)/plugins/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <script>
     defaultConfig(document.querySelector('#modal-form'));
+
     $('#modal-form').on('submit', function(e) {
         e.preventDefault();
         $(this).addClass('was-validated')
@@ -62,7 +65,7 @@
             let formData = new FormData(this);
             showLoading();
             $.ajax({
-                url: '/DuLieuThongKe/SuaDanhMucDuLieuThongKe',
+                url: '/Danhmuc/Themdulieuthongke',
                 type: 'POST',
                 data: formData,
                 contentType: false,
@@ -74,15 +77,14 @@
                         showNotification(data);
                         let element = document.getElementById('view-content');
                         let params = window.location.search;
-                        loadContent(`/DuLieuThongKe/DanhMucDuLieuThongKeList/${params}`, element);
+                        loadContent(`/Danhmuc/Dulieuthongkelist/${params}`, element);
                     }else {
                         showNotification(data);
                     }
                 },
                 error: function(xhr) {
                     hideLoading();
-                    var err = eval("(" + xhr.responseText + ")");
-                    showNotification({ isSuccessed: false, message: err });
+                    showNotification({ isSuccessed: false, message: xhr.responseText });
                 }
             })
         }

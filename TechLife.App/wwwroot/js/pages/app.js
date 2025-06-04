@@ -153,7 +153,7 @@ function modelPopup(reff) {
         },
         error: function (xhr, status, error) {
             hideLoading();
-            showNotification({ isSuccessed: false, message: error });
+            showNotification({ isSuccessed: false, message: xhr.responseText });
         },
         complete: function (xhr, status) {
             hideLoading();

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TechLife.Common
+﻿namespace TechLife.Common
 {
     public class SystemConstants
     {
@@ -13,6 +9,9 @@ namespace TechLife.Common
 
         public const int pageSize = 10;
         public const int pageIndex = 1;
+
+        public const string LanguageId = "vi";
+
         public class AppSettings
         {
             public const string UserInfo = "UserInfo";

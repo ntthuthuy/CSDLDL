@@ -9,7 +9,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title text-blue">
-                <strong>Thêm mới</strong>
+                <strong>Thêm từ file Excel</strong>
             </h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
@@ -53,6 +53,7 @@
             </div>
         </div>
         <div class="modal-footer float-right">
+            @Html.AntiForgeryToken()
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
@@ -97,7 +98,7 @@
                 },
                 error: function (xhr, status, error) {
                     hideLoading();
-                    showNotification({ isSuccessed: false, message: error });
+                    showNotification({ isSuccessed: false, message: xhr.responseText });
                 },
                 complete: function (xhr, status) {
                     hideLoading();

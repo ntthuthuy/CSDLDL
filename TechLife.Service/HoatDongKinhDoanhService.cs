@@ -16,10 +16,10 @@ namespace TechLife.Service
         Task<PagedResult<HoatDongKinhDoanhVm>> GetPaging(HoatDongKinhDoanhFormRequest request);
         Task<Result<bool>> Create(HoatDongKinhDoanhCreateRequest request);
         Task<Result<bool>> Update(HoatDongKinhDoanhUpdateRequest request);
-        Task<Result<bool>> Delete(int id);
+        Task<Result<bool>> Delete(HoatDongKinhDoanhDeleteRequest request);
         Task<List<HoatDongKinhDoanhVm>> GetAll();
         Task<HoatDongKinhDoanhVm> GetById(int id);
-        Task<Result<bool>> Import(List<ImporFileVm> items, int month, int year);
+        Task<Result<bool>> Import(List<ImporFileVm> items, int thang, int nam);
         Task<int> MinYear();
     }
 
@@ -61,13 +61,18 @@ namespace TechLife.Service
             return new Result<bool>() { IsSuccessed = true, Message = "Thêm thành công" };
         }
 
-        public async Task<Result<bool>> Delete(int id)
+        public async Task<Result<bool>> Delete(HoatDongKinhDoanhDeleteRequest request)
         {
-            var data = await _context.HoatDongKinhDoanh.FindAsync(id);
+            var data = await _context.HoatDongKinhDoanh.Where(x => !x.IsDelete && x.Thang == request.Thang && x.Nam == request.Nam).ToListAsync();
 
-            if (data == null || data.IsDelete) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
+            if (data.Count == 0) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
 
-            data.IsDelete = true;
+            foreach (var item in data)
+            {
+                item.IsDelete = true;
+            }
+
+            _context.HoatDongKinhDoanh.UpdateRange(data);
 
             await _context.SaveChangesAsync();
 
@@ -137,18 +142,16 @@ namespace TechLife.Service
             {
                 var item = data.FirstOrDefault(x => x.DanhMucId == c.Id);
 
-                if (item == null) continue;
-
                 result.Add(new()
                 {
-                    Id = item.Id,
+                    Id = item?.Id ?? 0,
                     Name = c.Name,
                     Code = c.Code,
                     DVT = c.DVT,
-                    ChinhThucThangTruoc = item.ChinhThucThangTruoc,
-                    UocThangHienTai = item.UocThangHienTai,
-                    LuyKeTuDauNam = item.LuyKeTuDauNam,
-                    DuTinhUocThangSau = item.DuTinhUocThangSau,
+                    ChinhThucThangTruoc = item?.ChinhThucThangTruoc ?? 0,
+                    UocThangHienTai = item?.UocThangHienTai ?? 0,
+                    LuyKeTuDauNam = item?.LuyKeTuDauNam ?? 0,
+                    DuTinhUocThangSau = item?.DuTinhUocThangSau ?? 0,
                     Level = c.Level
                 });
             }
@@ -164,7 +167,7 @@ namespace TechLife.Service
             };
         }
 
-        public async Task<Result<bool>> Import(List<ImporFileVm> items, int month, int year)
+        public async Task<Result<bool>> Import(List<ImporFileVm> items, int thang, int nam)
         {
             try
             {
@@ -176,7 +179,7 @@ namespace TechLife.Service
 
                 int i = 0;
 
-                var existsData = await _context.HoatDongKinhDoanh.Where(x => !x.IsDelete && x.Thang == month).ToListAsync();
+                var existsData = await _context.HoatDongKinhDoanh.Where(x => !x.IsDelete && x.Thang == thang).ToListAsync();
 
                 foreach (var item in items)
                 {
@@ -201,8 +204,8 @@ namespace TechLife.Service
                             LuyKeTuDauNam = decimal.Parse(item.LuyKeTuDauNam),
                             DuTinhUocThangSau = decimal.Parse(item.DuTinhUocThangSau),
                             DanhMucId = hierarchy[i].Id,
-                            Thang = month,
-                            Nam = year,
+                            Thang = thang,
+                            Nam = nam,
                             IsDelete = false
                         });
                     }
@@ -236,16 +239,11 @@ namespace TechLife.Service
         public async Task<Result<bool>> Update(HoatDongKinhDoanhUpdateRequest request)
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(request.Id));
-            //int? parentId = !string.IsNullOrWhiteSpace(request.ParentId) ? Convert.ToInt32(HashUtil.DecodeID(request.ParentId)) : null;
 
             var data = await _context.HoatDongKinhDoanh.FindAsync(id);
 
             if (data == null || data.IsDelete) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
 
-            //data.Code = request.Code?.Trim();
-            //data.Name = request.Name.Trim();
-            //data.ParentId = parentId;
-            //data.DVT = request.DVT?.Trim();
             data.ChinhThucThangTruoc = decimal.Parse(request.ChinhThucThangTruoc);
             data.UocThangHienTai = decimal.Parse(request.UocThangHienTai);
             data.DuTinhUocThangSau = decimal.Parse(request.DuTinhUocThangSau);

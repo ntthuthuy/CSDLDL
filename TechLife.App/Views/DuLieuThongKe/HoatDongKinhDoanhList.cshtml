@@ -3,7 +3,8 @@
 @using TechLife.Common.Extension;
 @model PagedResult<HoatDongKinhDoanhVm>
 @{
-    int month = ViewBag.Month;
+    int thang = ViewBag.Thang;
+    int nam = ViewBag.Nam;
 }
 
 <div class="container-fluid">
@@ -14,13 +15,10 @@
                     <div class="card-header">
                         <h3 class="card-title">@ViewData["Title"]</h3>
                         <div class="card-tools">
-                            <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
-                                <i class="fas fa-arrow-circle-left"></i> Quay lại
+                            <a href="#" data-url="/DuLieuThongKe/XoaHoatDongKinhDoanh/?thang=@thang&nam=@nam" class="btn btn-xs btn-danger modal-popup">
+                                <i class="fas fa-trash-alt"></i> Xóa
                             </a>
-                            @* <a href="/DuLieuThongKe/ThemHoatDongKinhDoanh/" class="btn btn-xs btn-success">
-                                <i class="fas fa-plus-circle"></i> Thêm mới
-                            </a> *@
-                            <a href="#" data-url="/DuLieuThongKe/ImportHoatDongKinhDoanh/" class="btn btn-xs btn-primary modal-popup">
+                            <a href="#" data-url="/DuLieuThongKe/ImportHoatDongKinhDoanh/?thang=@thang&nam=@nam" class="btn btn-xs btn-success modal-popup">
                                 <i class="fas fa-file-import"></i> Thêm từ Excel
                             </a>
                         </div>
@@ -30,12 +28,12 @@
                         <div class="row">
                             <div class="col-md-2 mb-3">
                                 <div class="">
-                                    <select class="form-control select2 form-value" asp-items="ViewBag.MonthOptions" name="Thang"></select>
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.YearOptions" name="Nam"></select>
                                 </div>
                             </div>
                             <div class="col-md-2 mb-3">
                                 <div class="">
-                                    <select class="form-control select2 form-value" asp-items="ViewBag.YearOptions" name="Nam"></select>
+                                    <select class="form-control select2 form-value" asp-items="ViewBag.MonthOptions" name="Thang"></select>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -44,10 +42,10 @@
                                         <tr>
                                             <th class="text-center align-middle">PHẦN BÁO CÁO HÀNG THÁNG</th>
                                             <th class="text-center align-middle" width="8%">ĐVT</th>
-                                            <th class="text-center align-middle" width="12%">Chính thức tháng @(month - 1)</th>
-                                            <th class="text-center align-middle" width="12%">Ước tháng @month</th>
+                                            <th class="text-center align-middle" width="12%">Chính thức tháng @(thang - 1)</th>
+                                            <th class="text-center align-middle" width="12%">Ước tháng @thang</th>
                                             <th class="text-center align-middle" width="12%">Lũy kế từ đầu năm</th>
-                                            <th class="text-center align-middle" width="12%">Dự tính ước tháng @(month + 1)</th>
+                                            <th class="text-center align-middle" width="12%">Dự tính ước tháng @(thang + 1)</th>
                                             <th class="text-center align-middle" width="10%">Chức năng</th>
                                         </tr>
                                     </thead>
@@ -65,13 +63,15 @@
                                                         @($"{item.Code + (!string.IsNullOrEmpty(item.Code) ? ". " : "")}{item.Name}")
                                                     </th>
                                                     <td class="text-center">@item.DVT</td>
-                                                    <td class="text-right">@Functions.ConvertDecimalVND(item.ChinhThucThangTruoc)</td>
-                                                    <td class="text-right">@Functions.ConvertDecimalVND(item.UocThangHienTai)</td>
-                                                    <td class="text-right">@Functions.ConvertDecimalVND(item.LuyKeTuDauNam)</td>
-                                                    <td class="text-right">@Functions.ConvertDecimalVND(item.DuTinhUocThangSau)</td>
+                                                    <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.ChinhThucThangTruoc) : "")</td>
+                                                    <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.UocThangHienTai) : "")</td>
+                                                    <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.LuyKeTuDauNam) : "")</td>
+                                                    <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.DuTinhUocThangSau) : "")</td>
                                                     <td class="text-center">
-                                                        <a title="Sửa hoạt động" href="#" data-url="/DuLieuThongKe/SuaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-warning btn-xs modal-popup"><i class="fas fa-edit"></i> Sửa</a>
-                                                        @* <a title="Xóa hoạt động" data-title="Bạn muốn xóa hoạt động @item.Name ?" data-url="/DuLieuThongKe/XoaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a> *@
+                                                        @if(item.Id != 0)
+                                                        {
+                                                            <a title="Sửa hoạt động" href="#" data-url="/DuLieuThongKe/SuaHoatDongKinhDoanh/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-warning btn-xs modal-popup"><i class="fas fa-edit"></i> Sửa</a>
+                                                        }
                                                     </td>
                                                 </tr>
                                             }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,6 +17,7 @@ using TechLife.Common.Enums;
 using TechLife.Common.Enums.HueCIT;
 using TechLife.Model;
 using TechLife.Model.BoPhan;
+using TechLife.Model.DanhMucDuLieuThongKe;
 using TechLife.Model.GiayPhepChungChi;
 using TechLife.Model.TienNghi;
 using TechLife.Service;
@@ -35,6 +37,9 @@ namespace TechLife.App.Controllers
         private readonly ILoaiDichVuDongBoService _loaiDichVuDongBoService;
         private readonly IQuocTichService _quocTichService;
         private readonly IDanhMucScheduleRepository _danhMucScheduleRepository;
+        private readonly IDanhMucDuLieuThongKeService _danhMucDuLieuThongKeService;
+        private readonly IDanhMucService _danhMucService;
+        private readonly INgonNguService _ngonNguService;
         private readonly ILogger<DanhmucController> _logger;
         private const string SERVICE_ID_NHA_HANG = "7NL8tqxUups3P0nh9xI2+w==";
         private const string SERVICE_ID_LU_HANH = "1uDmGjtxCbkEyePdF1lYVQ==";
@@ -80,6 +85,9 @@ namespace TechLife.App.Controllers
             , ILoaiDichVuDongBoService loaiDichVuDongBoService
             , IQuocTichService quocTichService
             , IDanhMucScheduleRepository danhMucScheduleRepository
+            , IDanhMucDuLieuThongKeService danhMucDuLieuThongKeService
+            , IDanhMucService danhMucService
+            , INgonNguService ngonNguService
             , ILogger<DanhmucController> logger)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
@@ -106,6 +114,9 @@ namespace TechLife.App.Controllers
             _loaiDichVuDongBoService = loaiDichVuDongBoService;
             _quocTichService = quocTichService;
             _danhMucScheduleRepository = danhMucScheduleRepository;
+            _danhMucDuLieuThongKeService = danhMucDuLieuThongKeService;
+            _danhMucService = danhMucService;
+            _ngonNguService = ngonNguService;
             _logger = logger;
         }
 
@@ -352,7 +363,7 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi thêm mới quốc tịch");
-                return Ok(new ApiResult<bool>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
+                return BadRequest("Đã có lỗi xảy ra");
             }
         }
         [HttpGet]
@@ -1906,7 +1917,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Cơ sở lưu trú";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
 
             return View(data);
         }
@@ -1916,7 +1927,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Nhà hàng";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.NhaHang);
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.NhaHang);
 
             return View(data);
         }
@@ -1926,7 +1937,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Công ty lữ hành";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.LuHanh);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.LuHanh, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
@@ -1936,7 +1956,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Công ty vận chuyển";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.VanChuyen);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.VanChuyen, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
@@ -1947,7 +1976,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Điểm du lịch";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["ngonNgu"]) ? Request.Query["ngonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = ngonNguId == x.Id
+            });
 
             return View(data);
         }
@@ -1957,7 +1995,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Khu du lịch";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.KhuDuLich);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuDuLich, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
@@ -1967,7 +2014,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Khu vui chơi giải trí";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.KhuVuiChoi);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuVuiChoi, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
@@ -1977,7 +2033,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Dịch vụ chăm sóc sức khỏe";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.CSSK);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.CSSK, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
@@ -1987,7 +2052,16 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Dịch vụ thể dục, thể thao";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.TheThao);
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.LanguageId;
+
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.TheThao, ngonNguId);
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
@@ -1997,7 +2071,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Cơ sở mua sắm";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.MuaSam);
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.MuaSam);
 
             return View(data);
         }
@@ -2007,7 +2081,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Hướng dẫn viên";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.HDV);
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.HDV);
 
             return View(data);
         }
@@ -2017,18 +2091,26 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Vệ sinh công cộng";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.VSCC);
+            var data = await _danhMucService.GetAll((int)LinhVucKinhDoanh.VSCC);
 
             return View(data);
         }
         [HttpGet]
-        public IActionResult Themdanhmuc(string act)
+        public async Task<IActionResult> Themdanhmuc(string act)
         {
 
             ViewData["Title"] = "Thêm mới danh mục";
             ViewData["Title_parent"] = "Danh mục";
 
             ViewBag.Action = act;
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.IsDefault
+            });
+
             return View();
         }
         [HttpPost]
@@ -2106,7 +2188,7 @@ namespace TechLife.App.Controllers
             if (act == "nhahang" || act == "congtyluhanh" || act == "diemdulich" || act == "cosomuasam" || act == "Khuvcgt" || act == "Thethao" || act == "Cssk" || act == "Vanchuyen")
             {
                 // Thêm mới tại database HueCIT
-                var result = await _danhMucApiClient.Create(request);
+                var result = await _danhMucService.Create(request);
 
                 if (result.IsSuccessed)
                 {
@@ -2163,7 +2245,7 @@ namespace TechLife.App.Controllers
             else
             {
                 // Thêm mới tại database HueCIT
-                var result = await _danhMucApiClient.Create(request);
+                var result = await _danhMucService.Create(request);
                 if (result.IsSuccessed)
                 {
                     TempData.AddAlert(new Result<string>()
@@ -2190,8 +2272,13 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Sửa danh mục";
             ViewData["Title_parent"] = "Danh mục";
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _danhMucApiClient.GetById(Id);
-
+            var data = await _danhMucService.GetById(Id);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == data.NgonNguId
+            });
             ViewBag.Action = act;
             return View(data);
         }
@@ -2221,7 +2308,7 @@ namespace TechLife.App.Controllers
             if (act == "nhahang" || act == "congtyluhanh" || act == "diemdulich" || act == "cosomuasam" || act == "Khuvcgt" || act == "Thethao" || act == "Cssk" || act == "Vanchuyen")
             {
                 // Cập nhật danh mục database HueCIT
-                var result = await _danhMucApiClient.Update(id, request);
+                var result = await _danhMucService.Update(id, request);
                 if (result.IsSuccessed)
                 {
                     // HueCIT
@@ -2301,7 +2388,7 @@ namespace TechLife.App.Controllers
             else
             {
                 // Cập nhật danh mục database HueCIT
-                var result = await _danhMucApiClient.Update(id, request);
+                var result = await _danhMucService.Update(id, request);
                 if (result != null)
                 {
                     TempData.AddAlert(new Result<string>()
@@ -2330,7 +2417,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _danhMucApiClient.Delete(id);
+            var result = await _danhMucService.Delete(id);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -3044,6 +3131,232 @@ namespace TechLife.App.Controllers
         }
 
 
+        #endregion
+
+        #region Dữ liệu thống kê
+        [HttpGet]
+        public IActionResult Dulieuthongke()
+        {
+            try
+            {
+                ViewData["Title"] = "Danh mục";
+                ViewData["Title_parent"] = "Dữ liệu thống kê";
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem danh mục");
+                return View(pageError404);
+            }
+        }
+
+        public async Task<IActionResult> Dulieuthongkelist(GetPagingFormRequest request)
+        {
+            try
+            {
+                ViewData["Title"] = "Danh mục";
+                request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
+                request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+
+                var data = await _danhMucDuLieuThongKeService.GetPaging(request);
+
+                return PartialView(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem danh sách");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Themdulieuthongke()
+        {
+            try
+            {
+                var options = await _danhMucDuLieuThongKeService.GetHierarchy();
+
+                foreach (var item in options)
+                {
+                    item.Name = (item.Code != null ? item.Code + ". " : "") + item.Name;
+
+                    if (item.Level > 0)
+                    {
+                        string space = "";
+
+                        for (int i = 0; i < item.Level; i++) space += "- ";
+
+                        item.Name = space + item.Name;
+                    }
+                }
+
+                ViewBag.Options = options.Select(x => new SelectListItem { Text = x.Name, Value = HashUtil.EncodeID(x.Id.ToString()) });
+                return PartialView();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Themdulieuthongke(DanhMucDuLieuThongKeCreateRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Ok(new Result<bool>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin!" });
+                }
+
+                var result = await _danhMucDuLieuThongKeService.Create(request);
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Thêm danh mục không thành công");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Suadulieuthongke(string id)
+        {
+            try
+            {
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var data = await _danhMucDuLieuThongKeService.GetById(Id);
+
+                var model = new DanhMucDuLieuThongKeUpdateRequest
+                {
+                    Id = HashUtil.EncodeID(data.Id.ToString()),
+                    Code = data.Code,
+                    Name = data.Name,
+                    ParentId = data.ParentId != null ? HashUtil.EncodeID(data.ParentId.ToString()) : null,
+                };
+
+                var hierarchy = await _danhMucDuLieuThongKeService.GetHierarchy();
+
+                foreach (var item in hierarchy)
+                {
+                    item.Name = (item.Code != null ? item.Code + ". " : "") + item.Name;
+
+                    if (item.Level > 0)
+                    {
+                        string space = "";
+
+                        for (int i = 0; i < item.Level; i++) space += "- ";
+
+                        item.Name = space + item.Name;
+                    }
+                }
+
+                var childrents = hierarchy.Where(x => x.Parents.Split(',').Select(int.Parse).Contains(Id)).ToList();
+
+                var options = hierarchy
+                    .Select(x => new SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = HashUtil.EncodeID(x.Id.ToString()),
+                        Selected = x.Id == (data.ParentId == null ? 0 : data.ParentId),
+                        Disabled = childrents.Contains(x)
+                    });
+
+                ViewBag.Options = options;
+
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi sửa danh mục");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Suadulieuthongke(DanhMucDuLieuThongKeUpdateRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Ok(new Result<string>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin" });
+                }
+
+                var result = await _danhMucDuLieuThongKeService.Update(request);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi sửa danh mục");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Xoadulieuthongke(string id)
+        {
+            var model = new FormRequest()
+            {
+                Title = "Cảnh báo!",
+                Caption = "Bạn chắc chắn muốn xóa danh mục này",
+                Id = id,
+                IsLoadPage = false,
+                Url = "/Danhmuc/Xoadulieuthongke",
+                UrlBack = "/Danhmuc/Dulieuthongkelist",
+                Note = "(Lưu ý sẽ xóa toàn bộ danh mục con đi kèm)"
+            };
+
+            return PartialView("_ModalConfirm", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Xoadulieuthongke(FormRequest request)
+        {
+            try
+            {
+                int id = Convert.ToInt32(HashUtil.DecodeID(request.Id));
+                var result = await _danhMucDuLieuThongKeService.Delete(id);
+                await Tracking(result.Message);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xóa danh mục");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderDuLieuThongKe(string id, int value)
+        {
+            try
+            {
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var result = await _danhMucDuLieuThongKeService.UpdateOrder(Id, value);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi cập nhật vị trí");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
         #endregion
     }
 }

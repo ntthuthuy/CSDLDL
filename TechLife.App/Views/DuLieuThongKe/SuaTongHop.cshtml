@@ -101,8 +101,7 @@
             },
             error: function(xhr) {
                 hideLoading();
-                var err = eval("(" + xhr.responseText + ")");
-                showNotification({ isSuccessed: false, message: err });
+                showNotification({ isSuccessed: false, message: xhr.responseText });
             }
         })
     })

@@ -11,9 +11,9 @@ namespace TechLife.Service
 {
     public interface IDanhMucService
     {
-        Task<List<DanhMucModel>> GetAll(int loaiId);
+        Task<List<DanhMucModel>> GetAll(int loaiId, string ngonNguId = SystemConstants.LanguageId);
 
-        Task<PagedResult<DanhMucModel>> GetPaging(int loaiId,GetPagingRequest request);
+        Task<PagedResult<DanhMucModel>> GetPaging(int loaiId, GetPagingRequest request);
 
         Task<ApiResult<DanhMucModel>> Create(DanhMucModel request);
 
@@ -35,13 +35,16 @@ namespace TechLife.Service
 
         public async Task<ApiResult<DanhMucModel>> Create(DanhMucModel request)
         {
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<DanhMucModel>("Ngôn ngữ không hợp lệ");
+
             var DanhMuc = new DanhMuc()
             {
                 IsDelete = request.IsDelete,
                 IsStatus = request.IsStatus,
                 MoTa = request.MoTa,
                 Ten = request.Ten,
-                LoaiId = request.LoaiId
+                LoaiId = request.LoaiId,
+                NgonNguId = request.NgonNguId,
             };
             _context.DanhMuc.Add(DanhMuc);
             var result = await _context.SaveChangesAsync();
@@ -74,10 +77,10 @@ namespace TechLife.Service
             return new ApiErrorResult<int>("Xóa lỗi!");
         }
 
-        public async Task<List<DanhMucModel>> GetAll(int loaiId)
+        public async Task<List<DanhMucModel>> GetAll(int loaiId, string ngonNguId)
         {
             var query = from m in _context.DanhMuc
-                        where m.IsDelete == false && m.LoaiId == loaiId
+                        where m.IsDelete == false && m.LoaiId == loaiId && m.NgonNguId == ngonNguId
                         select new DanhMucModel
                         {
                             Id = m.Id,
@@ -110,11 +113,12 @@ namespace TechLife.Service
                 LoaiId = obj.LoaiId,
                 DongBoID = obj.DongBoID,
                 NguonDongBo = obj.NguonDongBo,
+                NgonNguId = obj.NgonNguId,
             };
 
         }
 
-        public async Task<PagedResult<DanhMucModel>> GetPaging(int loaiId,GetPagingRequest request)
+        public async Task<PagedResult<DanhMucModel>> GetPaging(int loaiId, GetPagingRequest request)
         {
             var query = from m in _context.DanhMuc
                         where m.IsDelete == false && m.LoaiId == loaiId
@@ -154,10 +158,13 @@ namespace TechLife.Service
                 return new ApiErrorResult<int>("Lỗi! Không tìm thấy.");
             }
 
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<int>("Ngôn ngữ không hợp lệ");
+
             var model = DanhMuc.FirstOrDefault();
 
             model.MoTa = request.MoTa;
             model.Ten = request.Ten;
+            model.NgonNguId = request.NgonNguId;
 
             _context.DanhMuc.Update(model);
 

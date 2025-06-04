@@ -40,6 +40,7 @@
         </div>
         <div class="modal-footer float-right">
             <input type="hidden" asp-for="Id" />
+            @Html.AntiForgeryToken()
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
@@ -89,8 +90,7 @@
                 },
                 error: function(xhr) {
                     hideLoading();
-                    var err = eval("(" + xhr.responseText + ")");
-                    showNotification({ isSuccessed: false, message: err });
+                    showNotification({ isSuccessed: false, message: xhr.responseText });
                 }
             })
         }

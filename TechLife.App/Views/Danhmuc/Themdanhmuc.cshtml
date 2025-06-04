@@ -37,20 +37,25 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-2">
+                                        <div class="position-relative form-group">
+                                            <label class="control-label">Ngôn ngữ</label>
+                                            <select class="form-control select2" asp-for="NgonNguId" asp-items="ViewBag.NgonNguOptions"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Tên</label>
                                             <input asp-for="Ten" class="form-control" />
                                             <span asp-validation-for="Ten" class="text-danger"></span>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Mô tả</label>
-                                            <textarea asp-for="MoTa" class="form-control"> </textarea>
+                                            <textarea asp-for="MoTa" class="form-control" rows="5"> </textarea>
                                         </div>
                                     </div>
                                 </div>

@@ -3,8 +3,8 @@
 @using TechLife.Common.Extension;
 @model PagedResult<TongHopVm>
 @{
-    int month = ViewBag.Month;
-    int year = ViewBag.Year;
+    int thang = ViewBag.Thang;
+    int nam = ViewBag.Nam;
 }
 
 <div class="container-fluid">
@@ -15,19 +15,16 @@
                     <div class="card-header">
                         <h3 class="card-title">@ViewData["Title"]</h3>
                         <div class="card-tools">
-                            <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-primary">
-                                <i class="fas fa-arrow-circle-left"></i> Quay lại
-                            </a>
-                            @if(month >= 1 && month <= 12)
+                            @if (thang >= 1 && thang <= 12)
                             {
-                                <a href="#" data-url="/DuLieuThongKe/SuaTongHop/?thang=@month&nam=@year" class="btn btn-xs btn-warning modal-popup">
+                                <a href="#" data-url="/DuLieuThongKe/SuaTongHop/?thang=@thang&nam=@nam" class="btn btn-xs btn-warning modal-popup">
                                     <i class="fas fa-edit"></i> Sửa
                                 </a>
-                                <a href="#" data-url="/DuLieuThongKe/XoaTongHop?thang=@month&nam=@year" class="btn btn-xs btn-danger modal-popup">
+                                <a href="#" data-url="/DuLieuThongKe/XoaTongHop?thang=@thang&nam=@nam" class="btn btn-xs btn-danger modal-popup">
                                     <i class="fas fa-trash"></i> Xóa
                                 </a>
                             }
-                            <a href="#" data-url="/DuLieuThongKe/ImportTongHop/" class="btn btn-xs btn-success modal-popup">
+                            <a href="#" data-url="/DuLieuThongKe/ImportTongHop/?thang=@thang&nam=@nam" class="btn btn-xs btn-success modal-popup">
                                 <i class="fas fa-file-import"></i> Thêm từ Excel
                             </a>
                         </div>
@@ -53,7 +50,7 @@
                                         <tr>
                                             <th class="text-center align-middle" width="4%">TT</th>
                                             <th class="text-center align-middle" width="10%">Quốc tịch</th>
-                                            @if (month == 0)
+                                            @if (thang == 0)
                                             {
                                                 for (int i = 1; i <= 12; i++)
                                                 {
@@ -62,7 +59,7 @@
                                             }
                                             else
                                             {
-                                                <th class="text-center align-middle" width="70%">@($"Th {month}")</th>
+                                                <th class="text-center align-middle" width="70%">@($"Th {thang}")</th>
                                             }
                                             <th class="text-center align-middle" width="8%">Cộng dồn</th>
                                             <th class="text-center align-middle" width="8%">Thị phần</th>
@@ -80,21 +77,31 @@
                                                     <tr>
                                                         <td class="text-right align-middle">@(stt == Model.TotalRecords ? "" : stt)</td>
                                                         <td class="text-left align-middle">@item.TenQuocTich</td>
-                                                        @if (month == 0)
+                                                        @if (thang == 0)
                                                         {
                                                             for (int i = 1; i <= 12; i++)
                                                             {
                                                                 decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu;
-                                                                <td class="text-right align-middle">@(soLieu == null ? "-" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
+                                                                <td class="text-right align-middle">@(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == month)?.SoLieu;
-                                                            <td class="text-right align-middle">@(soLieu == null ? "-" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
+                                                            decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == thang)?.SoLieu;
+                                                            <td class="text-right align-middle">@(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
                                                         }
-                                                        <td class="text-right align-middle">@Functions.ConvertDecimalVND(item.List.FirstOrDefault(x => x.Thang == (int)thang)?.CongDon ?? 0)</td>
-                                                        <td class="text-right align-middle">@(item.List.FirstOrDefault(x => x.Thang == (int)thang)?.ThiPhan ?? 0)%</td>
+                                                        <td class="text-right align-middle">
+                                                            @{
+                                                                decimal? congDon = item.List.FirstOrDefault(x => x.Thang == (int)thang)?.CongDon;
+                                                            }
+                                                            @(congDon == null ? "" : Functions.ConvertDecimalVND((decimal)congDon))
+                                                        </td>
+                                                        <td class="text-right align-middle">
+                                                            @{
+                                                                decimal? thiPhan = item.List.FirstOrDefault(x => x.Thang == (int)thang)?.ThiPhan;
+                                                            }
+                                                            @(thiPhan == null ? "" : $"{thiPhan}%")
+                                                        </td>
                                                     </tr>
                                                     stt++;
                                                 }

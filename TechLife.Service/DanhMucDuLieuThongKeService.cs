@@ -82,7 +82,18 @@ namespace TechLife.Service
 
             if (data == null || data.IsDelete) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
 
-            data.IsDelete = true;
+            var hierarchy = await GetHierarchy();
+
+            var list = hierarchy.Where(x => x.Parents.Split(',').Select(int.Parse).Contains(id)).Select(x => x.Id).ToList();
+
+            var entities = await _context.DanhMucDuLieuThongKe.Where(x => list.Contains(x.Id)).ToListAsync();
+
+            foreach (var entity in entities)
+            {
+                entity.IsDelete = true;
+            }
+
+            _context.DanhMucDuLieuThongKe.UpdateRange(entities);
 
             await _context.SaveChangesAsync();
 

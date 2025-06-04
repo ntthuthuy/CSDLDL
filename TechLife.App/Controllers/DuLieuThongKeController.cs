@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TechLife.Common;
-using TechLife.Model.DanhMucDuLieuThongKe;
 using TechLife.Model.HoatDongKinhDoanh;
 using TechLife.Model.TongHop;
 using TechLife.Service;
@@ -42,176 +41,6 @@ namespace TechLife.App.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public IActionResult DanhMucDuLieuThongKe()
-        {
-            try
-            {
-                ViewData["Title"] = "Danh mục";
-                ViewData["Title_parent"] = "Dữ liệu thống kê";
-
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi xem danh mục");
-                return View(pageError404);
-            }
-        }
-
-        public async Task<IActionResult> DanhMucDuLieuThongKeList(GetPagingFormRequest request)
-        {
-            ViewData["Title"] = "Danh mục";
-            request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
-            request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
-
-            var data = await _danhMucDuLieuThongKeService.GetPaging(request);
-
-            return PartialView(data);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ThemDanhMucDuLieuThongKe()
-        {
-            var options = await _danhMucDuLieuThongKeService.GetHierarchy();
-
-            foreach (var item in options)
-            {
-                item.Name = (item.Code != null ? item.Code + ". " : "") + item.Name;
-
-                if (item.Level > 0)
-                {
-                    string space = "";
-
-                    for (int i = 0; i < item.Level; i++) space += "- ";
-
-                    item.Name = space + item.Name;
-                }
-            }
-
-            ViewBag.Options = options.Select(x => new SelectListItem { Text = x.Name, Value = HashUtil.EncodeID(x.Id.ToString()) });
-            return PartialView();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ThemDanhMucDuLieuThongKe(DanhMucDuLieuThongKeCreateRequest request)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return Ok(new Result<bool>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin!" });
-                }
-
-                var result = await _danhMucDuLieuThongKeService.Create(request);
-                await Tracking(result.Message);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Thêm danh mục không thành công");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> SuaDanhMucDuLieuThongKe(string id)
-        {
-            try
-            {
-                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-
-                var data = await _danhMucDuLieuThongKeService.GetById(Id);
-
-                var model = new DanhMucDuLieuThongKeUpdateRequest
-                {
-                    Id = HashUtil.EncodeID(data.Id.ToString()),
-                    Code = data.Code,
-                    Name = data.Name,
-                    ParentId = data.ParentId != null ? HashUtil.EncodeID(data.ParentId.ToString()) : null,
-                };
-
-                var hierarchy = await _danhMucDuLieuThongKeService.GetHierarchy();
-
-                foreach (var item in hierarchy)
-                {
-                    item.Name = (item.Code != null ? item.Code + ". " : "") + item.Name;
-
-                    if (item.Level > 0)
-                    {
-                        string space = "";
-
-                        for (int i = 0; i < item.Level; i++) space += "- ";
-
-                        item.Name = space + item.Name;
-                    }
-                }
-
-                var childrents = hierarchy.Where(x => x.Parents.Split(',').Select(int.Parse).Contains(Id)).ToList();
-
-                var options = hierarchy
-                    .Select(x => new SelectListItem
-                    {
-                        Text = x.Name,
-                        Value = HashUtil.EncodeID(x.Id.ToString()),
-                        Selected = x.Id == (data.ParentId == null ? 0 : data.ParentId),
-                        Disabled = childrents.Contains(x)
-                    });
-
-                ViewBag.Options = options;
-
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi sửa danh mục");
-                return View(pageError404);
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SuaDanhMucDuLieuThongKe(DanhMucDuLieuThongKeUpdateRequest request)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return Ok(new Result<string>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin" });
-                }
-
-                var result = await _danhMucDuLieuThongKeService.Update(request);
-
-                await Tracking(result.Message);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi sửa danh mục");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateOrder(string id, int value)
-        {
-            try
-            {
-                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-
-                var result = await _danhMucDuLieuThongKeService.UpdateOrder(Id, value);
-
-                await Tracking(result.Message);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi cập nhật vị trí");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
-            }
-        }
 
         [HttpGet]
         public IActionResult HoatDongKinhDoanh()
@@ -253,7 +82,8 @@ namespace TechLife.App.Controllers
                     Selected = request.Thang == x
                 });
 
-                ViewBag.Month = request.Thang;
+                ViewBag.Thang = request.Thang;
+                ViewBag.Nam = request.Nam;
 
                 List<int> years = new();
 
@@ -281,37 +111,49 @@ namespace TechLife.App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ImportHoatDongKinhDoanh()
+        public async Task<IActionResult> ImportHoatDongKinhDoanh(int thang, int nam)
         {
-            var months = Enumerable.Range(1, 12).ToList();
-
-            ViewBag.MonthOptions = months.Select(x => new SelectListItem
+            try
             {
-                Text = $"Tháng {x}",
-                Value = x.ToString(),
-                Selected = DateTime.Now.Month == x
-            });
+                var months = Enumerable.Range(1, 12).ToList();
 
-            int minYear = await _hoatDongKinhDoanhService.MinYear();
+                thang = thang == 0 ? DateTime.Now.Month : thang;
+                nam = nam == 0 ? DateTime.Now.Year : nam;
 
-            List<int> years = new();
+                ViewBag.MonthOptions = months.Select(x => new SelectListItem
+                {
+                    Text = $"Tháng {x}",
+                    Value = x.ToString(),
+                    Selected = thang == x
+                });
 
-            for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
-            {
-                years.Add(i);
+                int minYear = await _hoatDongKinhDoanhService.MinYear();
+
+                List<int> years = new();
+
+                for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+                {
+                    years.Add(i);
+                }
+
+                ViewBag.YearOptions = years.Select(x => new SelectListItem
+                {
+                    Text = $"Năm {x}",
+                    Value = x.ToString(),
+                    Selected = nam == x
+                });
+
+                return PartialView();
             }
-
-            ViewBag.YearOptions = years.Select(x => new SelectListItem
+            catch (Exception ex)
             {
-                Text = $"Năm {x}",
-                Value = x.ToString(),
-                Selected = DateTime.Now.Year == x
-            });
-
-            return PartialView();
+                _logger.LogError(ex, "Lỗi");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ImportHoatDongKinhDoanh([FromForm] ImportHoatDongKinhDoanhRequest request)
         {
             try
@@ -334,13 +176,15 @@ namespace TechLife.App.Controllers
 
                 var fileImport = new List<ImporFileVm>();
 
+                var listDanhMuc = await _danhMucDuLieuThongKeService.GetAll();
+
                 using var workbook = new XLWorkbook(stream);
 
                 IXLWorksheet worksheet = workbook.Worksheet(1);
                 var lastCol = worksheet.LastColumnUsed().ColumnNumber();
                 var lastRow = worksheet.LastRowUsed().RowNumber();
 
-                for (int i = 9; i <= 42; i++)
+                for (int i = 9; i < listDanhMuc.Count + 9; i++)
                 {
                     var item = new ImporFileVm();
 
@@ -361,7 +205,7 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Import file thất bại");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Import file thất bại" });
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
         }
 
@@ -374,7 +218,7 @@ namespace TechLife.App.Controllers
 
                 var data = await _hoatDongKinhDoanhService.GetById(Id);
 
-                if (data == null) return BadRequest(new Result<string>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" });
+                if (data == null) return BadRequest("Dữ liệu không tồn tại");
 
                 var model = new HoatDongKinhDoanhUpdateRequest
                 {
@@ -392,11 +236,12 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi xem cập nhật báo cáo hoạt động kinh doanh");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaHoatDongKinhDoanh(HoatDongKinhDoanhUpdateRequest request)
         {
             try
@@ -426,10 +271,40 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi cập nhật hoạt động kinh doanh");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Đã có lỗi xảy ra" });
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
         }
 
+        [HttpGet]
+        public IActionResult XoaHoatDongKinhDoanh(int thang, int nam)
+        {
+            var model = new HoatDongKinhDoanhDeleteRequest
+            {
+                Thang = thang,
+                Nam = nam
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaHoatDongKinhDoanh(HoatDongKinhDoanhDeleteRequest request)
+        {
+            try
+            {
+                var result = await _hoatDongKinhDoanhService.Delete(request);
+                await Tracking(result.Message);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xóa");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        [HttpGet]
         public IActionResult TongHop()
         {
             ViewData["Title"] = "Tổng hợp";
@@ -437,75 +312,95 @@ namespace TechLife.App.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> TongHopList(TongHopFormRequest request)
         {
-            request.Nam = request.Nam == 0 ? DateTime.Now.Year : request.Nam;
-
-            var months = Enumerable.Range(1, 12).ToList();
-
-            ViewBag.MonthOptions = months.Select(x => new SelectListItem
+            try
             {
-                Text = $"Tháng {x}",
-                Value = x.ToString(),
-                Selected = x == request.Thang
-            });
+                request.Nam = request.Nam == 0 ? DateTime.Now.Year : request.Nam;
 
-            int minYear = await _hoatDongKinhDoanhService.MinYear();
+                var months = Enumerable.Range(1, 12).ToList();
 
-            List<int> years = new();
+                ViewBag.MonthOptions = months.Select(x => new SelectListItem
+                {
+                    Text = $"Tháng {x}",
+                    Value = x.ToString(),
+                    Selected = x == request.Thang
+                });
 
-            for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
-            {
-                years.Add(i);
+                int minYear = await _hoatDongKinhDoanhService.MinYear();
+
+                List<int> years = new();
+
+                for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+                {
+                    years.Add(i);
+                }
+
+                ViewBag.YearOptions = years.Select(x => new SelectListItem
+                {
+                    Text = $"Năm {x}",
+                    Value = x.ToString(),
+                    Selected = x == request.Nam
+                });
+
+                ViewData["Title"] = $"Tổng hợp thị trường lưu trú và lượt khách các tháng năm {request.Nam}";
+                request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
+                request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+
+                ViewBag.Thang = request.Thang;
+                ViewBag.Nam = request.Nam;
+
+                var result = await _tongHopService.GetPaging(request);
+
+                return PartialView(result);
             }
-
-            ViewBag.YearOptions = years.Select(x => new SelectListItem
+            catch (Exception ex)
             {
-                Text = $"Năm {x}",
-                Value = x.ToString(),
-                Selected = x == request.Nam
-            });
-
-            ViewData["Title"] = $"Tổng hợp thị trường lưu trú và lượt khách các tháng năm {request.Nam}";
-            request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
-            request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
-
-            ViewBag.Month = request.Thang;
-            ViewBag.Year = request.Nam;
-
-            var result = await _tongHopService.GetPaging(request);
-
-            return PartialView(result);
+                _logger.LogError(ex, "Lỗi xem danh sách tổng hợp thị trường");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> ImportTongHop()
+        public async Task<IActionResult> ImportTongHop(int thang, int nam)
         {
-            var months = Enumerable.Range(1, 12).ToList();
-
-            ViewBag.MonthOptions = months.Select(x => new SelectListItem
+            try
             {
-                Text = $"Tháng {x}",
-                Value = x.ToString(),
-            });
+                var months = Enumerable.Range(1, 12).ToList();
 
-            int minYear = await _hoatDongKinhDoanhService.MinYear();
+                nam = nam == 0 ? DateTime.Now.Year : nam;
 
-            List<int> years = new();
+                ViewBag.MonthOptions = months.Select(x => new SelectListItem
+                {
+                    Text = $"Tháng {x}",
+                    Value = x.ToString(),
+                    Selected = thang != 0 && x == thang
+                });
 
-            for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
-            {
-                years.Add(i);
+                int minYear = await _hoatDongKinhDoanhService.MinYear();
+
+                List<int> years = new();
+
+                for (int i = minYear - 5; i <= DateTime.Now.Year; i++)
+                {
+                    years.Add(i);
+                }
+
+                ViewBag.YearOptions = years.Select(x => new SelectListItem
+                {
+                    Text = $"Năm {x}",
+                    Value = x.ToString(),
+                    Selected = nam == x
+                });
+
+                return PartialView();
             }
-
-            ViewBag.YearOptions = years.Select(x => new SelectListItem
+            catch (Exception ex)
             {
-                Text = $"Năm {x}",
-                Value = x.ToString(),
-                Selected = DateTime.Now.Year == x
-            });
-
-            return PartialView();
+                _logger.LogError(ex, "Lỗi");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
         }
 
         [HttpPost]
@@ -571,31 +466,39 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Import file thất bại");
-                return Ok(new Result<string>() { IsSuccessed = false, Message = "Import file thất bại" });
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> SuaTongHop(int thang, int nam)
         {
-            var listQuocTich = await _quocTichService.GetAll();
-
-            ViewBag.QuocTichOptions = listQuocTich.Select(x => new SelectListItem
+            try
             {
-                Text = x.TenQuocTich,
-                Value = HashUtil.EncodeID(x.Id.ToString())
-            });
+                var listQuocTich = await _quocTichService.GetAll();
 
-            var model = new TongHopUpdateRequest
+                ViewBag.QuocTichOptions = listQuocTich.Select(x => new SelectListItem
+                {
+                    Text = x.TenQuocTich,
+                    Value = HashUtil.EncodeID(x.Id.ToString())
+                });
+
+                var model = new TongHopUpdateRequest
+                {
+                    CongDon = "",
+                    SoLieu = "",
+                    ThiPhan = 0,
+                    Month = thang,
+                    Year = nam
+                };
+
+                return PartialView(model);
+            }
+            catch (Exception ex)
             {
-                CongDon = "",
-                SoLieu = "",
-                ThiPhan = 0,
-                Month = thang,
-                Year = nam
-            };
-
-            return PartialView(model);
+                _logger.LogError(ex, "Lỗi");
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
         }
 
         [HttpPost]
@@ -623,17 +526,20 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi cập nhật");
-                return BadRequest("Đã có lỗi xảy ra");
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
         }
 
         [HttpGet]
         public IActionResult XoaTongHop(int thang, int nam)
         {
-            ViewBag.Thang = thang;
-            ViewBag.Nam = nam;
+            var model = new TongHopDeleteRequest()
+            {
+                Thang = thang,
+                Nam = nam
+            };
 
-            return PartialView();
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -649,7 +555,7 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi xóa tổng hợp thị trường");
-                return BadRequest("Đã có lỗi xảy ra");
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
         }
     }

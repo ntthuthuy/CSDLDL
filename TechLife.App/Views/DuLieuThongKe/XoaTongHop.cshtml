@@ -1,4 +1,5 @@
-﻿<form id="modal-form">
+﻿@model TechLife.Model.TongHop.TongHopDeleteRequest
+<form id="modal-form">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title text-red">
@@ -12,15 +13,15 @@
             <div class="form-row">
                 <div class="col-md-12">
                     <div class="form-group text-center">
-                        <strong>Xóa toàn bộ dữ liệu tháng @ViewBag.Thang năm @ViewBag.Nam</strong>
+                        <strong>Xóa toàn bộ dữ liệu tháng @Model.Thang năm @Model.Nam</strong>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer float-right">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="thang" value="@ViewBag.Thang" />
-            <input type="hidden" name="nam" value="@ViewBag.Nam" />
+            <input type="hidden" asp-for="Thang" />
+            <input type="hidden" asp-for="Nam" />
             <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
                 Hủy
             </button>
@@ -43,21 +44,16 @@
                 if (data.isSuccessed) {
                     dropModal();
                     showNotification(data);
-                    if(isReload) {
-                        window.location.reload();
-                    } else {
-                        let element = document.getElementById('view-content');
-                        let params = window.location.search;
-                        loadContent(`/DuLieuThongKe/XoaTongHop/${params}`, element);
-                    }
+                    let element = document.getElementById('view-content');
+                    let params = window.location.search;
+                    loadContent(`/DuLieuThongKe/TongHopList/${params}`, element);
                 } else {
                     showNotification(data);
                 }
             },
             error: function(xhr) {
                 hideLoading();
-                var err = eval("(" + xhr.responseText + ")");
-                showNotification({ isSuccessed: false, message: err });
+                showNotification({ isSuccessed: false, message: xhr.responseText });
             }
         })
     })
