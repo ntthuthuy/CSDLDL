@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model IEnumerable<SelectListItem>
+
+<option value="">Chọn</option>
+@if (Model != null && Model.Any())
+{
+    foreach (var item in Model)
+    {
+        <option selected="@item.Selected" disabled="@item.Disabled" value="@item.Value">@item.Text</option>
+    }
+}

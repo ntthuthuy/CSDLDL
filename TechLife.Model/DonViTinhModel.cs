@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TechLife.Model
 {
@@ -12,5 +9,6 @@ namespace TechLife.Model
         public string Ten { get; set; }
         public bool IsStatus { get; set; }
         public bool IsDelete { get; set; }
+        public string NgonNguId { get; set; }
     }
 }

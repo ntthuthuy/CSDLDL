@@ -52,6 +52,7 @@ namespace TechLife.App.Controllers
         private readonly ILoaiHinhService _loaiHinhService;
         private readonly IDanhMucService _danhMucService;
         private readonly ILichSuCapNhatService _lichSuCapNhatService;
+        private readonly INgonNguService _ngonNguService;
         private readonly IDonViTinhService _donViTinhService;
         private readonly ILogger<HoSoController> _logger;
 
@@ -103,6 +104,7 @@ namespace TechLife.App.Controllers
             , ILoaiHinhService loaiHinhService
             , IDanhMucService danhMucService
             , ILichSuCapNhatService lichSuCapNhatService
+            , INgonNguService ngonNguService
             , ILogger<HoSoController> logger
 
             )
@@ -139,6 +141,7 @@ namespace TechLife.App.Controllers
             _loaiHinhService = loaiHinhService;
             _danhMucService = danhMucService;
             _lichSuCapNhatService = lichSuCapNhatService;
+            _ngonNguService = ngonNguService;
             _donViTinhService = donViTinhService;
             _config = configuration;
             _logger = logger;
@@ -163,9 +166,9 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task<List<NgoaiNguHoSoModel>> ListNgoaiNguHoSo(int hosoId = 0, List<NgoaiNguHoSoModel> listValue = null)
+        private async Task<List<NgoaiNguHoSoModel>> ListNgoaiNguHoSo(int hosoId = 0, List<NgoaiNguHoSoModel> listValue = null, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            List<NgoaiNguModel> list = await _ngoaiNguService.GetAll();
+            List<NgoaiNguModel> list = await _ngoaiNguService.GetAll(ngonNguId);
             var listItem = new List<NgoaiNguHoSoModel>();
             foreach (var x in list)
             {
@@ -182,9 +185,9 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task<List<TrinhDoHoSoModel>> ListTrinhDoHoSo(int hosoId = 0, List<TrinhDoHoSoModel> listValue = null)
+        private async Task<List<TrinhDoHoSoModel>> ListTrinhDoHoSo(int hosoId = 0, List<TrinhDoHoSoModel> listValue = null, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            List<TrinhDoModel> list = await _trinhDoService.GetAll();
+            List<TrinhDoModel> list = await _trinhDoService.GetAll(ngonNguId);
             var listItem = new List<TrinhDoHoSoModel>();
             foreach (var x in list)
             {
@@ -201,9 +204,9 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task<List<BoPhanHoSoModel>> ListBoPhanHoSo(int linhvucId, int hosoId = 0, List<BoPhanHoSoModel> listValue = null)
+        private async Task<List<BoPhanHoSoModel>> ListBoPhanHoSo(int linhvucId, int hosoId = 0, List<BoPhanHoSoModel> listValue = null, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            List<BoPhanVm> list = await _boPhanService.GetAll(linhvucId);
+            List<BoPhanVm> list = await _boPhanService.GetAll(linhvucId, ngonNguId);
             var listItem = new List<BoPhanHoSoModel>();
             foreach (var x in list)
             {
@@ -220,9 +223,9 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task<List<MucDoTTNNHoSoModel>> ListMucDoThongThaoHoSo(int hosoId = 0, List<MucDoTTNNHoSoModel> listValue = null)
+        private async Task<List<MucDoTTNNHoSoModel>> ListMucDoThongThaoHoSo(int hosoId = 0, List<MucDoTTNNHoSoModel> listValue = null, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            List<MucDoThongThaoNgoaiNguModel> list = await _mucDoThongThaoNgoaiNguService.GetAll();
+            List<MucDoThongThaoNgoaiNguModel> list = await _mucDoThongThaoNgoaiNguService.GetAll(ngonNguId);
 
             var listItem = new List<MucDoTTNNHoSoModel>();
             foreach (var x in list)
@@ -335,10 +338,10 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task<List<HoSoVanBanVm>> ListVanBanHoSo(int linhvucId, int hosoId = 0, List<HoSoVanBanVm> listValue = null)
+        private async Task<List<HoSoVanBanVm>> ListVanBanHoSo(int linhvucId, int hosoId = 0, List<HoSoVanBanVm> listValue = null, string ngonNguId = SystemConstants.DefaultLanguage)
         {
             var listItem = new List<HoSoVanBanVm>();
-            List<GiayPhepVm> list = await _giayPhepService.GetAll(linhvucId);
+            List<GiayPhepVm> list = await _giayPhepService.GetAll(linhvucId, ngonNguId);
             foreach (var x in list)
             {
                 var value = listValue != null ? listValue.Where(v => v.GiayPhepId == x.Id).FirstOrDefault() : null;
@@ -350,7 +353,7 @@ namespace TechLife.App.Controllers
                     NgayHetHan = value != null ? value.NgayHetHan : DateTime.Now,
                     NgayCap = value != null ? value.NgayCap : DateTime.Now,
                     NoiCap = value != null ? value.NoiCap : "",
-                    IsStatus = value != null ? value.IsStatus : false,
+                    IsStatus = value != null && value.IsStatus,
                     TenGoi = x.Ten,
                     FilePath = value != null ? value.FilePath : "",
                     FileName = value != null ? value.FileName : "",
@@ -484,9 +487,9 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task OptionDonViTinh(int seletedId = 0)
+        private async Task OptionDonViTinh(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var donvitinh = await _donViTinhService.GetAll();
+            var donvitinh = await _donViTinhService.GetAll(ngonNguId);
 
             var list = donvitinh.Select(x => new SelectListItem
             {
@@ -498,15 +501,15 @@ namespace TechLife.App.Controllers
             ViewBag.listDonViTinh = list;
         }
 
-        private async Task OptionLoaiHinhKinhDoanh(int seletedId = 0)
+        private async Task OptionLoaiHinhKinhDoanh(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var loaihinhkinhdoanh = await _loaiHinhService.GetAll();
+            var loaihinhkinhdoanh = await _loaiHinhService.GetAll(ngonNguId);
 
             var list = loaihinhkinhdoanh.Select(x => new SelectListItem
             {
                 Text = x.TenLoai.ToString(),
                 Value = x.Id.ToString(),
-                Selected = (int)x.Id == seletedId ? true : false
+                Selected = x.Id == seletedId
             });
 
             ViewBag.listLoaiHinhKD = list;
@@ -576,6 +579,10 @@ namespace TechLife.App.Controllers
 
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.CoSoLuuTru, pageRequest);
 
+                List<DuLieuDuLichModel> coSoLuuTru = data.Items.Select(x => x).ToList();
+
+                ViewBag.ListCoSoLuuTruEnglish = await _duLieuDuLichService.CoSoLuuTruEnglish(coSoLuuTru);
+
                 return View(data);
             }
             catch (Exception ex)
@@ -591,11 +598,15 @@ namespace TechLife.App.Controllers
         {
             try
             {
-                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
+                string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
+                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru, ngonNguId);
                 var csltModel = new DuLieuDuLichModel();
                 ViewData["Title"] = "Thêm cơ sở lưu trú";
                 ViewData["Title_parent"] = "Hồ sơ";
-                var amenities = tienNghi.Select(x => new Model.DuLieuDuLich.AmenityVm()
+                var amenities = tienNghi.Select(x => new AmenityVm()
                 {
                     Id = x.Id,
                     Name = x.Ten
@@ -603,20 +614,21 @@ namespace TechLife.App.Controllers
                 csltModel.DSLoaiPhong = await ListLoaiPhongHoSo();
                 csltModel.DSDichVu = await ListDichVuHoSo();
                 csltModel.DSNhaHang = ListNhaHangLuuTru();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, 0, null, ngonNguId);
                 csltModel.Amenities = amenities;
                 await OptionHuyen();
                 await OptionXa(-1);
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiHinhKinhDoanh();
-                await this.OptionDonViTinh(2);
+                await this.OptionLoaiHinhKinhDoanh(0, ngonNguId);
+                await this.OptionDonViTinh(2, ngonNguId);
+
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -635,7 +647,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "create_luutru,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themcosoluutru(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themcosoluutru(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -651,7 +663,7 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+                var result = await _duLieuDuLichService.Create(NgonNgu, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     TempData.AddAlert(new Result<string>()
@@ -718,16 +730,17 @@ namespace TechLife.App.Controllers
 
         [HttpGet]
         [Authorize(Roles = "edit_luutru,root")]
-        public async Task<IActionResult> Suacosoluutru(string id)
+        public async Task<IActionResult> Suacosoluutru(string id, string ngonNgu)
         {
             try
             {
                 ViewData["Title"] = "Sửa cơ sở lưu trú";
                 ViewData["Title_parent"] = "Hồ sơ";
-                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru);
+                ngonNgu = string.IsNullOrEmpty(ngonNgu) ? SystemConstants.DefaultLanguage : ngonNgu;
+                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru, ngonNgu);
                 int Id = Convert.ToInt32(HashUtil.DecodeID(id));
                 var csltModel = await _duLieuDuLichService.GetById(Id);
-                var amenities = tienNghi.Select(x => new Model.DuLieuDuLich.AmenityVm()
+                var amenities = tienNghi.Select(x => new AmenityVm()
                 {
                     Id = x.Id,
                     Name = x.Ten,
@@ -737,21 +750,21 @@ namespace TechLife.App.Controllers
                 {
                     csltModel.DSLoaiPhong = await ListLoaiPhongHoSo(csltModel.Id, csltModel.DSLoaiPhong);
                     csltModel.DSDichVu = await ListDichVuHoSo(csltModel.Id, csltModel.DSDichVu);
-                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSBoPhan);
-                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
+                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, ngonNgu);
+                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, ngonNgu);
+                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSBoPhan, ngonNgu);
+                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, ngonNgu);
                     csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSTienNghi);
                     csltModel.DSNhaHang = ListNhaHangLuuTru(csltModel.Id, csltModel.DSNhaHang);
-                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSVanBan);
+                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSVanBan, ngonNgu);
                     csltModel.Amenities = amenities;
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
                     await OptionNhaCungCap();
                     await OptionTieuChuanCoSo();
 
-                    await this.OptionDonViTinh(2);
-                    await this.OptionLoaiHinhKinhDoanh();
+                    await this.OptionDonViTinh(0, ngonNgu);
+                    await this.OptionLoaiHinhKinhDoanh(csltModel.LoaiHinhId, ngonNgu);
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()

@@ -11,7 +11,6 @@ namespace TechLife.Service
 {
     public interface ITrinhDoService
     {
-        Task<List<TrinhDoModel>> GetAll();
 
         Task<PagedResult<TrinhDoModel>> GetPaging(GetPagingRequest request);
 
@@ -23,6 +22,7 @@ namespace TechLife.Service
 
         Task<ApiResult<int>> Delete(int id);
         Task<List<TrinhDoHoSoModel>> GetAllByHoSo(int hosoId);
+        Task<List<TrinhDoModel>> GetAll(string ngonNguId = SystemConstants.DefaultLanguage);
     }
 
     public class TrinhDoService : ITrinhDoService
@@ -36,12 +36,15 @@ namespace TechLife.Service
 
         public async Task<ApiResult<TrinhDoModel>> Create(TrinhDoModel request)
         {
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<TrinhDoModel>("Ngôn ngữ không hợp lệ");
+
             var TrinhDo = new TrinhDo()
             {
                 IsDelete = request.IsDelete,
                 IsStatus = request.IsStatus,
                 MoTa = request.MoTa,
                 TenTrinhDo = request.TenTrinhDo,
+                NgonNguId = request.NgonNguId
             };
             _context.TrinhDo.Add(TrinhDo);
             var result = await _context.SaveChangesAsync();
@@ -74,17 +77,18 @@ namespace TechLife.Service
             return new ApiErrorResult<int>("Xóa lỗi!");
         }
 
-        public async Task<List<TrinhDoModel>> GetAll()
+        public async Task<List<TrinhDoModel>> GetAll(string ngonNguId)
         {
             var query = from m in _context.TrinhDo
-                        where m.IsDelete == false
+                        where m.IsDelete == false && m.NgonNguId == ngonNguId
                         select new TrinhDoModel
                         {
                             Id = m.Id,
                             TenTrinhDo = m.TenTrinhDo,
                             IsDelete = m.IsDelete,
                             IsStatus = m.IsStatus,
-                            MoTa = m.MoTa
+                            MoTa = m.MoTa,
+                            NgonNguId = m.NgonNguId
                         };
             return await query.ToListAsync();
         }
@@ -103,7 +107,8 @@ namespace TechLife.Service
             {
                 MoTa = obj.MoTa,
                 TenTrinhDo = obj.TenTrinhDo,
-                Id = obj.Id
+                Id = obj.Id,
+                NgonNguId = obj.NgonNguId
             };
 
         }
@@ -148,10 +153,13 @@ namespace TechLife.Service
                 return new ApiErrorResult<int>("Không tìm thấy!");
             }
 
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<int>("Ngôn ngữ không hợp lệ");
+
             var model = TrinhDo.FirstOrDefault();
 
             model.MoTa = request.MoTa;
             model.TenTrinhDo = request.TenTrinhDo;
+            model.NgonNguId = request.NgonNguId;
 
             _context.TrinhDo.Update(model);
 
@@ -171,7 +179,7 @@ namespace TechLife.Service
             {
                 list.Add(new TrinhDoHoSoModel()
                 {
-                    TrinhDo =await GetById(m.TrinhDoId),
+                    TrinhDo = await GetById(m.TrinhDoId),
                     TrinhDoId = m.TrinhDoId,
                     HoSoId = hosoId,
                     DonViTinhId = m.DonViTinhId,

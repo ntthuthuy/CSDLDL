@@ -19,7 +19,7 @@ namespace TechLife.Service
 
         Task<GiayPhepVm> GetById(int id);
 
-        Task<List<GiayPhepVm>> GetAll(int loaihinhId);
+        Task<List<GiayPhepVm>> GetAll(int loaihinhId, string ngonNguId = SystemConstants.DefaultLanguage);
 
         Task<ApiResult<bool>> Delete(int id);
     }
@@ -70,10 +70,10 @@ namespace TechLife.Service
             return new ApiErrorResult<bool>($"Xóa không thành công!");
         }
 
-        public async Task<List<GiayPhepVm>> GetAll(int loaihinhId)
+        public async Task<List<GiayPhepVm>> GetAll(int loaihinhId, string ngonNguId)
         {
             var query = from m in _context.GiayPhep
-                        where (loaihinhId == -1 || m.LinhVucId.Contains(loaihinhId.ToString()))
+                        where (loaihinhId == -1 || m.LinhVucId.Contains(loaihinhId.ToString())) && m.NgonNguId == ngonNguId
                         select new { m };
 
             return await query

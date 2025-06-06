@@ -11,6 +11,7 @@
 @{
     var user = Context.Request.GetUser();
     var User = new CustomClaimsPrincipal(userService, this.User);
+    var dict = (Dictionary<int, int>)ViewBag.ListCoSoLuuTruEnglish;
 }
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -18,7 +19,6 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -47,7 +47,7 @@
                                     @*<button type="button" class="btn btn-xs btn-success btn-upload">
                                             <i class="fas fa-upload"></i> Tải lên
                                         </button>*@
-                                    @if (User.IsInRole("create_luutru")|| User.IsInRole("root"))
+                                    @if (User.IsInRole("create_luutru") || User.IsInRole("root"))
                                     {
                                         <a href="/Hoso/Themcosoluutru/" class="btn btn-xs btn-success">
                                             <i class="fas fa-plus-circle"></i> Thêm mới
@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <table class="table table-hover table-striped table-bordered">
+                                        <table class="table-hover table-striped table-bordered table">
                                             <thead>
                                                 <tr>
                                                     <th width="5%" class="text-center">STT</th>
@@ -146,6 +146,25 @@
                                                                     }
                                                                 </td>
                                                                 <td class="text-center">
+                                                                    @if (User.IsInRole("create_luutru") || User.IsInRole("root"))
+                                                                    {
+                                                                        int item = dict.GetValueOrDefault(d.Id);
+
+                                                                        if(item != 0)
+                                                                        {
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Suacosoluutru?Id=@HashUtil.EncodeID(item.ToString())&NgonNgu=en">
+                                                                                <i class="fas fa-globe-europe"></i>
+                                                                                <span>ENG</span>
+                                                                            </a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themcosoluutru?NgonNgu=en">
+                                                                                <i class="fas fa-globe-europe"></i>
+                                                                                <span>ENG</span>
+                                                                            </a>
+                                                                        }
+                                                                    }
                                                                     @if (User.IsInRole("edit_luutru") || User.IsInRole("root"))
                                                                     {
                                                                         <a title="Sửa bản đồ cơ sở lưu trú" href="/HueCIT/BanDo/Edit/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-info btn-xs"><i class="fas fa-map"></i> Bản đồ</a>
@@ -230,7 +249,7 @@
     <!-- /.modal-dialog -->
 </div>
 @section scripts
-    {
+{
     <script type="text/javascript">
         $(document).ready(function () {
 

@@ -205,7 +205,7 @@
                                                         <div class="col-md-3">
                                                             <div class="form-group">
                                                                 <label class="control-label">Số điện thoại</label>
-                                                                <input asp-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" type="number" value="0" class="form-control" />
+                                                                <input asp-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" class="text-danger"></span>
                                                             </div>
                                                         </div>
@@ -1013,6 +1013,7 @@
                             </div>
                             <div class="card-footer">
                                 <div class="float-right">
+                                    <input type="hidden" name="NgonNgu" value="@ViewBag.NgonNgu" />
                                     <button type="submit" name="type_sumit" value="save" class="btn btn-primary">Lưu và cập nhật</button>
                                 </div>
                             </div>

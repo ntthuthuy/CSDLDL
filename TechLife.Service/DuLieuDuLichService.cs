@@ -8,8 +8,10 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using TechLife.Common;
 using TechLife.Common.Enums;
+using TechLife.Common.Enums.HueCIT;
 using TechLife.Data;
 using TechLife.Data.Entities;
+using TechLife.Data.Extensions;
 using TechLife.Data.Repositories;
 using TechLife.Model;
 using TechLife.Model.DuLieuDuLich;
@@ -17,9 +19,6 @@ using TechLife.Model.HoSoVanBan;
 using TechLife.Model.NhaCungCap;
 using TechLife.Model.TienNghi;
 using TechLife.Service.Common;
-using TechLife.Data.Extensions;
-using TechLife.Model.HoSoThanhTra;
-using TechLife.Common.Enums.HueCIT;
 
 namespace TechLife.Service
 {
@@ -97,6 +96,8 @@ namespace TechLife.Service
         Task<List<DuLieuDuLichAPI>> GetAll_LuHanh();
         Task<List<DuLieuDuLichAPI>> GetAll_CoSoMuaSam();
         Task<List<DuLieuDuLichAPI>> GetAll_VanChuyen();
+
+        Task<Dictionary<int, int>> CoSoLuuTruEnglish(List<DuLieuDuLichModel> coSoLuuTru);
 
         //HueCIT
         Task<List<HoSoVanBanVm>> GetListVanBanByHoSo(int hosoId);
@@ -1287,7 +1288,8 @@ namespace TechLife.Service
                 : await _context.LoaiDichVu.Where(x => x.Id == item.LoaiHinhId).Select(x => new LoaiHinhModel() { Id = x.Id, TenLoai = x.TenLoai }).FirstOrDefaultAsync();
                 item.Images = await _fileUploadService.GetImageByHoSoId(item.Id, LoaiFile.hosodulich.ToString());
                 item.NhaCungCap = await _context.NhaCungCap.Where(x => x.Id == item.NhaCungCapId).Select(x => new NhaCungCapVm() { Ten = x.Ten }).FirstOrDefaultAsync();
-            };
+            }
+            ;
             //4. Select and projection
             return new PagedResult<DuLieuDuLichModel>()
             {
@@ -3260,6 +3262,20 @@ namespace TechLife.Service
                 }).ToList();
 
             return data;
+        }
+
+        public async Task<Dictionary<int, int>> CoSoLuuTruEnglish(List<DuLieuDuLichModel> coSoLuuTru)
+        {
+            var data = await _context.HoSo
+                .AsNoTracking()
+                .Where(x => !x.IsDelete && x.NgonNguId.ToLower() == "en")
+                .ToListAsync();
+
+            var result = from d in data
+                         join m in coSoLuuTru on d.SoDienThoai equals m.SoDienThoai
+                         select new { Key = m.Id, Value = d.Id };
+
+            return result.ToDictionary(x => x.Key, x => x.Value);
         }
     }
 

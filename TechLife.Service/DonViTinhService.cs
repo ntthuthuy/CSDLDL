@@ -12,7 +12,6 @@ namespace TechLife.Service
 {
     public interface IDonViTinhService
     {
-        Task<List<DonViTinhModel>> GetAll();
 
         Task<PagedResult<DonViTinhModel>> GetPaging(GetPagingRequest request);
 
@@ -23,6 +22,7 @@ namespace TechLife.Service
         Task<DonViTinhModel> GetById(int id);
 
         Task<ApiResult<int>> Delete(int id);
+        Task<List<DonViTinhModel>> GetAll(string ngonNguId = SystemConstants.DefaultLanguage);
     }
 
     public class DonViTinhService : IDonViTinhService
@@ -41,11 +41,13 @@ namespace TechLife.Service
         {
             try
             {
+                if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<DonViTinhModel>("Ngôn ngữ không hợp lệ");
                 var donViTinh = new DonViTinh()
                 {
                     IsDelete = request.IsDelete,
                     IsStatus = request.IsStatus,
                     Ten = request.Ten,
+                    NgonNguId = request.NgonNguId
                 };
                 _context.DonViTinh.Add(donViTinh);
                 var result = await _context.SaveChangesAsync();
@@ -95,28 +97,29 @@ namespace TechLife.Service
             }
         }
 
-        public async Task<List<DonViTinhModel>> GetAll()
+        public async Task<List<DonViTinhModel>> GetAll(string ngonNguId)
         {
             try
             {
                 var query = from m in _context.DonViTinh
-                            where m.IsDelete == false
+                            where m.IsDelete == false && m.NgonNguId == ngonNguId
                             select new DonViTinhModel
                             {
                                 Id = m.Id,
                                 Ten = m.Ten,
                                 IsDelete = m.IsDelete,
                                 IsStatus = m.IsStatus,
+                                NgonNguId = m.NgonNguId
                             };
                 return await query.ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
                 throw new TLException("Đã có lỗi trong quá trình xử lý", ex);
             }
-          
+
         }
 
         public async Task<DonViTinhModel> GetById(int id)
@@ -134,10 +137,11 @@ namespace TechLife.Service
                 return new DonViTinhModel()
                 {
                     Ten = obj.Ten,
-                    Id = obj.Id
+                    Id = obj.Id,
+                    NgonNguId = obj.NgonNguId
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
@@ -177,7 +181,7 @@ namespace TechLife.Service
                     Items = data
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
@@ -194,10 +198,12 @@ namespace TechLife.Service
                 {
                     throw new TLException($"Không tìm thấy bảng ghi nào với id = {id}");
                 }
+                if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<int>("Ngôn ngữ không hợp lệ");
 
                 var model = donViTinh.FirstOrDefault();
 
                 model.Ten = request.Ten;
+                model.NgonNguId = request.NgonNguId;
 
                 _context.DonViTinh.Update(model);
 

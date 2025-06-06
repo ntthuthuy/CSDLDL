@@ -151,6 +151,7 @@ namespace TechLife.App
             services.AddTransient<IDbConnectionService, DbConnectionService>();
             services.AddTransient<IQuocTichService, QuocTichService>();
             services.AddTransient<ITongHopService, TongHopService>();
+            services.AddTransient<ILoaiHinhLaoDongService, LoaiHinhLaoDongService>();
 
             services.AddTransient<IFileUploadService, FileUploadService>();
             services.AddTransient<IFileUploaderDongBoService, FileUploaderDongBoService>();

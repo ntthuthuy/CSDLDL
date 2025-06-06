@@ -155,5 +155,7 @@ namespace TechLife.Model.DuLieuDuLich
         public string GiaThamKhaoTu { get; set; }
         public string GiaThamKhaoDen { get; set; }
         public int? MaSoThue { get; set; }
+
+        public string NgonNguId { get; set; }
     }
 }

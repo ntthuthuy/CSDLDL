@@ -44,6 +44,10 @@ namespace TechLife.App.Controllers
         private readonly ILoaiHinhService _loaiHinhService;
         private readonly ILoaiDichVuService _loaiDichVuService;
         private readonly INgoaiNguService _ngoaiNguService;
+        private readonly ITrinhDoService _trinhDoService;
+        private readonly ILoaiHinhLaoDongService _loaiHinhLaoDongService;
+        private readonly IMucDoThongThaoNgoaiNguService _mucDoThongThaoNgoaiNguService;
+        private readonly IDonViTinhService _donViTinhService;
         private readonly ILogger<DanhmucController> _logger;
         private const string SERVICE_ID_NHA_HANG = "7NL8tqxUups3P0nh9xI2+w==";
         private const string SERVICE_ID_LU_HANH = "1uDmGjtxCbkEyePdF1lYVQ==";
@@ -96,6 +100,10 @@ namespace TechLife.App.Controllers
             , ILoaiHinhService loaiHinhService
             , ILoaiDichVuService loaiDichVuService
             , INgoaiNguService ngoaiNguService
+            , ITrinhDoService trinhDoService
+            , ILoaiHinhLaoDongService loaiHinhLaoDongService
+            , IMucDoThongThaoNgoaiNguService mucDoThongThaoNgoaiNguService
+            , IDonViTinhService donViTinhService
             , ILogger<DanhmucController> logger)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
@@ -129,6 +137,10 @@ namespace TechLife.App.Controllers
             _loaiHinhService = loaiHinhService;
             _loaiDichVuService = loaiDichVuService;
             _ngoaiNguService = ngoaiNguService;
+            _trinhDoService = trinhDoService;
+            _loaiHinhLaoDongService = loaiHinhLaoDongService;
+            _mucDoThongThaoNgoaiNguService = mucDoThongThaoNgoaiNguService;
+            _donViTinhService = donViTinhService;
             _logger = logger;
         }
 
@@ -1495,16 +1507,28 @@ namespace TechLife.App.Controllers
         {
             ViewData["Title"] = "Mức độ thông thạo ngoại ngữ";
             ViewData["Title_parent"] = "Danh mục";
-            var data = await _mucDoThongThaoNgoaiNguApiClient.GetAll();
-
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+            var data = await _mucDoThongThaoNgoaiNguService.GetAll(ngonNguId);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
             return View(data);
         }
         [HttpGet]
-        public IActionResult Themmucdothongthaongoaingu()
+        public async Task<IActionResult> Themmucdothongthaongoaingu()
         {
 
             ViewData["Title"] = "Thêm mức độ thông thạo ngoại ngữ";
             ViewData["Title_parent"] = "Danh mục";
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == SystemConstants.DefaultLanguage
+            });
             return View();
         }
         [HttpPost]
@@ -1528,7 +1552,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
 
-            var result = await _mucDoThongThaoNgoaiNguApiClient.Create(request);
+            var result = await _mucDoThongThaoNgoaiNguService.Create(request);
 
             if (result.IsSuccessed)
             {
@@ -1538,7 +1562,7 @@ namespace TechLife.App.Controllers
                     Message = "Thêm mới thành công",
                 });
 
-                return Redirect("/Danhmuc/Dothanhthaongonngu");
+                return RedirectToAction("Dothanhthaongonngu", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1546,6 +1570,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -1556,7 +1587,13 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Sửa mức độ thông thạo ngoại ngữ";
             ViewData["Title_parent"] = "Danh mục";
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _mucDoThongThaoNgoaiNguApiClient.GetById(Id);
+            var data = await _mucDoThongThaoNgoaiNguService.GetById(Id);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == data.NgonNguId
+            });
             return View(data);
         }
         [HttpPost]
@@ -1582,7 +1619,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _mucDoThongThaoNgoaiNguApiClient.Update(id, request);
+            var result = await _mucDoThongThaoNgoaiNguService.Update(id, request);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -1590,7 +1627,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Cập nhật thành công",
                 });
-                return Redirect("/Danhmuc/Dothanhthaongonngu");
+                return RedirectToAction("Dothanhthaongonngu", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1598,6 +1635,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -1609,7 +1653,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _mucDoThongThaoNgoaiNguApiClient.Delete(id);
+            var result = await _mucDoThongThaoNgoaiNguService.Delete(id);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -1637,17 +1681,28 @@ namespace TechLife.App.Controllers
 
             ViewData["Title"] = "Loại hình lao động";
             ViewData["Title_parent"] = "Danh mục";
-
-            var data = await _loaiHinhLaoDongApiClient.GetAll();
-
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+            var data = await _loaiHinhLaoDongService.GetAll(ngonNguId);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
             return View(data);
         }
         [HttpGet]
-        public IActionResult Themloaihinhlaodong()
+        public async Task<IActionResult> Themloaihinhlaodong()
         {
 
             ViewData["Title"] = "Thêm loại hình lao động";
             ViewData["Title_parent"] = "Danh mục";
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == SystemConstants.DefaultLanguage
+            });
             return View();
         }
         [HttpPost]
@@ -1671,7 +1726,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
 
-            var result = await _loaiHinhLaoDongApiClient.Create(request);
+            var result = await _loaiHinhLaoDongService.Create(request);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -1679,7 +1734,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Thêm mới thành công",
                 });
-                return Redirect("/Danhmuc/Loaihinhlaodong");
+                return RedirectToAction("Loaihinhlaodong", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1687,6 +1742,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -1697,7 +1759,13 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Sửa loại hình lao động";
             ViewData["Title_parent"] = "Danh mục";
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _loaiHinhLaoDongApiClient.GetById(Id);
+            var data = await _loaiHinhLaoDongService.GetById(Id);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == data.NgonNguId
+            });
             return View(data);
         }
         [HttpPost]
@@ -1723,7 +1791,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _loaiHinhLaoDongApiClient.Update(id, request);
+            var result = await _loaiHinhLaoDongService.Update(id, request);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -1732,7 +1800,7 @@ namespace TechLife.App.Controllers
                     Message = "Cập nhật thành công",
                 });
 
-                return Redirect("/Danhmuc/Loaihinhlaodong");
+                return RedirectToAction("Loaihinhlaodong", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1740,6 +1808,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -1751,7 +1826,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _loaiHinhLaoDongApiClient.Delete(id);
+            var result = await _loaiHinhLaoDongService.Delete(id);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -1921,17 +1996,28 @@ namespace TechLife.App.Controllers
 
             ViewData["Title"] = "Trình độ";
             ViewData["Title_parent"] = "Danh mục";
-
-            var data = await _trinhDoApiClient.GetAll();
-
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+            var data = await _trinhDoService.GetAll(ngonNguId);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
             return View(data);
         }
         [HttpGet]
-        public IActionResult Themtrinhdo()
+        public async Task<IActionResult> Themtrinhdo()
         {
 
             ViewData["Title"] = "Thêm trình độ";
             ViewData["Title_parent"] = "Danh mục";
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == SystemConstants.DefaultLanguage
+            });
             return View();
         }
         [HttpPost]
@@ -1955,7 +2041,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
 
-            var result = await _trinhDoApiClient.Create(request);
+            var result = await _trinhDoService.Create(request);
 
             if (result.IsSuccessed)
             {
@@ -1965,7 +2051,7 @@ namespace TechLife.App.Controllers
                     Message = "Thêm mới thành công",
                 });
 
-                return Redirect("/Danhmuc/Diaphuong");
+                return RedirectToAction("Trinhdo", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1973,6 +2059,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -1983,7 +2076,13 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Sửa trình độ";
             ViewData["Title_parent"] = "Danh mục";
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _trinhDoApiClient.GetById(Id);
+            var data = await _trinhDoService.GetById(Id);
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == data.NgonNguId
+            });
             return View(data);
         }
         [HttpPost]
@@ -2008,7 +2107,7 @@ namespace TechLife.App.Controllers
             }
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
-            var result = await _trinhDoApiClient.Update(id, request);
+            var result = await _trinhDoService.Update(id, request);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -2016,7 +2115,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Cập nhật thành công",
                 });
-                return Redirect("/Danhmuc/Trinhdo");
+                return RedirectToAction("Trinhdo", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -2024,6 +2123,12 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -2035,7 +2140,7 @@ namespace TechLife.App.Controllers
 
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _trinhDoApiClient.Delete(id);
+            var result = await _trinhDoService.Delete(id);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -2893,18 +2998,32 @@ namespace TechLife.App.Controllers
 
             ViewData["Title"] = "Đơn vị tính";
             ViewData["Title_parent"] = "Danh mục";
+            string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
+            var data = await _donViTinhService.GetAll(ngonNguId);
 
-            var data = await _donViTinhApiClient.GetAll();
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == ngonNguId
+            });
 
             return View(data);
         }
         [HttpGet]
-        public IActionResult Themdvt()
+        public async Task<IActionResult> Themdvt()
         {
 
             ViewData["Title"] = "Thêm đơn vị tính";
             ViewData["Title_parent"] = "Danh mục";
+
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == SystemConstants.DefaultLanguage
+            });
 
             return View();
         }
@@ -2927,7 +3046,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
 
-            var result = await _donViTinhApiClient.Create(request);
+            var result = await _donViTinhService.Create(request);
 
             if (result != null)
             {
@@ -2939,7 +3058,7 @@ namespace TechLife.App.Controllers
                         Message = "Thêm mới thành công",
                     });
 
-                    return Redirect("/Danhmuc/Donvitinh");
+                    return RedirectToAction("Donvitinh", new { NgonNgu = request.NgonNguId });
                 }
                 else
                 {
@@ -2947,6 +3066,13 @@ namespace TechLife.App.Controllers
                     {
                         IsSuccessed = result.IsSuccessed,
                         Message = result.Message
+                    });
+
+                    ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                    {
+                        Text = x.Ten,
+                        Value = x.Id,
+                        Selected = x.Id == request.NgonNguId
                     });
                 }
             }
@@ -2957,6 +3083,13 @@ namespace TechLife.App.Controllers
                     IsSuccessed = false,
                     Message = "Đã có lỗi xãy ra trong quá trình xử lý"
                 });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
+                });
             }
             return View(request);
         }
@@ -2964,13 +3097,16 @@ namespace TechLife.App.Controllers
         [HttpGet]
         public async Task<IActionResult> Suadvt(string id = "")
         {
-
-
             ViewData["Title"] = "Sửa đơn vị tính";
             ViewData["Title_parent"] = "Danh mục";
 
-            var data = await _donViTinhApiClient.GetById(Convert.ToInt32(HashUtil.DecodeID(id)));
-
+            var data = await _donViTinhService.GetById(Convert.ToInt32(HashUtil.DecodeID(id)));
+            ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+            {
+                Text = x.Ten,
+                Value = x.Id,
+                Selected = x.Id == data.NgonNguId
+            });
             return View(data);
         }
         [HttpPost]
@@ -2995,7 +3131,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
 
-            var result = await _donViTinhApiClient.Update(request.Id, request);
+            var result = await _donViTinhService.Update(request.Id, request);
             if (result.IsSuccessed)
             {
                 TempData.AddAlert(new Result<string>()
@@ -3004,7 +3140,7 @@ namespace TechLife.App.Controllers
                     Message = "Cập nhật thành công",
                 });
 
-                return Redirect("/Danhmuc/Donvitinh");
+                return RedirectToAction("Donvitinh", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -3012,6 +3148,12 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);

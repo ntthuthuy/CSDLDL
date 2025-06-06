@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TechLife.Data.Entities
+﻿namespace TechLife.Data.Entities
 {
     public class DonViTinh
     {
@@ -10,5 +6,6 @@ namespace TechLife.Data.Entities
         public string Ten { get; set; }
         public bool IsStatus { get; set; }
         public bool IsDelete { get; set; }
+        public string NgonNguId { get; set; }
     }
 }
