@@ -46,18 +46,24 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
                                             <label class="control-label">Lĩnh vực</label>
                                             <select onchange="this.form.submit()" class="form-control" id="loaihinh" name="loaihinh" asp-items="ViewBag.listLinhVucKinhDoanh">
                                                 <option value="-1">tất cả</option>
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">Ngôn ngữ</label>
+                                            <select onchange="this.form.submit()" class="form-control" name="NgonNgu" asp-items="ViewBag.NgonNguOptions"></select>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <table class="table table-hover table-striped table-bordered">
+                                        <table class="table-hover table-striped table-bordered table">
                                             <thead>
                                                 <tr>
                                                     <th width="5%" class="text-center">STT</th>
@@ -70,7 +76,7 @@
                                                 @{
                                                     if (Model != null && Model.Items != null)
                                                     {
-                                                        int stt = 0;
+                                                        int stt = (Model.PageIndex - 1) * Model.PageSize ;
                                                         <tr>
                                                             <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
                                                         </tr>

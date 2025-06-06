@@ -11,7 +11,7 @@ namespace TechLife.Service
 {
     public interface IGiayPhepService
     {
-        Task<PagedResult<GiayPhepVm>> GetPaging(int loaihinhId, GetPagingRequest request);
+        Task<PagedResult<GiayPhepVm>> GetPaging(int loaihinhId, GetPagingRequest request, string ngonNguId = SystemConstants.DefaultLanguage);
 
         Task<ApiResult<GiayPhepVm>> Create(GiayPhepCreateRequest request);
 
@@ -35,10 +35,15 @@ namespace TechLife.Service
 
         public async Task<ApiResult<GiayPhepVm>> Create(GiayPhepCreateRequest request)
         {
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<GiayPhepVm>("Ngôn ngữ không hợp lệ");
+
+            if (request.LoaiHinhId == null || request.LoaiHinhId.Count == 0) return new ApiErrorResult<GiayPhepVm>("Vui lòng chọn lĩnh vực sử dụng");
+
             var giayphep = new GiayPhep()
             {
                 Ten = request.Ten,
-                LinhVucId = string.Join(",", request.LoaiHinhId)
+                LinhVucId = string.Join(",", request.LoaiHinhId),
+                NgonNguId = request.NgonNguId
             };
             _context.GiayPhep.Add(giayphep);
             var result = await _context.SaveChangesAsync();
@@ -95,10 +100,10 @@ namespace TechLife.Service
             };
         }
 
-        public async Task<PagedResult<GiayPhepVm>> GetPaging(int loaihinhId, GetPagingRequest request)
+        public async Task<PagedResult<GiayPhepVm>> GetPaging(int loaihinhId, GetPagingRequest request, string ngonNguId)
         {
             var query = from m in _context.GiayPhep
-                        where (loaihinhId == -1 || m.LinhVucId.Contains(loaihinhId.ToString()))
+                        where (loaihinhId == -1 || m.LinhVucId.Contains(loaihinhId.ToString())) && m.NgonNguId == ngonNguId
                         select new { m };
 
             if (!string.IsNullOrEmpty(request.Keyword))
@@ -112,7 +117,8 @@ namespace TechLife.Service
                 {
                     Ten = x.m.Ten,
                     Id = x.m.Id,
-                    LinhVucId = x.m.LinhVucId
+                    LinhVucId = x.m.LinhVucId,
+                    NgonNguId = x.m.NgonNguId,
                 }).ToListAsync();
 
             //4. Select and projection
@@ -133,8 +139,11 @@ namespace TechLife.Service
                 return new ApiErrorResult<bool>($"Lỗi! Không tìm thấy với id :{id} ");
             }
 
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<bool>("Ngôn ngữ không hợp lệ");
+
             giayphep.Ten = request.Ten;
             giayphep.LinhVucId = string.Join(",", request.LoaiHinhId);
+            giayphep.NgonNguId = request.NgonNguId;
 
             _context.GiayPhep.Update(giayphep);
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace TechLife.Data.Entities
 {
@@ -13,6 +11,7 @@ namespace TechLife.Data.Entities
         public bool IsDelete { get; set; }
         public int ViTri { get; set; }
         public string LinhVucId { get; set; }
+        public string NgonNguId { get; set; }
         public List<BoPhanHoSo> DSBoPhanHoSo { get; set; }
     }
 }

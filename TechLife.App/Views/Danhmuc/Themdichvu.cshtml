@@ -38,10 +38,16 @@
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <div class="form-row">
-                                    <div class="col-md-6">
-                                        <div class="position-relative form-group">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">Ngôn ngữ</label>
+                                            <select class="form-control select2" asp-items="ViewBag.NgonNguOptions" asp-for="NgonNguId"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label class="control-label">Tên</label>
-                                            <input asp-for="TenDichVu" class="form-control is-invalid" />
+                                            <input asp-for="TenDichVu" class="form-control" />
                                             <span asp-validation-for="TenDichVu" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -49,7 +55,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Mô tả</label>
                                             <textarea asp-for="MoTa" class="form-control"> </textarea>
                                         </div>

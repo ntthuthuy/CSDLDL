@@ -43,16 +43,22 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="position-relative form-group">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
                                             <label class="control-label">Lĩnh vực</label>
                                             <select class="form-control" onchange="this.form.submit()" name="linhvuc" asp-items="ViewBag.listLinhVucKinhDoanh">
                                                 <option value="0">tất cả</option>
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ngôn ngữ</label>
+                                            <select class="form-control" onchange="this.form.submit()" name="NgonNgu" asp-items="ViewBag.NgonNguOptions"></select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <table class="table table-hover table-striped table-bordered">
+                                <table class="table-hover table-striped table-bordered table">
                                     <thead>
                                         <tr>
                                             <th width="5%" class="text-center">STT</th>
@@ -78,19 +84,21 @@
                                                                 var arr = !String.IsNullOrEmpty(d.LinhVucId) ? d.LinhVucId.Split(",") : null;
                                                                 if (arr != null)
                                                                 {
+                                                                    var enumLinhVucKinhDoanh = Enum.GetValues(typeof(LinhVucKinhDoanh)).Cast<LinhVucKinhDoanh>();
                                                                     for (var i = 0; i < arr.Length; i++)
                                                                     {
-                                                                        string name = Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.CoSoLuuTru ? StringEnum.GetStringValue(LinhVucKinhDoanh.CoSoLuuTru) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.NhaHang ? StringEnum.GetStringValue(LinhVucKinhDoanh.NhaHang) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.DiemDuLich ? StringEnum.GetStringValue(LinhVucKinhDoanh.DiemDuLich) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.KhuDuLich ? StringEnum.GetStringValue(LinhVucKinhDoanh.KhuDuLich) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.LuHanh ? StringEnum.GetStringValue(LinhVucKinhDoanh.LuHanh) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.HDV ? StringEnum.GetStringValue(LinhVucKinhDoanh.HDV) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.CSSK ? StringEnum.GetStringValue(LinhVucKinhDoanh.CSSK) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.TheThao ? StringEnum.GetStringValue(LinhVucKinhDoanh.TheThao) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.VanChuyen ? StringEnum.GetStringValue(LinhVucKinhDoanh.VanChuyen) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.VSCC ? StringEnum.GetStringValue(LinhVucKinhDoanh.VSCC) :
-                                                                                             Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.MuaSam ? StringEnum.GetStringValue(LinhVucKinhDoanh.MuaSam) : "";
+                                                                        // string name = Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.CoSoLuuTru ? StringEnum.GetStringValue(LinhVucKinhDoanh.CoSoLuuTru) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.NhaHang ? StringEnum.GetStringValue(LinhVucKinhDoanh.NhaHang) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.DiemDuLich ? StringEnum.GetStringValue(LinhVucKinhDoanh.DiemDuLich) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.KhuDuLich ? StringEnum.GetStringValue(LinhVucKinhDoanh.KhuDuLich) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.LuHanh ? StringEnum.GetStringValue(LinhVucKinhDoanh.LuHanh) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.HDV ? StringEnum.GetStringValue(LinhVucKinhDoanh.HDV) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.CSSK ? StringEnum.GetStringValue(LinhVucKinhDoanh.CSSK) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.TheThao ? StringEnum.GetStringValue(LinhVucKinhDoanh.TheThao) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.VanChuyen ? StringEnum.GetStringValue(LinhVucKinhDoanh.VanChuyen) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.VSCC ? StringEnum.GetStringValue(LinhVucKinhDoanh.VSCC) :
+                                                                        //                      Convert.ToInt32(arr[i]) == (int)LinhVucKinhDoanh.MuaSam ? StringEnum.GetStringValue(LinhVucKinhDoanh.MuaSam) : "";
+                                                                        string name = enumLinhVucKinhDoanh.Select(x => (int)x).Contains(Convert.ToInt32(arr[i])) ? StringEnum.GetStringValue(enumLinhVucKinhDoanh.First(x => (int)x == Convert.ToInt32(arr[i]))) : "";
                                                                         <em>- @name</em><br />
                                                                     }
                                                                 }
@@ -98,7 +106,7 @@
                                                             }
                                                         </td>
                                                         <td class="text-center">
-                                                            <input data-id="@Model[stt-1].Id" class="txt-vitri text-right form-control" value="@Model[stt-1].ViTri" />
+                                                            <input data-id="@Model[stt-1].Id" class="txt-vitri form-control text-right" value="@Model[stt-1].ViTri" />
                                                         </td>
                                                         <td class="text-center">
                                                             <a title="Sửa bộ phận" href="/Danhmuc/Suabophan/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>

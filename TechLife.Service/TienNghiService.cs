@@ -13,7 +13,7 @@ namespace TechLife.Service
 {
     public interface ITienNghiService
     {
-        Task<List<TienNghiVm>> GetAll(int linhvucId);
+        Task<List<TienNghiVm>> GetAll(int linhvucId, string ngonNguId = SystemConstants.DefaultLanguage);
 
         Task<PagedResult<TienNghiVm>> GetPaging(int linhvucId, GetPagingRequest request);
 
@@ -40,13 +40,18 @@ namespace TechLife.Service
 
         public async Task<ApiResult<TienNghiVm>> Create(TienNghiCreateRequest request)
         {
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<TienNghiVm>("Ngôn ngữ không hợp lệ");
+
+            if (request.LinhVucId == null || request.LinhVucId.Length == 0) return new ApiErrorResult<TienNghiVm>("Vui lòng nhập đầy đủ thông tin");
+
             var tiennghi = new TienNghi()
             {
                 MoTa = request.MoTa,
                 Ten = request.Ten,
                 DonViTinhId = request.DonViTinhId,
                 LinhVucId = string.Join(',', request.LinhVucId),
-                ViTri = _context.TienNghi.Count()
+                ViTri = _context.TienNghi.Count(),
+                NgonNguId = request.NgonNguId
             };
             _context.TienNghi.Add(tiennghi);
 
@@ -79,12 +84,10 @@ namespace TechLife.Service
             return new ApiErrorResult<int>("Xóa lỗi!");
         }
 
-        public async Task<List<TienNghiVm>> GetAll(int linhvucId)
+        public async Task<List<TienNghiVm>> GetAll(int linhvucId, string ngonNguId)
         {
-
-
             var query = from m in _context.TienNghi
-                        where !m.IsDelete
+                        where !m.IsDelete && m.NgonNguId == ngonNguId
                         orderby m.ViTri
                         select new TienNghiVm
                         {
@@ -92,8 +95,10 @@ namespace TechLife.Service
                             Ten = m.Ten,
                             MoTa = m.MoTa,
                             DonViTinhId = m.DonViTinhId,
+                            DonViTinhName = m.DonViTinh.Ten,
                             LinhVucId = m.LinhVucId,
-                            ViTri = m.ViTri
+                            ViTri = m.ViTri,
+                            NgonNguId = m.NgonNguId,
                         };
 
             var data = await query.ToListAsync();
@@ -112,7 +117,8 @@ namespace TechLife.Service
                     Ten = obj.Ten,
                     Id = obj.Id,
                     DonViTinhId = obj.DonViTinhId,
-                    LinhVucId = obj.LinhVucId
+                    LinhVucId = obj.LinhVucId,
+                    NgonNguId = obj.NgonNguId
                 };
             }
             else return null;
@@ -157,10 +163,14 @@ namespace TechLife.Service
 
             if (model == null) return new ApiErrorResult<int>($"Không tìm thấy tiện nghị với id = {id}");
 
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<int>("Ngôn ngữ không hợp lệ");
+
             model.MoTa = request.MoTa;
             model.Ten = request.Ten;
             model.LinhVucId = string.Join(',', request.LinhVucId);
             model.DonViTinhId = request.DonViTinhId;
+            model.NgonNguId = request.NgonNguId;
+
             _context.TienNghi.Update(model);
 
             var result = await _context.SaveChangesAsync();

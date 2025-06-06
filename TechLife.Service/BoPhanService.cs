@@ -15,8 +15,6 @@ namespace TechLife.Service
 {
     public interface IBoPhanService
     {
-        Task<List<BoPhanVm>> GetAll(int linhvucId);
-
         Task<PagedResult<BoPhanVm>> GetPaging(GetPagingRequest request);
 
         Task<ApiResult<BoPhanVm>> Create(BoPhanCreateRequest request);
@@ -28,6 +26,7 @@ namespace TechLife.Service
 
         Task<ApiResult<int>> Delete(int id);
         Task<List<BoPhanHoSoModel>> GetAllByHoSo(int hosoId);
+        Task<List<BoPhanVm>> GetAll(int linhvucId, string ngonNguId = SystemConstants.DefaultLanguage);
     }
 
     public class BoPhanService : BaseRepository, IBoPhanService
@@ -46,12 +45,15 @@ namespace TechLife.Service
         {
             try
             {
+                if (request.LinhVucId == null || request.LinhVucId.Count == 0) return new ApiErrorResult<BoPhanVm>("Vui lòng nhập đầy đủ thông tin");
+
                 var bophan = new BoPhan()
                 {
                     MoTa = request.MoTa,
                     TenBoPhan = request.TenBoPhan,
                     LinhVucId = string.Join(",", request.LinhVucId),
-                    ViTri = _context.BoPhan.Count()
+                    ViTri = _context.BoPhan.Count(),
+                    NgonNguId = request.NgonNguId
                 };
 
                 _context.BoPhan.Add(bophan);
@@ -106,13 +108,12 @@ namespace TechLife.Service
             }
         }
 
-        public async Task<List<BoPhanVm>> GetAll(int linhvucId)
+        public async Task<List<BoPhanVm>> GetAll(int linhvucId, string ngonNguId)
         {
             try
             {
                 var query = from m in _context.BoPhan
-
-                            where m.IsDelete == false
+                            where m.IsDelete == false && m.NgonNguId == ngonNguId
                             && (linhvucId == 0 || m.LinhVucId.Contains(linhvucId.ToString()))
                             orderby m.ViTri
                             select new { m };
@@ -124,7 +125,8 @@ namespace TechLife.Service
                     MoTa = v.m.MoTa,
                     Id = v.m.Id,
                     ViTri = v.m.ViTri,
-                    LinhVucId = v.m.LinhVucId
+                    LinhVucId = v.m.LinhVucId,
+                    NgonNguId = v.m.NgonNguId
                 }).ToListAsync();
 
             }
@@ -153,7 +155,8 @@ namespace TechLife.Service
                     TenBoPhan = obj.TenBoPhan,
                     Id = obj.Id,
                     LinhVucId = obj.LinhVucId,
-                    ViTri = obj.ViTri
+                    ViTri = obj.ViTri,
+                    NgonNguId = obj.NgonNguId
                 };
 
                 return model;
@@ -220,9 +223,12 @@ namespace TechLife.Service
                     return new ApiErrorResult<int>($"Không tìm thấy dữ liệu tương ứng với id = {id}");
                 }
 
+                if (request.LinhVucId == null || request.LinhVucId.Length == 0) return new ApiErrorResult<int>("Vui lòng nhập đầy đủ thông tin");
+
                 obj.MoTa = request.MoTa;
                 obj.TenBoPhan = request.TenBoPhan;
                 obj.LinhVucId = string.Join(",", request.LinhVucId);
+                obj.NgonNguId = request.NgonNguId;
 
                 var trans = await base.CreateTransaction();
 

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace TechLife.Model.BoPhan
 {
@@ -15,5 +13,7 @@ namespace TechLife.Model.BoPhan
         public string MoTa { get; set; }
         [Display(Name = "Lĩnh vực áp dụng")]
         public List<int> LinhVucId { get; set; }
+
+        public string NgonNguId { get; set; }
     }
 }

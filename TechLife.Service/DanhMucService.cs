@@ -11,7 +11,7 @@ namespace TechLife.Service
 {
     public interface IDanhMucService
     {
-        Task<List<DanhMucModel>> GetAll(int loaiId, string ngonNguId = SystemConstants.LanguageId);
+        Task<List<DanhMucModel>> GetAll(int loaiId, string ngonNguId = SystemConstants.DefaultLanguage);
 
         Task<PagedResult<DanhMucModel>> GetPaging(int loaiId, GetPagingRequest request);
 
@@ -90,7 +90,8 @@ namespace TechLife.Service
                             LoaiId = m.LoaiId,
                             MoTa = m.MoTa,
                             DongBoID = m.DongBoID,
-                            NguonDongBo = m.NguonDongBo
+                            NguonDongBo = m.NguonDongBo,
+                            NgonNguId = m.NgonNguId
                         };
             return await query.ToListAsync();
         }

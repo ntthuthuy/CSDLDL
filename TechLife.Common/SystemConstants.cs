@@ -10,7 +10,7 @@
         public const int pageSize = 10;
         public const int pageIndex = 1;
 
-        public const string LanguageId = "vi";
+        public const string DefaultLanguage = "vi";
 
         public class AppSettings
         {

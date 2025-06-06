@@ -11,7 +11,7 @@ namespace TechLife.Service
 {
     public interface ILoaiHinhService
     {
-        Task<List<LoaiHinhModel>> GetAll();
+        Task<List<LoaiHinhModel>> GetAll(string ngonNguId = SystemConstants.DefaultLanguage);
 
         Task<PagedResult<LoaiHinhModel>> GetPaging(GetPagingRequest request);
 
@@ -35,12 +35,15 @@ namespace TechLife.Service
 
         public async Task<ApiResult<LoaiHinhModel>> Create(LoaiHinhModel request)
         {
+            if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<LoaiHinhModel>("Ngôn ngữ không hợp lệ");
+
             var LoaiHinh = new LoaiHinh()
             {
                 IsDelete = request.IsDelete,
                 IsStatus = request.IsStatus,
                 MoTa = request.MoTa,
                 TenLoai = request.TenLoai,
+                NgonNguId = request.NgonNguId
             };
             _context.LoaiHinh.Add(LoaiHinh);
             var result = await _context.SaveChangesAsync();
@@ -73,17 +76,18 @@ namespace TechLife.Service
             return new ApiErrorResult<int>("Xóa lỗi!");
         }
 
-        public async Task<List<LoaiHinhModel>> GetAll()
+        public async Task<List<LoaiHinhModel>> GetAll(string ngonNguId)
         {
             var query = from m in _context.LoaiHinh
-                        where m.IsDelete == false
+                        where m.IsDelete == false && m.NgonNguId == ngonNguId
                         select new LoaiHinhModel
                         {
                             Id = m.Id,
                             TenLoai = m.TenLoai,
                             IsDelete = m.IsDelete,
                             IsStatus = m.IsStatus,
-                            MoTa = m.MoTa
+                            MoTa = m.MoTa,
+                            NgonNguId = m.NgonNguId
                         };
             return await query.ToListAsync();
         }
@@ -102,7 +106,8 @@ namespace TechLife.Service
             {
                 MoTa = obj.MoTa,
                 TenLoai = obj.TenLoai,
-                Id = obj.Id
+                Id = obj.Id,
+                NgonNguId = obj.NgonNguId
             };
 
         }
@@ -151,6 +156,7 @@ namespace TechLife.Service
 
             model.MoTa = request.MoTa;
             model.TenLoai = request.TenLoai;
+            model.NgonNguId = request.NgonNguId;
 
             _context.LoaiHinh.Update(model);
 

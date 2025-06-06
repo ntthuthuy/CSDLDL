@@ -11,7 +11,6 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -36,18 +35,30 @@
                             </div>
                             <div class="card-body">
                                 @Html.ValidationSummary()
-                                <div class="col-md-6">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="form-group">
-                                        <label asp-for="Ten" class="control-label"></label>
-                                        <input asp-for="Ten" class="form-control" />
-                                        <span asp-validation-for="Ten" class="text-danger"></span>
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-row">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label" asp-for="NgonNguId"></label> <span class="text-danger">*</span>
+                                            <select class="form-control" asp-for="NgonNguId" asp-items="ViewBag.NgonNguOptions"></select>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label asp-for="LoaiHinhId" class="control-label"></label>
-                                        <select multiple asp-items="ViewBag.listLinhVucKinhDoanh" asp-for="LoaiHinhId" class="form-control">
-                                        </select>
-                                        <span asp-validation-for="LoaiHinhId" class="text-danger"></span>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="Ten" class="control-label"></label> <span class="text-danger">*</span>
+                                            <input asp-for="Ten" class="form-control" />
+                                            <span asp-validation-for="Ten" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label asp-for="LoaiHinhId" class="control-label"></label> <span class="text-danger">*</span>
+                                            <select multiple asp-items="ViewBag.listLinhVucKinhDoanh" asp-for="LoaiHinhId" class="form-control">
+                                            </select>
+                                            <span asp-validation-for="LoaiHinhId" class="text-danger"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace TechLife.Model.GiayPhepChungChi
 {
@@ -13,5 +11,8 @@ namespace TechLife.Model.GiayPhepChungChi
 
         [Display(Name = "Lĩnh vực sử dụng")]
         public List<int> LoaiHinhId { get; set; }
+
+        [Display(Name = "Ngôn ngữ")]
+        public string NgonNguId { get; set; }
     }
 }

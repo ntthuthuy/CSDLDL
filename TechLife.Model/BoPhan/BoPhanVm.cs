@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-
-namespace TechLife.Model.BoPhan
+﻿namespace TechLife.Model.BoPhan
 {
     public class BoPhanVm
     {
@@ -12,5 +7,6 @@ namespace TechLife.Model.BoPhan
         public string MoTa { get; set; }
         public int ViTri { get; set; }
         public string LinhVucId { get; set; }
+        public string NgonNguId { get; set; }
     }
 }

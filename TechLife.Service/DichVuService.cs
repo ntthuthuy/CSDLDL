@@ -12,7 +12,7 @@ namespace TechLife.Service
 {
     public interface IDichVuService
     {
-        Task<List<DichVuModel>> GetAll();
+        Task<List<DichVuModel>> GetAll(string ngonNguId = SystemConstants.DefaultLanguage);
 
         Task<PagedResult<DichVuModel>> GetPaging(GetPagingRequest request);
 
@@ -42,6 +42,8 @@ namespace TechLife.Service
         {
             try
             {
+                if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<DichVuModel>("Ngôn ngữ không hợp lệ");
+
                 var dichVu = new DichVu()
                 {
                     IsDelete = request.IsDelete,
@@ -51,6 +53,7 @@ namespace TechLife.Service
                     DVT = request.DVT,
                     LoaiId = request.LoaiId,
                     SucChua = request.SucChua,
+                    NgonNguId = request.NgonNguId
                 };
                 _context.DichVu.Add(dichVu);
                 var result = await _context.SaveChangesAsync();
@@ -100,12 +103,12 @@ namespace TechLife.Service
             }
         }
 
-        public async Task<List<DichVuModel>> GetAll()
+        public async Task<List<DichVuModel>> GetAll(string ngonNguId)
         {
             try
             {
                 var query = from m in _context.DichVu
-                            where m.IsDelete == false
+                            where m.IsDelete == false && m.NgonNguId == ngonNguId
                             select new DichVuModel
                             {
                                 Id = m.Id,
@@ -120,13 +123,13 @@ namespace TechLife.Service
 
                 return await query.ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
                 throw new TLException("Đã có lỗi trong quá trình xử lý", ex);
             }
-            
+
         }
 
         public async Task<DichVuModel> GetById(int id)
@@ -148,10 +151,11 @@ namespace TechLife.Service
                     DVT = obj.DVT,
                     LoaiId = obj.LoaiId,
                     SucChua = obj.SucChua,
-                    Id = obj.Id
+                    Id = obj.Id,
+                    NgonNguId = obj.NgonNguId
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
@@ -195,7 +199,7 @@ namespace TechLife.Service
                     Items = data
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
@@ -212,6 +216,7 @@ namespace TechLife.Service
                 {
                     throw new TLException($"Không tìm thấy bảng ghi nào tương ứng với id = {id}");
                 }
+                if (!await _context.NgonNgu.AnyAsync(x => x.Id == request.NgonNguId)) return new ApiErrorResult<int>("Ngôn ngữ không hợp lệ");
 
                 var model = dichVu.FirstOrDefault();
 
@@ -219,6 +224,7 @@ namespace TechLife.Service
                 model.TenDichVu = request.TenDichVu;
                 model.DVT = request.DVT;
                 model.SucChua = request.SucChua;
+                model.NgonNguId = request.NgonNguId;
 
                 _context.DichVu.Update(model);
 
@@ -257,13 +263,13 @@ namespace TechLife.Service
                 }
                 return listThucDon;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _logService.Create(ex.Message, ex.StackTrace);
 
                 throw new TLException("Đã có lỗi trong quá trình xử lý", ex);
             }
-            
+
         }
     }
 }

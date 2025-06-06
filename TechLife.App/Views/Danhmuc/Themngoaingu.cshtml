@@ -34,19 +34,24 @@
                                 <h3 class="card-title">@ViewData["Title"]</h3>
                             </div>
                             <div class="card-body">
-             
                                 <div class="form-row">
-                                    <div class="col-md-6">
-                                        <div class="position-relative form-group">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">Ngôn ngữ</label>
+                                            <select class="form-control" asp-for="NgonNguId" asp-items="ViewBag.NgonNguOptions"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label class="control-label">Tên</label>
-                                            <input asp-for="TenNgoaiNgu" class="form-control is-invalid" />
+                                            <input asp-for="TenNgoaiNgu" class="form-control" />
                                             <span asp-validation-for="TenNgoaiNgu" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Mô tả</label>
                                             <textarea asp-for="MoTa" class="form-control"> </textarea>
                                         </div>

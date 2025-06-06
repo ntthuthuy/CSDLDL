@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TechLife.Model.TienNghi
+﻿namespace TechLife.Model.TienNghi
 {
     public class TienNghiVm
     {
@@ -11,6 +7,8 @@ namespace TechLife.Model.TienNghi
         public string MoTa { get; set; }
         public int ViTri { get; set; }
         public int DonViTinhId { get; set; }
+        public string DonViTinhName { get; set; }
         public string LinhVucId { get; set; }
+        public string NgonNguId { get; set; }
     }
 }

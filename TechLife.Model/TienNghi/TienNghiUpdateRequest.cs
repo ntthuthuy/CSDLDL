@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TechLife.Model.TienNghi
 {
@@ -17,5 +14,8 @@ namespace TechLife.Model.TienNghi
         public int DonViTinhId { get; set; }
         [Display(Name = "Lĩnh vực áp dụng")]
         public int[] LinhVucId { get; set; }
+
+        [Display(Name = "Ngôn ngữ")]
+        public string NgonNguId { get; set; }
     }
 }

@@ -30,51 +30,57 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-outline card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">@ViewData["Title"]</h3>
-                            <div class="card-tools">
-                                <a href="/Danhmuc/Themdichvu/" class="btn btn-xs btn-success">
-                                    <i class="fas fa-plus-circle"></i> Thêm mới
-                                </a>
+                        <form id="form" method="get">
+                            <div class="card-header">
+                                <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a href="/Danhmuc/Themdichvu/" class="btn btn-xs btn-success">
+                                        <i class="fas fa-plus-circle"></i> Thêm mới
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <table class="table table-hover table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th width="5%" class="text-center">STT</th>
-                                        <th width="30%" class="text-center">Tên</th>
-                                        <th>Mô tả</th>
-                                        <th width="15%" class="text-center">Chức năng</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        if (Model != null && Model != null)
-                                        {
-                                            int stt = 0;
-                                            foreach (var d in Model)
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-2">
+                                        <select class="form-control select2 form-value" asp-items="ViewBag.NgonNguOptions" name="NgonNgu"></select>
+                                    </div>
+                                </div>
+                                <table class="table-hover table-striped table-bordered table">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" class="text-center">STT</th>
+                                            <th width="30%" class="text-center">Tên</th>
+                                            <th>Mô tả</th>
+                                            <th width="15%" class="text-center">Chức năng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (Model != null && Model != null)
                                             {
-                                                stt++;
-                                                <tr>
-                                                    <td class="text-center">@stt</td>
-                                                    <td>@d.TenDichVu</td>
-                                                    <td>@d.MoTa</td>
-                                                    <td class="text-center">
-                                                        <a title="Sửa dịch vụ" href="/Danhmuc/Suadichvu/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
-                                                        <a title="Xóa dịch vụ" data-title="Bạn muốn xóa dịch vụ @d.TenDichVu ?" data-url="/Danhmuc/Xoadichvu/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                                int stt = 0;
+                                                foreach (var d in Model)
+                                                {
+                                                    stt++;
+                                                    <tr>
+                                                        <td class="text-center">@stt</td>
+                                                        <td>@d.TenDichVu</td>
+                                                        <td>@d.MoTa</td>
+                                                        <td class="text-center">
+                                                            <a title="Sửa dịch vụ" href="/Danhmuc/Suadichvu/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+                                                            <a title="Xóa dịch vụ" data-title="Bạn muốn xóa dịch vụ @d.TenDichVu ?" data-url="/Danhmuc/Xoadichvu/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
 
-                                                    </td>
-                                                </tr>
+                                                        </td>
+                                                    </tr>
+                                                }
                                             }
                                         }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
-                       
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
                     </div>
                     <!-- /.card -->
                 </div>
@@ -83,6 +89,10 @@
     </section>
     <!-- /.content -->
 </div>
-
-
-
+@section scripts {
+    <script>
+        $('.form-value').change(() => {
+            $('#form').submit();
+        })
+    </script>
+}
