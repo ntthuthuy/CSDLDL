@@ -722,7 +722,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Thêm mới thành công",
                 });
-                return Redirect("/Danhmuc/Dichvu");
+                return RedirectToAction("Dichvu", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -730,6 +730,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -780,7 +787,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Cập nhật thành công",
                 });
-                return Redirect("/Danhmuc/Dichvu");
+                return RedirectToAction("Dichvu", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -788,6 +795,12 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -836,7 +849,7 @@ namespace TechLife.App.Controllers
             {
                 Text = x.Ten,
                 Value = x.Id,
-                Selected = SystemConstants.DefaultLanguage == ngonNguId
+                Selected = x.Id == ngonNguId
             });
 
             return View(data);
@@ -1082,7 +1095,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Thêm mới thành công",
                 });
-                return Redirect("/Danhmuc/Loaihinhkinhdoanh");
+                return RedirectToAction("Loaihinhkinhdoanh", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1090,6 +1103,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -1139,7 +1159,7 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Cập nhật thành công",
                 });
-                return Redirect("/Danhmuc/Loaihinhkinhdoanh");
+                return RedirectToAction("Loaihinhkinhdoanh", new { NgonNgu = request.NgonNguId });
             }
             else
             {
@@ -1147,6 +1167,13 @@ namespace TechLife.App.Controllers
                 {
                     IsSuccessed = result.IsSuccessed,
                     Message = result.Message
+                });
+
+                ViewBag.NgonNguOptions = (await _ngonNguService.GetAll()).Select(x => new SelectListItem
+                {
+                    Text = x.Ten,
+                    Value = x.Id,
+                    Selected = x.Id == request.NgonNguId
                 });
             }
             return View(request);
@@ -2365,7 +2392,7 @@ namespace TechLife.App.Controllers
             {
                 Text = x.Ten,
                 Value = x.Id,
-                Selected = x.IsDefault
+                Selected = x.Id == SystemConstants.DefaultLanguage
             });
 
             return View();
@@ -3265,7 +3292,7 @@ namespace TechLife.App.Controllers
             {
                 if (type_submit == "save")
                 {
-                    return RedirectToAction("Giayphep");
+                    return RedirectToAction("Giayphep", new { NgonNgu = request.NgonNguId });
                 }
                 else
                 {
@@ -3350,7 +3377,7 @@ namespace TechLife.App.Controllers
             {
                 if (type_submit == "save")
                 {
-                    return RedirectToAction("Giayphep");
+                    return RedirectToAction("Giayphep", new { NgonNgu = request.NgonNguId });
                 }
                 else
                 {

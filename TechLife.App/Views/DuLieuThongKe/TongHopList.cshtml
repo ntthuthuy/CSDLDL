@@ -68,37 +68,42 @@
                                     <tbody>
                                         @if (Model != null && Model.Items != null)
                                         {
-                                            int? thang = Model.Items.SelectMany(x => x.List).Max(x => (int?)x.Thang);
+                                            int? lastMonth = Model.Items.SelectMany(x => x.List).Max(x => (int?)x.Thang);
                                             int stt = (Model.PageIndex - 1) * Model.PageSize + 1;
                                             if (Model.Items.Count > 0)
                                             {
                                                 foreach (var item in Model.Items)
                                                 {
+                                                    bool total = stt == Model.TotalRecords;
                                                     <tr>
-                                                        <td class="text-right align-middle">@(stt == Model.TotalRecords ? "" : stt)</td>
-                                                        <td class="text-left align-middle">@item.TenQuocTich</td>
+                                                        <td class="text-right align-middle">@(total ? "" : stt)</td>
+                                                        <td class="text-left align-middle @(total ? "font-weight-bold" : "")">@item.TenQuocTich</td>
                                                         @if (thang == 0)
                                                         {
                                                             for (int i = 1; i <= 12; i++)
                                                             {
                                                                 decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu;
-                                                                <td class="text-right align-middle">@(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
+                                                                <td class="text-right align-middle @(total ? "font-weight-bold" : "")">
+                                                                    @(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))
+                                                                </td>
                                                             }
                                                         }
                                                         else
                                                         {
                                                             decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == thang)?.SoLieu;
-                                                            <td class="text-right align-middle">@(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))</td>
+                                                            <td class="text-right align-middle @(total ? "font-weight-bold" : "")">
+                                                                @(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))
+                                                            </td>
                                                         }
-                                                        <td class="text-right align-middle">
+                                                        <td class="font-weight-bold text-right align-middle">
                                                             @{
-                                                                decimal? congDon = item.List.FirstOrDefault(x => x.Thang == (int)thang)?.CongDon;
+                                                                decimal? congDon = item.List.FirstOrDefault(x => x.Thang == (int)lastMonth)?.CongDon;
                                                             }
                                                             @(congDon == null ? "" : Functions.ConvertDecimalVND((decimal)congDon))
                                                         </td>
-                                                        <td class="text-right align-middle">
+                                                        <td class="font-weight-bold text-right align-middle">
                                                             @{
-                                                                decimal? thiPhan = item.List.FirstOrDefault(x => x.Thang == (int)thang)?.ThiPhan;
+                                                                decimal? thiPhan = item.List.FirstOrDefault(x => x.Thang == (int)lastMonth)?.ThiPhan;
                                                             }
                                                             @(thiPhan == null ? "" : $"{thiPhan}%")
                                                         </td>

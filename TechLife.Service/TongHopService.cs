@@ -97,7 +97,9 @@ namespace TechLife.Service
         {
             try
             {
-                var query = _context.TongHop.Where(x => !x.IsDelete && x.Nam == request.Nam && (request.Thang == 0 || request.Thang == x.Thang));
+                var query = _context.TongHop
+                    .AsNoTracking()
+                    .Where(x => !x.IsDelete && x.Nam == request.Nam && (request.Thang == 0 || request.Thang == x.Thang));
 
                 if (!string.IsNullOrWhiteSpace(request.Search))
                 {

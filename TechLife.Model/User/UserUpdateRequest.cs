@@ -14,7 +14,8 @@ namespace TechLife.Model.User
         public string LastName { get; set; }
 
         [Display(Name = "Ngày sinh")]
-        [DataType(DataType.Date)]
+        [DataType(DataType.Date, ErrorMessage = "Ngày sinh không hợp lệ")]
+        [Required(ErrorMessage = "Vui lòng nhập ngày sinh")]
         public DateTime Dob { get; set; }
 
         [Display(Name = "Hòm thư")]

@@ -33,25 +33,24 @@
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-
-                                @Html.ValidationSummary()
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                                 <div class="form-row">
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Họ</label>
                                             <input asp-for="LastName" class="form-control" />
                                             <span asp-validation-for="LastName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Tên</label>
                                             <input asp-for="FirstName" class="form-control" />
                                             <span asp-validation-for="FirstName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Căn cước công dân</label>
                                             <input asp-for="CanCuocCongDan" class="form-control" />
                                             <span asp-validation-for="CanCuocCongDan" class="text-danger"></span>
@@ -60,14 +59,14 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Ngày sinh</label>
                                             <input asp-for="Dob" class="form-control" />
                                             <span asp-validation-for="Dob" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Email</label>
                                             <input asp-for="Email" class="form-control" />
                                             <span asp-validation-for="Email" class="text-danger"></span>
@@ -75,7 +74,7 @@
                                     </div>
 
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Số điện thoại</label>
                                             <input asp-for="PhoneNumber" class="form-control" />
                                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
@@ -85,21 +84,21 @@
                                 <hr />
                                 <div class="form-row">
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Tài khoản</label>
                                             <input asp-for="UserName" class="form-control" autocomplete="new-user" />
                                             <span asp-validation-for="UserName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Mật khẩu</label>
                                             <input asp-for="Password" class="form-control" autocomplete="new-password" />
                                             <span asp-validation-for="Password" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Xác nhận mật khẩu</label>
                                             <input asp-for="ConfirmPassword" class="form-control" />
                                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
@@ -107,9 +106,9 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    
+
                                     <div class="col-md-6">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Vai trò</label>
                                             <select asp-for="GroupId"
                                                     class="form-control select2"

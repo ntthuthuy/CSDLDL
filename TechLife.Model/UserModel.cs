@@ -30,6 +30,7 @@ namespace TechLife.Model
 
         [Display(Name = "Ngày sinh")]
         [DataType(DataType.Date)]
+        [Required(ErrorMessage = "Vui lòng nhập ngày sinh")]
         public DateTime Dob { get; set; }
 
         [Display(Name = "Hòm thư")]
