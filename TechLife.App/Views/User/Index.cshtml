@@ -11,7 +11,6 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -67,25 +66,26 @@
                                             </thead>
                                             <tbody>
                                                 @{
-                                                if (Model != null && Model.Items != null)
-                                                {
-                                                    int stt = 0;
-                                                    foreach (var d in Model.Items)
+                                                    if (Model != null && Model.Items != null)
                                                     {
-                                                        stt++;
-                                                    <tr>
-                                                        <td class="text-center">@stt</td>
-                                                        <td class="text-center">@d.UserName</td>
-                                                        <td>@d.FullName</td>
-                                                        <td class="text-center">
-                                                            @*@Html.ActionLink("Sửa", "EditUser", new { id = d.Id }) |*@
-                                                            @*@Html.ActionLink("Gắn quyền", "RoleAssign", new { id = d.Id })*@
-                                                            <a href="/User/RoleAssign?id=@d.Id">Phân quyền</a> |
-                                                            <a href="/User/Edit?id=@d.Id">Cập nhật</a>
-                                                        </td>
-                                                    </tr>
+                                                        int stt = 0;
+                                                        foreach (var d in Model.Items)
+                                                        {
+                                                            stt++;
+                                                            <tr>
+                                                                <td class="text-center">@stt</td>
+                                                                <td class="text-center">@d.UserName</td>
+                                                                <td>@d.FullName</td>
+                                                                <td class="text-center">
+                                                                    @*@Html.ActionLink("Sửa", "EditUser", new { id = d.Id }) |*@
+                                                                    @*@Html.ActionLink("Gắn quyền", "RoleAssign", new { id = d.Id })*@
+                                                                    <a href="/User/RoleAssign?id=@d.Id">Phân quyền</a> |
+                                                                    <a href="/User/Edit?id=@d.Id">Cập nhật</a> |
+                                                                    <a href="javascript:;" data-id="@d.Id" class="btn-delete-user">Xóa</a>
+                                                                </td>
+                                                            </tr>
+                                                        }
                                                     }
-                                                }
                                                 }
                                             </tbody>
                                         </table>
@@ -94,12 +94,12 @@
                             </div>
                             <!-- /.card-body -->
                             @{
-                            if (Model.TotalRecords > Model.PageSize)
-                            {
-                                <div class="card-footer">
-                                    @await Component.InvokeAsync("Paging", new { page = Model })
-                                </div>
-                            }
+                                if (Model.TotalRecords > Model.PageSize)
+                                {
+                                    <div class="card-footer">
+                                        @await Component.InvokeAsync("Paging", new { page = Model })
+                                    </div>
+                                }
                             }
                         </div>
                         <!-- /.card -->
@@ -149,7 +149,82 @@
             $(".btn-form-dongbo").on("click", function () {
                 $("#modal-dongbo").modal("show");
             })
+
+            $('.btn-delete-user').click(function() {
+                const type = $(this).data('type');
+                const id = $(this).data('id');
+
+                $('#modal .modal-dialog').removeClass('modal-sm modal-lg modal-xl');
+                $('#modal .modal-dialog').html('');
+
+                let html = `
+                <form id="modal-form" onsubmit="handleSubmit(event)">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-red">
+                                <strong>Cảnh báo!</strong>
+                            </h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                    <div class="form-group text-center">
+                                        <strong>Xác nhận xóa tài khoản này</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer float-right">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="Id" value="${id}" />
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
+                                Hủy
+                            </button>
+                            <button type="submit" from="modal-form" class="btn btn-success">Xác nhận</button>
+                        </div>
+                    </div>
+                </form>
+                `
+
+                 $('#modal .modal-dialog').html(html);
+                $('#modal').modal("show");
+                if (type)
+                    $('#modal .modal-dialog').addClass(type)
+            });
         });
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            showLoading();
+
+            $.ajax({
+                url: '/User/Delete',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    hideLoading();
+                    if (data.isSuccessed) {
+                        dropModal();
+                        showNotification(data);
+                        window.location.reload();
+                    } else {
+                        showNotification(data);
+                    }
+                },
+                error: function(xhr) {
+                    hideLoading();
+                    showNotification({ isSuccessed: false, message: xhr.responseText });
+                }
+            });
+        }
+
     </script>
 
 }

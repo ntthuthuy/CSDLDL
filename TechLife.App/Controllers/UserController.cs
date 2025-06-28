@@ -536,5 +536,22 @@ namespace TechLife.App.Controllers
 
             return Redirect(Request.GetBackUrl());
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var result = await _userService.Delete(id);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
     }
 }
