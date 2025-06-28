@@ -199,7 +199,7 @@ namespace TechLife.Service
                 WITH DanhMuc AS
                 (
 	                SELECT Id, Name, ParentId, IdString = CONVERT(VARCHAR(1000), Id), ParentString = COALESCE(CONVERT(VARCHAR(1000), ParentId),'0'), [Order]
-	                FROM csdldl.DanhMucDuLieuThongKe
+	                FROM DanhMucDuLieuThongKe
 	                WHERE IsDelete = 0 AND (@Search = '' OR Name LIKE N'%' + @Search + '%' OR Code LIKE N'%' + @Search + '%')
                 ),
                 DanhMucRecursive(Id, Name, IdString, Parents, Level, [Order]) AS
