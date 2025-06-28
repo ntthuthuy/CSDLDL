@@ -20,6 +20,9 @@
             public const string BaseAddress = "BaseAddress";
             public const string HSCVAddress = "HSCVAddress";
             public const string UniqueCode = "00.23.H57";
+
+
+            public const int ExpireMinutes = 30;
         }
 
         public class ProductSettings

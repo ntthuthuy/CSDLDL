@@ -150,39 +150,6 @@ namespace TechLife.App.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var sessions = context.HttpContext.Session.GetString("Token");
-            if (sessions == null)
-            {
-                context.Result = new RedirectToActionResult("Logout", "User", null);
-
-                //string userName = User.Identity.Name;
-                //var result = _userService.Authencate(userName);
-                //if (result.Result.ResultObj == null)
-                //{
-                //}
-                //var userPrincipal = this.ValidateToken(result.Result.ResultObj);
-
-                //var authProperties = new AuthenticationProperties
-                //{
-                //    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                //};
-                //context.HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
-                //context.HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.Result.ResultObj);
-                //context.HttpContext.SignInAsync(
-                //            CookieAuthenticationDefaults.AuthenticationScheme,
-                //            userPrincipal,
-                //            authProperties);
-
-                //var user = _userService.GetByUserName(userName);
-                //string jsonUser = JsonConvert.SerializeObject(user.Result.ResultObj);
-
-                ////HttpContext.Session.SetString(SystemConstants.AppSettings.UserInfo, jsonUser);
-
-
-                //context.Result = new RedirectToActionResult("Index", "Home", null);
-                //context.Result = new RedirectResult(Request.GetBackUrl());
-            }
-
             base.OnActionExecuting(context);
         }
 

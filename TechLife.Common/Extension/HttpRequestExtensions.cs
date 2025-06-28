@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
+using TechLife.Common.Enums;
 using TechLife.Model;
 
 namespace TechLife.Common.Extension
@@ -79,7 +80,7 @@ namespace TechLife.Common.Extension
             else return "";
         }
 
-        public static UserModel GetUser(this HttpRequest request)
+        public static UserLoginVm GetUser(this HttpRequest request)
         {
             try
             {
@@ -88,11 +89,13 @@ namespace TechLife.Common.Extension
                     var userId = request.HttpContext.User.FindFirst("Id").Value;
                     if (string.IsNullOrEmpty(userId)) return null;
 
-                    return new UserModel()
+                    return new UserLoginVm()
                     {
                         Id = Guid.Parse(userId),
                         UserName = request.HttpContext.User.Identity.Name,
                         FullName = request.HttpContext.User.FindFirst("FullName")?.Value,
+                        AvartarUrl = request.HttpContext.User.FindFirst("AvartarUrl")?.Value ?? string.Empty,
+                        LoginType = Enum.Parse<LoginType>(request.HttpContext.User.FindFirst("LoginType")?.Value ?? LoginType.Default.ToString()),
                     };
                 }
                 else return null;
@@ -180,7 +183,7 @@ namespace TechLife.Common.Extension
             }
         }
 
-        public static UserModel GetUser(this ClaimsPrincipal User, params string[] permissionInRole)
+        public static UserLoginVm GetUser(this ClaimsPrincipal User, params string[] permissionInRole)
         {
             try
             {
@@ -189,11 +192,14 @@ namespace TechLife.Common.Extension
                     var userId = User.FindFirst("Id").Value;
                     if (string.IsNullOrEmpty(userId)) return null;
 
-                    return new UserModel()
+                    return new UserLoginVm()
                     {
                         Id = Guid.Parse(userId),
                         UserName = User.Identity.Name,
-                        FullName = User.FindFirst("FullName").Value,
+                        FullName = User.FindFirst("FullName")?.Value,
+                        AvartarUrl = User.FindFirst("AvartarUrl")?.Value ?? string.Empty,
+                        IdToken = User.FindFirst("IdToken")?.Value ?? string.Empty,
+                        LoginType = Enum.Parse<LoginType>(User.FindFirst("LoginType")?.Value ?? LoginType.Default.ToString()),
                     };
                 }
                 else return null;

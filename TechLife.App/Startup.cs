@@ -114,6 +114,7 @@ namespace TechLife.App
             services.AddTransient<IDanhMucApiClient, DanhMucApiClient>();
             services.AddTransient<IDiemVeSinhApiClient, DiemVeSinhApiClient>();
             services.AddTransient<IFileApiClient, FileApiClient>();
+            services.AddTransient<ILoginWithSsoApiClient, LoginWithSsoApiClient>();
             //HueCIT
             services.AddTransient<IFileUploaderApiClient, FileUploaderApiClient>();
 

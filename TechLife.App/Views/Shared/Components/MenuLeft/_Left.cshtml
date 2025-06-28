@@ -1,16 +1,17 @@
 ﻿@using Microsoft.AspNetCore.Http.Extensions
 @using TechLife.Common
+@using TechLife.Common.Extension
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
 @model List<TechLife.App.Models.MenuViewModel>
 @{
-    var user = (TechLife.Model.UserModel)ViewBag.User;
+    var user = (UserLoginVm)ViewBag.User;
 }
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="/" class="brand-link">
-        @if (!String.IsNullOrEmpty(user.AvataUrl))
+        @if (!String.IsNullOrEmpty(user.AvartarUrl))
         {
-        <img src="@(Configuration["BaseAddress"] + user.AvataUrl)" class="brand-image img-circle elevation-3" style="opacity: .8;width: 35px;height: 35px;">
+            <img src="@(user.AvartarUrl)" class="brand-image img-circle elevation-3" style="opacity: .8;width: 35px;height: 35px;">
         }
         else
         {

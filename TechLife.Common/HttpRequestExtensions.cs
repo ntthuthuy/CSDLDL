@@ -10,6 +10,11 @@ namespace TechLife.Common
 {
     public static class HttpRequestExtensions
     {
+        public static string GetRawUrlSSOVNeID(this HttpRequest request)
+        {
+            var httpContext = request.HttpContext;
+            return $"{request.Scheme}://{request.Host}/LoginWithSSOVNeID/";
+        }
         public static string GetRawUrl(this HttpRequest request)
         {
             var httpContext = request.HttpContext;

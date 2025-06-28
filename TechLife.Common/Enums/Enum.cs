@@ -171,4 +171,10 @@ namespace TechLife.Common.Enums
         [StringValue(@"Tài khoản mạng xã hội")]
         MangXaHoi = 5,
     }
+    public enum LoginType
+    {
+        Default,
+        SSO,
+        SSOHueS
+    }
 }

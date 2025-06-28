@@ -50,6 +50,7 @@ namespace TechLife.Service
         Task<bool> IsInRole(Guid userId, string role);
 
         Task<bool> IsIsInRoles(Guid userId, IEnumerable<string> roles);
+        Task<ApiResult<string>> AuthencateByCitizen(string citizenId, string idToken = "", string avartarUrl = "");
     }
 
     public class UserService : IUserService
@@ -86,11 +87,7 @@ namespace TechLife.Service
             claims.Add(new Claim("Id", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
             claims.Add(new Claim("FullName", user.FullName));
-            //claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
-            //foreach (var r in roles)
-            //{
-            //    claims.Add(new Claim(ClaimTypes.Role, r));
-            //}
+            claims.Add(new Claim("LoginType", LoginType.SSO.ToString()));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -103,7 +100,35 @@ namespace TechLife.Service
 
             return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
+        public async Task<ApiResult<string>> AuthencateByCitizen(string citizenId, string idToken = "", string avartarUrl = "")
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.CanCuocCongDan == citizenId && (x.LockoutEnd == null || x.LockoutEnd <= DateTimeOffset.UtcNow));
 
+            if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
+
+            await _signInManager.SignInAsync(user, true);
+
+            //var roles = await _userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim("Id", user.Id.ToString()));
+            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            claims.Add(new Claim("FullName", user.FullName));
+            claims.Add(new Claim("IdToken", !String.IsNullOrWhiteSpace(idToken) ? idToken : ""));
+            claims.Add(new Claim("AvartarUrl", !String.IsNullOrWhiteSpace(avartarUrl) ? avartarUrl : ""));
+            claims.Add(new Claim("LoginType", LoginType.SSOHueS.ToString()));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_config["Tokens:Issuer"],
+                _config["Tokens:Issuer"],
+                claims,
+                expires: DateTime.Now.AddHours(3),
+                signingCredentials: creds);
+
+            return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
+        }
         public async Task<ApiResult<string>> Login(LoginModel request)
         {
             var user = await _userManager.FindByNameAsync(request.UserName);
@@ -121,12 +146,8 @@ namespace TechLife.Service
             claims.Add(new Claim("Id", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
             claims.Add(new Claim("FullName", user.FullName));
-            //claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
+            claims.Add(new Claim("LoginType", LoginType.Default.ToString()));
 
-            //foreach (var r in roles)
-            //{
-            //    claims.Add(new Claim(ClaimTypes.Role, r));
-            //}
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
 

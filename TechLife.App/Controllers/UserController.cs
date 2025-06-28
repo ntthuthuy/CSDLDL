@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TechLife.App.ApiClients;
 using TechLife.Common;
+using TechLife.Common.Extension;
 using TechLife.Model;
 using TechLife.Model.User;
 using TechLife.Service;
@@ -53,12 +54,20 @@ namespace TechLife.App.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Logout(string ReturnUrl)
         {
+            var user = User.GetUser();
+
             await _userService.Logout();
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Remove("Token");
             HttpContext.Session.Remove(SystemConstants.AppSettings.UserInfo);
-            return Redirect("/sso");
+
+            if (user.LoginType == Common.Enums.LoginType.SSO)
+                return Redirect("/sso");
+            else if (user.LoginType == Common.Enums.LoginType.SSOHueS)
+                return Redirect($"https://sso.huecity.vn/auth/realms/hues/protocol/openid-connect/logout?id_token_hint={user.IdToken}&post_logout_redirect_uri=https://gstt.hue.gov.vn/admin");
+            else
+                return Redirect("/");
         }
 
         [HttpGet]

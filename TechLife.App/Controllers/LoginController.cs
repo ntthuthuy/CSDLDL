@@ -71,7 +71,7 @@ namespace TechLife.App.Controllers
             var userPrincipal = this.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+                ExpiresUtc = DateTime.UtcNow.AddMinutes(SystemConstants.AppSettings.ExpireMinutes),
                 IsPersistent = true
             };
             HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
@@ -131,7 +131,7 @@ namespace TechLife.App.Controllers
                 var userPrincipal = this.ValidateToken(result.ResultObj);
                 var authProperties = new AuthenticationProperties
                 {
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(SystemConstants.AppSettings.ExpireMinutes),
                     IsPersistent = request.RememberMe
                 };
                 HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);

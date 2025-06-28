@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using TechLife.Common.Extension;
 using TechLife.Model;
 
 namespace TechLife.App.Models
@@ -11,6 +12,6 @@ namespace TechLife.App.Models
         public string CurrentLanguageId { get; set; }
 
         public string ReturnUrl { set; get; }
-        public UserModel UserInfo { set; get; }
+        public UserLoginVm UserInfo { set; get; }
     }
 }
