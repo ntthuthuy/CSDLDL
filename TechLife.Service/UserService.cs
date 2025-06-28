@@ -102,7 +102,7 @@ namespace TechLife.Service
         }
         public async Task<ApiResult<string>> AuthencateByCitizen(string citizenId, string idToken = "", string avartarUrl = "")
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.CanCuocCongDan == citizenId && (x.LockoutEnd == null || x.LockoutEnd <= DateTimeOffset.UtcNow));
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.CanCuocCongDan == citizenId && x.IsStatus);
 
             if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
 

@@ -46,9 +46,9 @@ namespace TechLife.App.Controllers
 
             validationParameters.ValidateLifetime = true;
 
-            validationParameters.ValidAudience = configuration["Tokens:Issuer"];
-            validationParameters.ValidIssuer = configuration["Tokens:Issuer"];
-            validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Tokens:Key"]));
+            validationParameters.ValidAudience = _configuration["Tokens:Issuer"];
+            validationParameters.ValidIssuer = _configuration["Tokens:Issuer"];
+            validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
 
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
 
@@ -77,14 +77,14 @@ namespace TechLife.App.Controllers
                         if (info.IsSuccessed)
                         {
                             if (String.IsNullOrWhiteSpace(info.ResultObj.citizenId))
-                                return Redirect("/AccessDenied?type=3");
+                                return Redirect("/AccessDenied?type=1");
 
                             info.ResultObj.TokenDetail = token;
                           
                             var result = await _userService.AuthencateByCitizen(info.ResultObj.citizenId, info.ResultObj.TokenDetail?.id_token ?? "", info.ResultObj.avatar);
 
                             if (!result.IsSuccessed || String.IsNullOrEmpty(result.ResultObj))
-                                return Redirect("/AccessDenied?type=3");
+                                return Redirect("/AccessDenied?type=2");
 
                             var userPrincipal = this.ValidateToken(result.ResultObj);
 
@@ -108,13 +108,13 @@ namespace TechLife.App.Controllers
                             return Redirect(returnUrl);
                         }
                     }
-
+                    logger.LogError("Không xác thực được");
                     return Redirect("/AccessDenied?type=3");
                 }
 
                 Response.AddCookie("ReturnUrl", String.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
 
-                return Redirect($"https://sso.huecity.vn/auth/realms/hues/protocol/openid-connect/auth?response_type=code&client_id=to8OUqrGhQyJJ7O&redirect_uri={urlCallBack}");
+                return Redirect($"https://sso.huecity.vn/auth/realms/hues/protocol/openid-connect/auth?response_type=code&client_id={SystemConstants.AppSettings.HueSSSOClient_Id}&redirect_uri={urlCallBack}");
             }
 
             return Redirect(String.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);

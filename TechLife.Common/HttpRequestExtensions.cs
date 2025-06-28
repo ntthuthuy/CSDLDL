@@ -15,6 +15,11 @@ namespace TechLife.Common
             var httpContext = request.HttpContext;
             return $"{request.Scheme}://{request.Host}/LoginWithSSOVNeID/";
         }
+        public static string GetAppUrl(this HttpRequest request)
+        {
+            var httpContext = request.HttpContext;
+            return $"{request.Scheme}://{request.Host}/";
+        }
         public static string GetRawUrl(this HttpRequest request)
         {
             var httpContext = request.HttpContext;

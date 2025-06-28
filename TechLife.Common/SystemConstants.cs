@@ -21,6 +21,9 @@
             public const string HSCVAddress = "HSCVAddress";
             public const string UniqueCode = "00.23.H57";
 
+            public const string HueSSSOClient_Id = "to8OUqrGhQyJJ7O";
+            public const string HueSSSOClient_Secret = "g3UlhAXnobEw4ZsxuEW4vUBfnDLDtYo";
+
 
             public const int ExpireMinutes = 30;
         }
