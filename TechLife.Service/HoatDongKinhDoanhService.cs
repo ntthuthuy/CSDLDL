@@ -129,7 +129,8 @@ namespace TechLife.Service
             {
                 request.Search = request.Search.Trim();
 
-                query = query.Where(x => x.Code.Contains(request.Search, StringComparison.OrdinalIgnoreCase) || x.Name.Contains(request.Search, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => x.Code.ToLower().Contains(request.Search.ToLower())
+                || x.Name.ToLower().Contains(request.Search.ToLower()));
             }
 
             var hierarchy = await _danhMucService.GetHierarchy();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,20 +30,24 @@ namespace TechLife.Service
         Task<ApiResult<bool>> RoleAssign(Guid id, List<RoleModel> request);
         Task<ApiResult<bool>> RoleUnAssign(Guid id, Guid userId);
         Task<List<RoleModel>> GetAll(int groupId);
+        Task<ApiResult<bool>> UnAssignAllRole(Guid userId);
     }
 
     public class RoleService : IRoleService
     {
         private readonly RoleManager<Role> _roleManager;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<RoleService> _logger;
         private readonly TLDbContext _context;
 
         public RoleService(RoleManager<Role> roleManager
             , UserManager<User> userManager
+            , ILogger<RoleService> logger
             , TLDbContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _logger = logger;
             _context = context;
         }
 
@@ -88,7 +93,7 @@ namespace TechLife.Service
                 "where RoleGroups.GroupId = @GroupId";
 
             var roles = await _context.RawQuery<RoleModel>(query, prams);
-              
+
 
             return roles;
         }
@@ -221,6 +226,32 @@ namespace TechLife.Service
             catch (Exception ex)
             {
                 return new ApiErrorResult<bool>(ex.Message);
+            }
+        }
+
+        public async Task<ApiResult<bool>> UnAssignAllRole(Guid userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+
+                if (user == null)
+                {
+                    return new ApiErrorResult<bool>("Tài khoản không tồn tại");
+                }
+
+                var userRoles = await _context.UserRoles.Where(x => x.UserId == userId).ToListAsync();
+
+                _context.UserRoles.RemoveRange(userRoles);
+
+                await _context.SaveChangesAsync();
+
+                return new ApiSuccessResult<bool>(true, "Xóa tất cả quyền thành công");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
             }
         }
     }

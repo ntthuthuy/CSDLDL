@@ -103,7 +103,7 @@ namespace TechLife.Service
 
                 if (!string.IsNullOrWhiteSpace(request.Search))
                 {
-                    query = query.Where(x => x.QuocTich.TenQuocTich.Contains(request.Search, StringComparison.OrdinalIgnoreCase));
+                    query = query.Where(x => x.QuocTich.TenQuocTich.ToLower().Contains(request.Search.ToLower()));
                 }
 
                 var data = await query

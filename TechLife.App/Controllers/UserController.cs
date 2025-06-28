@@ -284,6 +284,23 @@ namespace TechLife.App.Controllers
             return View(request);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UnAssignAllRole(Guid Id)
+        {
+            try
+            {
+                var result = await _roleService.UnAssignAllRole(Id);
+
+                await Tracking(result.Message);
+
+                return Ok(result);
+            }
+            catch
+            {
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Group()
         {
