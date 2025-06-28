@@ -17,13 +17,7 @@ namespace TechLife.App.ApiClients
     {
         Task<TokenDetails> AuthenticateSSOVNeID(string urlSSO, string code);
 
-        Task<TokenDetails> AuthenticateSSOOrgan(string urlSSO, string code);
-
         Task<ApiResult<UserDetail>> GetUserInfo(string access_token);
-
-        Task<ApiResult<UserDetail>> GetOrganInfo(string access_token);
-
-        Task<ApiResult<TokenDetails>> GetTokenDetails(string access_token);
     }
 
     public class LoginWithSsoApiClient : BaseApiClient, ILoginWithSsoApiClient
@@ -63,8 +57,8 @@ namespace TechLife.App.ApiClients
                        "&code={4}",
                        "authorization_code",
                        urlSSO,
-                       "to8OUqrGhQyJJ7O",
-                       "g3UlhAXnobEw4ZsxuEW4vUBfnDLDtYo",
+                       SystemConstants.AppSettings.HueSSSOClient_Id,
+                       SystemConstants.AppSettings.HueSSSOClient_Secret,
                        code);
 
                 StringContent contentParams = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded");
@@ -76,49 +70,8 @@ namespace TechLife.App.ApiClients
                     _logger.LogInformation("Token: {0}", result);
                     return JsonConvert.DeserializeObject<TokenDetails>(result);
                 }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi xác thực tài khoản {0}", code);
-                return null;
-            }
-        }
 
-        public async Task<TokenDetails> AuthenticateSSOOrgan(string urlSSO, string code)
-        {
-            try
-            {
-                string endpointHost = "https://sso.huecity.vn";
-                string currentSiteCallbackUri = urlSSO;
-
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-                ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-
-                var client = _httpClientFactory.CreateClient();
-
-                client.BaseAddress = new Uri(endpointHost);
-
-                string contentString = string.Format("grant_type={0}" +
-                       "&redirect_uri={1}" +
-                       "&client_id={2}" +
-                       "&client_secret={3}" +
-                       "&code={4}",
-                       "authorization_code",
-                       urlSSO,
-                       "to8OUqrGhQyJJ7O",
-                       "g3UlhAXnobEw4ZsxuEW4vUBfnDLDtYo",
-                       code);
-
-                StringContent contentParams = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-                var response = await client.PostAsync($"/auth/realms/org/protocol/openid-connect/token", contentParams);
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    _logger.LogInformation("Token: {0}", result);
-                    return JsonConvert.DeserializeObject<TokenDetails>(result);
-                }
+                _logger.LogError("Xác thực không thành công. Lỗi: {0} - ContentString: {1}", JsonConvert.SerializeObject(response), contentString);
                 return null;
             }
             catch (Exception ex)
@@ -148,70 +101,14 @@ namespace TechLife.App.ApiClients
 
                     return new ApiSuccessResult<UserDetail>(userDetails, "Xác thực thành công");
                 }
+
+                _logger.LogError("Xác thực không thành công. Lỗi: {0}", JsonConvert.SerializeObject(response));
                 return new ApiErrorResult<UserDetail>("Xác thực không thành công. Lỗi: " + response.StatusCode);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi xác thực tài khoản {0}", access_token);
                 return new ApiErrorResult<UserDetail>("Xác thực không thành công. Lỗi: " + ex.Message);
-            }
-        }
-
-        public async Task<ApiResult<UserDetail>> GetOrganInfo(string access_token)
-        {
-            try
-            {
-                UserDetail userDetails = null;
-
-                var client = _httpClientFactory.CreateClient();
-                client.BaseAddress = new Uri("https://sso.huecity.vn");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-
-                var response = await client.PostAsync($"/auth/realms/org/protocol/openid-connect/userinfo", null);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-
-                    userDetails = JsonConvert.DeserializeObject<UserDetail>(result);
-
-                    return new ApiSuccessResult<UserDetail>(userDetails, "Xác thực thành công");
-                }
-                return new ApiErrorResult<UserDetail>("Xác thực không thành công. Lỗi: " + response.StatusCode);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi xác thực tài khoản {0}", access_token);
-                return new ApiErrorResult<UserDetail>("Xác thực không thành công. Lỗi: " + ex.Message);
-            }
-        }
-
-        public async Task<ApiResult<TokenDetails>> GetTokenDetails(string access_token)
-        {
-            try
-            {
-                TokenDetails userDetails = null;
-
-                var client = _httpClientFactory.CreateClient();
-                client.BaseAddress = new Uri("https://sso.huecity.vn");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-
-                var response = await client.PostAsync($"/auth/realms/org/protocol/openid-connect/token", null);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-
-                    userDetails = JsonConvert.DeserializeObject<TokenDetails>(result);
-
-                    return new ApiSuccessResult<TokenDetails>(userDetails, "Xác thực thành công");
-                }
-                return new ApiErrorResult<TokenDetails>("Xác thực không thành công. Lỗi: " + response.StatusCode);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi xác thực tài khoản {0}", access_token);
-                return new ApiErrorResult<TokenDetails>("Xác thực không thành công. Lỗi: " + ex.Message);
             }
         }
     }

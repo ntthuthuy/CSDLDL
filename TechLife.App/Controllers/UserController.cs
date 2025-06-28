@@ -65,7 +65,7 @@ namespace TechLife.App.Controllers
             if (user.LoginType == Common.Enums.LoginType.SSO)
                 return Redirect("/sso");
             else if (user.LoginType == Common.Enums.LoginType.SSOHueS)
-                return Redirect($"https://sso.huecity.vn/auth/realms/hues/protocol/openid-connect/logout?id_token_hint={user.IdToken}&post_logout_redirect_uri=https://gstt.hue.gov.vn/admin");
+                return Redirect($"https://sso.huecity.vn/auth/realms/hues/protocol/openid-connect/logout?id_token_hint={user.IdToken}&post_logout_redirect_uri={Request.GetAppUrl()}");
             else
                 return Redirect("/");
         }
