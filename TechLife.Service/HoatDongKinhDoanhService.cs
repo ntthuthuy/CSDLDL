@@ -180,7 +180,7 @@ namespace TechLife.Service
 
                 int i = 0;
 
-                var existsData = await _context.HoatDongKinhDoanh.Where(x => !x.IsDelete && x.Thang == thang).ToListAsync();
+                var existsData = await _context.HoatDongKinhDoanh.Where(x => !x.IsDelete && x.Thang == thang && x.Nam == nam).ToListAsync();
 
                 foreach (var item in items)
                 {
