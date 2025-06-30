@@ -242,7 +242,7 @@ namespace TechLife.Service
                     GioiThieu = request.GioiThieu,
                     TongSoGiuong = request.TongSoGiuong,
                     TongSoPhong = request.TongSoPhong,
-                    GiaThamKhao = !String.IsNullOrEmpty(request.GiaThamKhao) ? Convert.ToDecimal(request.GiaThamKhao.Replace(",", "")) : 0,
+                    GiaThamKhao = !String.IsNullOrEmpty(request.GiaThamKhao) ? request.GiaThamKhao.Replace(",", "") : "0",
                     //HueCIT
                     LoaiDiaDiemAnUong = request.LoaiDiaDiemAnUong,
                     PhucVu = request.PhucVu,
@@ -1304,6 +1304,8 @@ namespace TechLife.Service
         {
             try
             {
+                request.GiaThamKhao = request.GiaThamKhao.Replace(",", "");
+
                 var coSoLuuTru = await _context.HoSo.FindAsync(id);
                 //if (coSoLuuTru == null || coSoLuuTru.Count() <= 0)
                 //{
@@ -1379,7 +1381,7 @@ namespace TechLife.Service
                 model.ToaDoX = request.ToaDoX;
                 model.ToaDoY = request.ToaDoY;
                 model.MaDoanhNghiep = request.MaDoanhNghiep;
-                model.GiaThamKhao = Convert.ToDecimal(request.GiaThamKhao);
+                model.GiaThamKhao = decimal.TryParse(request.GiaThamKhao, out _) ? request.GiaThamKhao : "0";
                 if (request.DSDichVu != null && request.DSDichVu.Count() > 0)
                 {
                     var dichvu = _context.DichVuHoSo.Where(v => v.HoSoId == model.Id);

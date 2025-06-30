@@ -97,7 +97,21 @@
             </div>
         </div>
     </div>
+    <script src="~/plugins/jquery/jquery.min.js"></script>
     <script src="~/js/huecit/jquery.validate.min.js"></script>
     <script src="~/js/huecit/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.eye').click(function() {
+                if($(this).hasClass('fa-eye-slash')) {
+                    $(this).removeClass('fa-eye-slash');
+                    $('#Password').attr('type', 'text');
+                }else {
+                    $(this).addClass('fa-eye-slash');
+                    $('#Password').attr('type', 'password');
+                }
+            });
+        })
+    </script>
 </body>
 </html>
