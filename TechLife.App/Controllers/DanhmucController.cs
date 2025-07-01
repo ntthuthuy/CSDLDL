@@ -2538,7 +2538,7 @@ namespace TechLife.App.Controllers
                         Message = "Thêm mới thành công",
                     });
 
-                    return Redirect("/Danhmuc/" + act);
+                    return RedirectToAction(act, new { NgonNgu = request.NgonNguId });
                 }
             }
 

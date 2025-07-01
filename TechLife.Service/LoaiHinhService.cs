@@ -76,7 +76,7 @@ namespace TechLife.Service
             return new ApiErrorResult<int>("Xóa lỗi!");
         }
 
-        public async Task<List<LoaiHinhModel>> GetAll(string ngonNguId)
+        public async Task<List<LoaiHinhModel>> GetAll(string ngonNguId = "vi")
         {
             var query = from m in _context.LoaiHinh
                         where m.IsDelete == false && m.NgonNguId == ngonNguId

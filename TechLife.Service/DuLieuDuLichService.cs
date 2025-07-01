@@ -97,7 +97,7 @@ namespace TechLife.Service
         Task<List<DuLieuDuLichAPI>> GetAll_CoSoMuaSam();
         Task<List<DuLieuDuLichAPI>> GetAll_VanChuyen();
 
-        Task<Dictionary<int, int>> CoSoLuuTruEnglish(List<DuLieuDuLichModel> coSoLuuTru);
+        Task<Dictionary<int, int>> DuLieuDuLichEnglish(List<DuLieuDuLichModel> items);
 
         //HueCIT
         Task<List<HoSoVanBanVm>> GetListVanBanByHoSo(int hosoId);
@@ -1063,6 +1063,7 @@ namespace TechLife.Service
                     //HueCIT
                     ToaDoX = x.m.ToaDoX,
                     ToaDoY = x.m.ToaDoY,
+                    NgonNguId = x.m.NgonNguId
                 }).FirstOrDefaultAsync();
 
                 var item = data;
@@ -3266,7 +3267,7 @@ namespace TechLife.Service
             return data;
         }
 
-        public async Task<Dictionary<int, int>> CoSoLuuTruEnglish(List<DuLieuDuLichModel> coSoLuuTru)
+        public async Task<Dictionary<int, int>> DuLieuDuLichEnglish(List<DuLieuDuLichModel> items)
         {
             var data = await _context.HoSo
                 .AsNoTracking()
@@ -3274,7 +3275,7 @@ namespace TechLife.Service
                 .ToListAsync();
 
             var result = from d in data
-                         join m in coSoLuuTru on d.SoDienThoai equals m.SoDienThoai
+                         join m in items on d.SoDienThoai equals m.SoDienThoai
                          select new { Key = m.Id, Value = d.Id };
 
             return result.ToDictionary(x => x.Key, x => x.Value);

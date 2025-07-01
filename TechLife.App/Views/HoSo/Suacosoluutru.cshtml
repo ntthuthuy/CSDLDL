@@ -96,21 +96,21 @@
                                                 <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="form-row">
                                                         <div class="col-md-6">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tên cơ sở lưu trú <span class="text-red">*</span></label>
                                                                 <input asp-for="DuLieuDuLich.Ten" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.Ten" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tên viết tắt</label>
                                                                 <input asp-for="DuLieuDuLich.TenVietTat" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.TenVietTat" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Loại hình kinh doanh <span class="text-red">*</span></label>
                                                                 <select class="form-control select2" asp-for="DuLieuDuLich.LoaiHinhId" asp-items="ViewBag.listLoaiHinhKD">
                                                                     <option value="0">Chọn</option>
@@ -120,16 +120,16 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
-                                                        <div class="col-md-6">
-                                                            <div class="position-relative form-group">
+                                                        <div class="col-md-9">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Địa chỉ </label>
                                                                 <input asp-for="DuLieuDuLich.SoNha" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoNha" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
-                                                                <label class="control-label">Quận/ huyện/ thị xã <span class="text-red">*</span></label>
+                                                            <div class="form-group">
+                                                                <label class="control-label">Xã/ phường <span class="text-red">*</span></label>
 
                                                                 <select class="form-control option-huyen" asp-for="DuLieuDuLich.QuanHuyenId" asp-items="ViewBag.listHuyen">
                                                                     <option value="0">Chọn</option>
@@ -137,40 +137,40 @@
                                                                 <span asp-validation-for="DuLieuDuLich.QuanHuyenId" class="text-danger"></span>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                        @* <div class="col-md-3">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Xã/ phường/ thị trấn </label>
                                                                 <select class="form-control option-xa" asp-for="DuLieuDuLich.PhuongXaId" asp-items="ViewBag.listXa">
                                                                     <option value="0">Chọn</option>
                                                                 </select>
                                                                 <span asp-validation-for="DuLieuDuLich.PhuongXaId" class="text-danger"></span>
                                                             </div>
-                                                        </div>
+                                                        </div> *@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số điện thoại </label>
                                                                 <input asp-for="DuLieuDuLich.SoDienThoai" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoDienThoai" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Fax</label>
                                                                 <input asp-for="DuLieuDuLich.Fax" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.Fax" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Email</label>
                                                                 <input asp-for="DuLieuDuLich.Email" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.Email" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Website</label>
                                                                 <input asp-for="DuLieuDuLich.Website" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.Website" class="text-danger"></span>
@@ -179,21 +179,21 @@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-6">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Họ và tên (Người đại diện)</label>
                                                                 <input asp-for="DuLieuDuLich.HoTenNguoiDaiDien" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.HoTenNguoiDaiDien" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Chức vụ</label>
                                                                 <input asp-for="DuLieuDuLich.ChucVuNguoiDaiDien" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.ChucVuNguoiDaiDien" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số điện thoại</label>
                                                                 <input asp-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoDienThoaiNguoiDaiDien" class="text-danger"></span>
@@ -202,21 +202,21 @@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số GPDK kinh doanh</label>
                                                                 <input asp-for="DuLieuDuLich.SoGiayPhep" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoGiayPhep" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Thời điểm bắt đầu kinh doanh</label>
                                                                 <input asp-for="DuLieuDuLich.ThoiDiemBatDauKinhDoanh" class="form-control datepicker" />
                                                                 <span asp-validation-for="DuLieuDuLich.ThoiDiemBatDauKinhDoanh" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số lần chuyển chủ</label>
                                                                 <input asp-for="DuLieuDuLich.SoLanChuyenChu" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoLanChuyenChu" class="text-danger"></span>
@@ -225,7 +225,7 @@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Công ty, đơn vị chủ quản </label>
                                                                 <select asp-for="DuLieuDuLich.NhaCungCapId" asp-items="ViewBag.listNhaCungCap" class="form-control">
                                                                     <option value="0">Chọn</option>
@@ -234,21 +234,21 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Giờ mở cửa</label>
                                                                 <input asp-for="DuLieuDuLich.GioMoCua" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.GioMoCua" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Giờ đóng cửa</label>
                                                                 <input asp-for="DuLieuDuLich.GioDongCua" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.GioDongCua" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Giá tham khảo</label>
                                                                 <input asp-for="DuLieuDuLich.GiaThamKhao" value="0" id="GiaThamKhao" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.GiaThamKhao" class="text-danger"></span>
@@ -265,14 +265,14 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số VB đạt chuẩn</label>
                                                                 <input asp-for="DuLieuDuLich.SoCVDatChuan" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoCVDatChuan" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Ngày công nhận</label>
                                                                 <input asp-for="DuLieuDuLich.NgayCVDatChuan" class="form-control datepicker" />
                                                                 <span asp-validation-for="DuLieuDuLich.NgayCVDatChuan" class="text-danger"></span>
@@ -281,7 +281,7 @@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Hạng sao</label>
                                                                 <select asp-for="DuLieuDuLich.HangSao" asp-items="ViewBag.listTieuChuan" class="form-control select2">
                                                                     <option value="0">Không xếp hạng</option>
@@ -290,21 +290,21 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số quyết định</label>
                                                                 <input asp-for="DuLieuDuLich.SoQuyetDinh" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoQuyetDinh" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Ngày quyết định</label>
                                                                 <input asp-for="DuLieuDuLich.NgayQuyetDinh" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.NgayQuyetDinh" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Ngày hết hạn</label>
                                                                 <input asp-for="DuLieuDuLich.NgayHetHan" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.NgayHetHan" class="text-danger"></span>
@@ -314,14 +314,14 @@
                                                     <hr />
                                                     <div class="form-row">
                                                         <div class="col-md-6">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tổng số vốn đầu tư ban đầu (1000 VNĐ)</label>
                                                                 <input asp-for="DuLieuDuLich.TongVonDauTuBanDau" id="TongVonDauTuBanDau" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.TongVonDauTuBanDau" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tổng số vốn đầu tư nâng cấp</label>
                                                                 <input asp-for="DuLieuDuLich.TongVonDauTuBoSung" id="TongVonDauTuBoSung" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.TongVonDauTuBoSung" class="text-danger"></span>
@@ -330,42 +330,42 @@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Diện tích mặt bằng (m2)</label>
                                                                 <input asp-for="DuLieuDuLich.DienTichMatBang" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.DienTichMatBang" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Diện tích mặt bằng xây dựng (m2)</label>
                                                                 <input asp-for="DuLieuDuLich.DienTichMatBangXayDung" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.DienTichMatBangXayDung" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Số tầng</label>
                                                                 <input asp-for="DuLieuDuLich.SoTang" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoTang" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tổng diện tích xây dựng (m2)</label>
                                                                 <input asp-for="DuLieuDuLich.DienTichXayDung" type="number" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.DienTichXayDung" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tổng số phòng</label>
                                                                 <input asp-for="DuLieuDuLich.TongSoPhong" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.TongSoPhong" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <div class="position-relative form-group">
+                                                            <div class="form-group">
                                                                 <label class="control-label">Tổng số giường</label>
                                                                 <input asp-for="DuLieuDuLich.TongSoGiuong" class="form-control text-right" />
                                                                 <span asp-validation-for="DuLieuDuLich.TongSoGiuong" class="text-danger"></span>

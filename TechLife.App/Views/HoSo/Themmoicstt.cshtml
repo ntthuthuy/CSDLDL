@@ -109,14 +109,14 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
-                                                        <div class="col-md-2">
+                                                        <div class="col-md-3">
                                                             <div class="position-relative form-group">
                                                                 <label class="control-label">Số nhà</label>
                                                                 <input asp-for="DuLieuDuLich.SoNha" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoNha" class="text-danger"></span>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-6">
                                                             <div class="position-relative form-group">
                                                                 <label class="control-label">Đường phố</label>
                                                                 <input asp-for="DuLieuDuLich.DuongPho" class="form-control" />
@@ -125,7 +125,7 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Quận/ huyện/ thị xã <span class="text-red">*</span></label>
+                                                                <label class="control-label">Xã/ phường <span class="text-red">*</span></label>
 
                                                                 <select class="form-control option-huyen" asp-for="DuLieuDuLich.QuanHuyenId" asp-items="ViewBag.listHuyen">
                                                                     <option value="0">Chọn</option>
@@ -133,7 +133,7 @@
                                                                 <span asp-validation-for="DuLieuDuLich.QuanHuyenId" class="text-danger"></span>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        @* <div class="col-md-3">
                                                             <div class="position-relative form-group">
                                                                 <label class="control-label">Xã/ phường/ thị trấn </label>
                                                                 <select class="form-control option-xa" asp-for="DuLieuDuLich.PhuongXaId" asp-items="ViewBag.listXa">
@@ -141,7 +141,7 @@
                                                                 </select>
                                                                 <span asp-validation-for="DuLieuDuLich.PhuongXaId" class="text-danger"></span>
                                                             </div>
-                                                        </div>
+                                                        </div> *@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-md-3">
@@ -722,6 +722,7 @@
                             </div>
                             <div class="card-footer">
                                 <div class="float-right">
+                                    <input type="hidden" name="NgonNgu" value="@ViewBag.NgonNgu" />
                                     <button type="submit" name="type_sumit" value="save" class="btn btn-primary">Lưu</button>
                                     <button type="submit" name="type_sumit" value="save_create" class="btn btn-primary">Lưu và thêm mới</button>
                                 </div>

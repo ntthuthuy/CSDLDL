@@ -514,6 +514,7 @@ namespace TechLife.App.Controllers
 
             ViewBag.listLoaiHinhKD = list;
         }
+
         [Authorize(Roles = "view_luutru,root")]
         public async Task<IActionResult> Cosoluutru()
         {
@@ -579,9 +580,9 @@ namespace TechLife.App.Controllers
 
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.CoSoLuuTru, pageRequest);
 
-                List<DuLieuDuLichModel> coSoLuuTru = data.Items.Select(x => x).ToList();
+                //List<DuLieuDuLichModel> coSoLuuTru = data.Items.Select(x => x).ToList();
 
-                ViewBag.ListCoSoLuuTruEnglish = await _duLieuDuLichService.CoSoLuuTruEnglish(coSoLuuTru);
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
 
                 return View(data);
             }
@@ -598,7 +599,7 @@ namespace TechLife.App.Controllers
         {
             try
             {
-                string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
                 ViewBag.NgonNgu = ngonNguId;
 
@@ -663,7 +664,9 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _duLieuDuLichService.Create(NgonNgu, request.DuLieuDuLich);
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     TempData.AddAlert(new Result<string>()
@@ -730,16 +733,15 @@ namespace TechLife.App.Controllers
 
         [HttpGet]
         [Authorize(Roles = "edit_luutru,root")]
-        public async Task<IActionResult> Suacosoluutru(string id, string ngonNgu)
+        public async Task<IActionResult> Suacosoluutru(string id)
         {
             try
             {
                 ViewData["Title"] = "Sửa cơ sở lưu trú";
                 ViewData["Title_parent"] = "Hồ sơ";
-                ngonNgu = string.IsNullOrEmpty(ngonNgu) ? SystemConstants.DefaultLanguage : ngonNgu;
-                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru, ngonNgu);
                 int Id = Convert.ToInt32(HashUtil.DecodeID(id));
                 var csltModel = await _duLieuDuLichService.GetById(Id);
+                var tienNghi = await _tienNghiService.GetAll((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.NgonNguId);
                 var amenities = tienNghi.Select(x => new AmenityVm()
                 {
                     Id = x.Id,
@@ -750,21 +752,21 @@ namespace TechLife.App.Controllers
                 {
                     csltModel.DSLoaiPhong = await ListLoaiPhongHoSo(csltModel.Id, csltModel.DSLoaiPhong);
                     csltModel.DSDichVu = await ListDichVuHoSo(csltModel.Id, csltModel.DSDichVu);
-                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, ngonNgu);
-                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, ngonNgu);
-                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSBoPhan, ngonNgu);
-                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, ngonNgu);
+                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
                     csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSTienNghi);
                     csltModel.DSNhaHang = ListNhaHangLuuTru(csltModel.Id, csltModel.DSNhaHang);
-                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSVanBan, ngonNgu);
+                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                     csltModel.Amenities = amenities;
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
                     await OptionNhaCungCap();
                     await OptionTieuChuanCoSo();
 
-                    await this.OptionDonViTinh(0, ngonNgu);
-                    await this.OptionLoaiHinhKinhDoanh(csltModel.LoaiHinhId, ngonNgu);
+                    await this.OptionDonViTinh(0, csltModel.NgonNguId);
+                    await this.OptionLoaiHinhKinhDoanh(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -811,13 +813,13 @@ namespace TechLife.App.Controllers
                 {
                     oldValue.DSLoaiPhong = await ListLoaiPhongHoSo(oldValue.Id, oldValue.DSLoaiPhong);
                     oldValue.DSDichVu = await ListDichVuHoSo(oldValue.Id, oldValue.DSDichVu);
-                    oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
-                    oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
-                    oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSBoPhan);
-                    oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
+                    oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu, oldValue.NgonNguId);
+                    oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo, oldValue.NgonNguId);
+                    oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
+                    oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
                     oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSTienNghi);
                     oldValue.DSNhaHang = ListNhaHangLuuTru(oldValue.Id, oldValue.DSNhaHang);
-                    oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSVanBan);
+                    oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
                     oldValue.Amenities = amenities;
                 }
 
@@ -865,13 +867,13 @@ namespace TechLife.App.Controllers
                     {
                         newValue.DSLoaiPhong = await ListLoaiPhongHoSo(newValue.Id, newValue.DSLoaiPhong);
                         newValue.DSDichVu = await ListDichVuHoSo(newValue.Id, newValue.DSDichVu);
-                        newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
-                        newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
-                        newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSBoPhan);
-                        newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
+                        newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu, newValue.NgonNguId);
+                        newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo, newValue.NgonNguId);
+                        newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
+                        newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
                         newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSTienNghi);
                         newValue.DSNhaHang = ListNhaHangLuuTru(newValue.Id, newValue.DSNhaHang);
-                        newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSVanBan);
+                        newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
                         newValue.Amenities = amenities;
                     }
 
@@ -990,9 +992,9 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
-        private async Task OptionLoaiNhaHang(int seletedId = 0)
+        private async Task OptionLoaiNhaHang(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _dichVuService.GetAll();
+            var luhanh = await _dichVuService.GetAll(ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -1025,6 +1027,7 @@ namespace TechLife.App.Controllers
             {
                 ViewData["Title"] = "Danh sách nhà hàng";
                 ViewData["Title_parent"] = "Hồ sơ";
+
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
                 int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
@@ -1049,6 +1052,8 @@ namespace TechLife.App.Controllers
 
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.NhaHang, pageRequest);
 
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
+
                 return View(data);
             }
             catch (Exception ex)
@@ -1067,7 +1072,8 @@ namespace TechLife.App.Controllers
 
                 var csltModel = new DuLieuDuLichModel();
 
-
+                string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+                ViewBag.NgonNgu = ngonNguId;
 
                 csltModel.DSThucDon = ListThucDonHoSo();
                 csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
@@ -1082,7 +1088,7 @@ namespace TechLife.App.Controllers
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiNhaHang();
+                await this.OptionLoaiNhaHang(0, ngonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
@@ -1103,7 +1109,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "create_nhahang,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoinhahang(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoinhahang(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -1118,7 +1124,9 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (result.IsSuccessed)
                 {
@@ -1179,18 +1187,18 @@ namespace TechLife.App.Controllers
                 {
                     csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
                     csltModel.DSDichVu = await ListDichVuHoSo(csltModel.Id, csltModel.DSDichVu);
-                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSBoPhan);
-                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
+                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
                     csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSTienNghi);
-                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSVanBan);
+                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiNhaHang();
+                    await this.OptionLoaiNhaHang(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                     await this.OptionDonViTinh(2);
                 }
 
@@ -1321,6 +1329,7 @@ namespace TechLife.App.Controllers
                 return Redirect("/Hoso/Suathongtinnhahang/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_nhahang,root")]
         [ValidateAntiForgeryToken]
@@ -1709,6 +1718,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_congtyluhanh,root")]
         [ValidateAntiForgeryToken]
@@ -1732,9 +1742,9 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
-        private async Task OptionLoaiCoSoMuaSam(int seletedId = 0)
+        private async Task OptionLoaiCoSoMuaSam(int seletedId = 0, string NgonNgu = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _loaiDichVuService.GetAll();
+            var luhanh = await _loaiDichVuService.GetAll(NgonNgu);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -1794,6 +1804,9 @@ namespace TechLife.App.Controllers
                 };
 
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.MuaSam, pageRequest);
+
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
+
                 return View(data);
             }
             catch (Exception ex)
@@ -1812,19 +1825,23 @@ namespace TechLife.App.Controllers
 
                 var csltModel = new DuLieuDuLichModel();
 
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.MuaSam);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.MuaSam, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSTienNghi);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.MuaSam);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.MuaSam, 0, null, ngonNguId);
 
                 await OptionHuyen();
                 await OptionXa(-1);
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiCoSoMuaSam();
+                await this.OptionLoaiCoSoMuaSam(0, ngonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
@@ -1845,7 +1862,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "create_muasam,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoicosomuasam(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoicosomuasam(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -1859,8 +1876,9 @@ namespace TechLife.App.Controllers
                     }
                 }
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
                 {
@@ -1869,7 +1887,7 @@ namespace TechLife.App.Controllers
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiCoSoMuaSam();
+                    await this.OptionLoaiCoSoMuaSam(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -1922,17 +1940,19 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Sửa thông tin cơ sở mua sắm";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
                 var csltModel = await _duLieuDuLichService.GetById(Convert.ToInt32(HashUtil.DecodeID(id)));
 
                 if (csltModel != null)
                 {
                     csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
-                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSBoPhan);
-                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
+                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
                     csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSTienNghi);
-                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSVanBan);
+                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
 
                     await OptionHuyen();
                     await OptionXa(csltModel.QuanHuyenId);
@@ -1961,6 +1981,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "edit_muasam,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Suathongtincosomuasam(DuLieuDuLichUpdateRequest request, string type_sumit)
         {
             try
@@ -2102,9 +2123,9 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
-        private async Task OptionLoaiDiemDuLich(int seletedId = 0)
+        private async Task OptionLoaiDiemDuLich(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich, ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -2162,6 +2183,9 @@ namespace TechLife.App.Controllers
                     nguon = nguon
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.DiemDuLich, pageRequest);
+
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
+
                 return View(data);
             }
             catch (Exception ex)
@@ -2179,6 +2203,10 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới điểm du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
@@ -2193,8 +2221,8 @@ namespace TechLife.App.Controllers
                 await OptionXa();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiDiemDuLich();
-                await this.OptionDonViTinh(2);
+                await this.OptionLoaiDiemDuLich(0, ngonNguId);
+                await this.OptionDonViTinh(2, ngonNguId);
 
                 var model = new DuLieuDuLichCreateExtRequest()
                 {
@@ -2214,7 +2242,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "create_diemdulich,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoidiemdulich(DuLieuDuLichCreateExtRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoidiemdulich(DuLieuDuLichCreateExtRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -2230,14 +2258,16 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     await OptionHuyen();
                     await OptionXa();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiDiemDuLich();
+                    await this.OptionLoaiDiemDuLich(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -2294,17 +2324,17 @@ namespace TechLife.App.Controllers
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo(csltModel.Id, csltModel.DSVeDichVu);
                 csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSBoPhan);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSVanBan);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSTienNghi);
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiDiemDuLich();
+                await this.OptionLoaiDiemDuLich(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichUpdateExtRequest()
@@ -2340,11 +2370,11 @@ namespace TechLife.App.Controllers
 
                 oldValue.DSVeDichVu = ListVeDichVuHoSo(oldValue.Id, oldValue.DSVeDichVu);
                 oldValue.DSThucDon = ListThucDonHoSo(oldValue.Id, oldValue.DSThucDon);
-                oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
-                oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
-                oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSBoPhan);
-                oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
-                oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSVanBan);
+                oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu, oldValue.NgonNguId);
+                oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo, oldValue.NgonNguId);
+                oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
+                oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
+                oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
                 oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSTienNghi);
 
                 if (request.DuLieuDuLich.DSVanBan != null)
@@ -2381,7 +2411,7 @@ namespace TechLife.App.Controllers
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiDiemDuLich();
+                    await this.OptionLoaiDiemDuLich(oldValue.LoaiHinh.Id, oldValue.NgonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -2392,11 +2422,11 @@ namespace TechLife.App.Controllers
                     var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
                     newValue.DSVeDichVu = ListVeDichVuHoSo(newValue.Id, newValue.DSVeDichVu);
                     newValue.DSThucDon = ListThucDonHoSo(newValue.Id, newValue.DSThucDon);
-                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
-                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
-                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSBoPhan);
-                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
-                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSVanBan);
+                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu, newValue.NgonNguId);
+                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo, newValue.NgonNguId);
+                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
+                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
+                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
                     newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSTienNghi);
 
                     var history = new LichSuCapNhatCreateRequest
@@ -2475,6 +2505,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_diemdulich,root")]
         [ValidateAntiForgeryToken]
@@ -2732,6 +2763,7 @@ namespace TechLife.App.Controllers
             var data = await _duLieuDuLichService.GetAllCSLT(term);
             return Ok(data);
         }
+
         [HttpPost]
         [Authorize(Roles = "manage_travel_data")]
         [ValidateAntiForgeryToken]
@@ -2749,6 +2781,7 @@ namespace TechLife.App.Controllers
             await Tracking(result.Message);
             return Redirect(Request.GetBackUrl());
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_huongdanvien,root")]
         [ValidateAntiForgeryToken]
@@ -2896,6 +2929,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_vesinhcongcong,root")]
         [ValidateAntiForgeryToken]
@@ -2944,6 +2978,7 @@ namespace TechLife.App.Controllers
                     huyen = huyen
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.KhuDuLich, pageRequest);
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
                 return View(data);
             }
             catch (Exception ex)
@@ -2953,9 +2988,9 @@ namespace TechLife.App.Controllers
             }
         }
 
-        private async Task OptionLoaiKhuDuLich(int seletedId = 0)
+        private async Task OptionLoaiKhuDuLich(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuDuLich);
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuDuLich, ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -2975,6 +3010,8 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới khu du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
@@ -2990,7 +3027,7 @@ namespace TechLife.App.Controllers
                 await OptionNhaCungCap();
 
                 await this.OptionDonViTinh(2);
-                await this.OptionLoaiKhuDuLich();
+                await this.OptionLoaiKhuDuLich(0, ngonNguId);
                 var model = new DuLieuDuLichCreateRequest()
                 {
                     DuLieuDuLich = csltModel,
@@ -3009,7 +3046,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_khudulich,root")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoikhudulich(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoikhudulich(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -3025,14 +3062,16 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     await OptionHuyen();
                     await OptionXa();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiKhuDuLich();
+                    await this.OptionLoaiKhuDuLich(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -3088,17 +3127,17 @@ namespace TechLife.App.Controllers
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo(csltModel.Id, csltModel.DSVeDichVu);
                 csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSBoPhan);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSVanBan);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSTienNghi);
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiKhuDuLich();
+                await this.OptionLoaiKhuDuLich(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                 await this.OptionDonViTinh(2);
                 var model = new DuLieuDuLichUpdateRequest()
                 {
@@ -3128,11 +3167,11 @@ namespace TechLife.App.Controllers
                 var oldValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
                 oldValue.DSVeDichVu = ListVeDichVuHoSo(oldValue.Id, oldValue.DSVeDichVu);
                 oldValue.DSThucDon = ListThucDonHoSo(oldValue.Id, oldValue.DSThucDon);
-                oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
-                oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
-                oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSBoPhan);
-                oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
-                oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSVanBan);
+                oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu, oldValue.NgonNguId);
+                oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo, oldValue.NgonNguId);
+                oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
+                oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
+                oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
                 oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSTienNghi);
 
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
@@ -3182,11 +3221,11 @@ namespace TechLife.App.Controllers
                     var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
                     newValue.DSVeDichVu = ListVeDichVuHoSo(newValue.Id, newValue.DSVeDichVu);
                     newValue.DSThucDon = ListThucDonHoSo(newValue.Id, newValue.DSThucDon);
-                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
-                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
-                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSBoPhan);
-                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
-                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSVanBan);
+                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu, newValue.NgonNguId);
+                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo, newValue.NgonNguId);
+                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
+                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
+                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
                     newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSTienNghi);
 
                     var history = new LichSuCapNhatCreateRequest
@@ -3241,6 +3280,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_khudulich,root")]
         [ValidateAntiForgeryToken]
@@ -3259,9 +3299,9 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
-        private async Task OptionLoaiKhuVuiChoi(int seletedId = 0)
+        private async Task OptionLoaiKhuVuiChoi(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuVuiChoi);
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.KhuVuiChoi, ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -3302,6 +3342,7 @@ namespace TechLife.App.Controllers
                     nguon = nguon
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.KhuVuiChoi, pageRequest);
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
                 return View(data);
             }
             catch (Exception ex)
@@ -3319,21 +3360,24 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới khu vui chơi, giải trí";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+                ViewBag.NgonNgu = ngonNguId;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, 0, null, ngonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuVuiChoi);
 
                 await OptionHuyen();
                 await OptionXa();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiKhuVuiChoi();
+                await this.OptionLoaiKhuVuiChoi(0, ngonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
@@ -3354,7 +3398,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_dichvuvuichoi,root")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoikhuvcgt(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoikhuvcgt(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -3368,7 +3412,10 @@ namespace TechLife.App.Controllers
                         v.FileName = v.Files != null ? v.Files.FileName : "";
                     }
                 }
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     await OptionHuyen();
@@ -3376,7 +3423,7 @@ namespace TechLife.App.Controllers
                     await OptionNhaCungCap();
 
                     await this.OptionDonViTinh(2);
-                    await this.OptionLoaiKhuVuiChoi();
+                    await this.OptionLoaiKhuVuiChoi(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -3431,12 +3478,12 @@ namespace TechLife.App.Controllers
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo(csltModel.Id, csltModel.DSVeDichVu);
                 csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSBoPhan);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
 
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSVanBan);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSTienNghi);
 
 
@@ -3444,7 +3491,7 @@ namespace TechLife.App.Controllers
                 await OptionXa(csltModel.QuanHuyenId);
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiKhuVuiChoi();
+                await this.OptionLoaiKhuVuiChoi(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                 await this.OptionDonViTinh(2);
                 var model = new DuLieuDuLichUpdateRequest()
                 {
@@ -3510,7 +3557,7 @@ namespace TechLife.App.Controllers
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiKhuVuiChoi();
+                    await this.OptionLoaiKhuVuiChoi(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -3580,6 +3627,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_dichvuvuichoi,root")]
         [ValidateAntiForgeryToken]
@@ -3628,6 +3676,7 @@ namespace TechLife.App.Controllers
                     huyen = huyen
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.CSSK, pageRequest);
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
                 return View(data);
             }
             catch (Exception ex)
@@ -3637,9 +3686,9 @@ namespace TechLife.App.Controllers
             }
         }
 
-        private async Task OptionLoaiHinhCSSK(int seletedId = 0)
+        private async Task OptionLoaiHinhCSSK(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.CSSK);
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.CSSK, ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -3659,22 +3708,26 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới cơ sở chăm sóc sức khỏe";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
 
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CSSK);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CSSK);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CSSK, 0, null, ngonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CSSK, 0, null, ngonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK);
 
                 await OptionHuyen();
                 await OptionXa();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiHinhCSSK();
+                await this.OptionLoaiHinhCSSK(0, ngonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
@@ -3694,7 +3747,7 @@ namespace TechLife.App.Controllers
         [HttpPost]
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_dichvucssk,root")]
-        public async Task<IActionResult> Themmoicssk(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoicssk(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -3708,16 +3761,19 @@ namespace TechLife.App.Controllers
                         v.FileName = v.Files != null ? v.Files.FileName : "";
                     }
                 }
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     await OptionHuyen();
                     await OptionXa();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiHinhCSSK();
+                    await this.OptionLoaiHinhCSSK(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
                     await this.OptionDonViTinh(2);
-
+                    ViewBag.NgonNgu = ngonNguId;
                     ModelState.AddModelError("", result.Message);
                     return View(request);
                 }
@@ -3771,17 +3827,17 @@ namespace TechLife.App.Controllers
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo(csltModel.Id, csltModel.DSVeDichVu);
                 csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSBoPhan);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSVanBan);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSTienNghi);
                 await OptionHuyen();
                 await OptionXa(csltModel.QuanHuyenId);
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiHinhCSSK();
+                await this.OptionLoaiHinhCSSK(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -3849,7 +3905,7 @@ namespace TechLife.App.Controllers
                     await OptionXa(request.DuLieuDuLich.QuanHuyenId);
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiHinhCSSK();
+                    await this.OptionLoaiHinhCSSK(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -3919,6 +3975,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_dichvucssk,root")]
         [ValidateAntiForgeryToken]
@@ -3967,6 +4024,7 @@ namespace TechLife.App.Controllers
                     huyen = huyen
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.TheThao, pageRequest);
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
                 return View(data);
             }
             catch (Exception ex)
@@ -3976,9 +4034,9 @@ namespace TechLife.App.Controllers
             }
         }
 
-        private async Task OptionLoaiHinhTheThao(int seletedId = 0)
+        private async Task OptionLoaiHinhTheThao(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.TheThao);
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.TheThao, ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -3998,6 +4056,10 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới cơ sở thể thao";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
@@ -4013,7 +4075,7 @@ namespace TechLife.App.Controllers
                 await OptionXa();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiHinhTheThao();
+                await this.OptionLoaiHinhTheThao(0, ngonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
@@ -4034,7 +4096,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_dichvuthethao,root")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoicstt(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoicstt(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
         {
             try
             {
@@ -4048,14 +4110,17 @@ namespace TechLife.App.Controllers
                         v.FileName = v.Files != null ? v.Files.FileName : "";
                     }
                 }
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
                     await OptionHuyen();
                     await OptionXa();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiHinhTheThao();
+                    await this.OptionLoaiHinhTheThao(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -4111,12 +4176,12 @@ namespace TechLife.App.Controllers
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo(csltModel.Id, csltModel.DSVeDichVu);
                 csltModel.DSThucDon = ListThucDonHoSo(csltModel.Id, csltModel.DSThucDon);
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSBoPhan);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
 
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSVanBan);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSTienNghi);
 
                 await OptionHuyen();
@@ -4124,7 +4189,7 @@ namespace TechLife.App.Controllers
                 await OptionNhaCungCap();
 
                 await this.OptionDonViTinh(2);
-                await this.OptionLoaiHinhTheThao();
+                await this.OptionLoaiHinhTheThao(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
 
                 var model = new DuLieuDuLichUpdateRequest()
                 {
@@ -4192,7 +4257,7 @@ namespace TechLife.App.Controllers
                     await OptionNhaCungCap();
 
                     await this.OptionDonViTinh(2);
-                    await this.OptionLoaiHinhTheThao();
+                    await this.OptionLoaiHinhTheThao(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -4261,6 +4326,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_dichvuthethao,root")]
         [ValidateAntiForgeryToken]
@@ -4459,6 +4525,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_donviquanly,root")]
         [ValidateAntiForgeryToken]
@@ -4767,6 +4834,7 @@ namespace TechLife.App.Controllers
                 return View(request);
             }
         }
+
         [HttpPost]
         [Authorize(Roles = "delete_congtyvanchuyen,root")]
         [ValidateAntiForgeryToken]
@@ -4896,6 +4964,7 @@ namespace TechLife.App.Controllers
 
             return Ok(result);
         }
+
         [HttpPost]
         [Authorize(Roles = "manage_travel_data,root")]
         [ValidateAntiForgeryToken]
@@ -5132,6 +5201,7 @@ namespace TechLife.App.Controllers
 
             return Redirect(Request.GetBackUrl());
         }
+
         [HttpPost]
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "manage_travel_data,root")]

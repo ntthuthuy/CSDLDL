@@ -11,6 +11,7 @@
 @{
     var user = Context.Request.GetUser();
     var User = new CustomClaimsPrincipal(userService, this.User);
+    var dict = (Dictionary<int, int>)ViewBag.ListDuLieuDuLichEnglish;
 }
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -82,7 +83,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <table class="table table-hover table-striped table-bordered">
+                                        <table class="table-hover table-striped table-bordered table">
                                             <thead>
                                                 <tr>
                                                     <th width="5%" class="text-center">STT</th>
@@ -128,6 +129,26 @@
                                                                     }
                                                                 </td>
                                                                 <td class="text-center">
+                                                                    @if (User.IsInRole("create_nhahang") || User.IsInRole("edit_nhahang") || User.IsInRole("root"))
+                                                                    {
+                                                                        int item = dict.GetValueOrDefault(d.Id);
+
+                                                                        if (item != 0)
+                                                                        {
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Suathongtinnhahang?Id=@HashUtil.EncodeID(item.ToString())&NgonNgu=en">
+                                                                                <i class="fas fa-globe-europe"></i>
+                                                                                <span>ENG</span>
+                                                                            </a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoinhahang?NgonNgu=en">
+                                                                                <i class="fas fa-globe-europe"></i>
+                                                                                <span>ENG</span>
+                                                                            </a>
+                                                                        }
+                                                                    }
+                                                                    
                                                                     @if (User.IsInRole("edit_nhahang") || User.IsInRole("root"))
                                                                     {
                                                                         <a title="Sửa cơ sở lưu trú" href="/Hoso/Suathongtinnhahang/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
