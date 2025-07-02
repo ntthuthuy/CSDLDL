@@ -25,63 +25,17 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-outline card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">@ViewData["Title"]</h3>
-                            <div class="card-tools">
-                                <a href="/Danhmuc/Themdiaphuong/" class="btn btn-xs btn-success">
-                                    <i class="fas fa-plus-circle"></i> Thêm mới
-                                </a>
-                            </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <table class="table table-hover table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th width="5%" class="text-center">STT</th>
-                                        <th width="30%" class="text-center">Tên</th>
-                                        <th>Mô tả</th>
-                                        <th width="15%" class="text-center">Chức năng</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        if (Model != null && Model != null)
-                                        {
-                                            int stt = 0;
-                                            foreach (var d in Model)
-                                            {
-                                                stt++;
-                                                <tr>
-                                                    <td class="text-center">@stt</td>
-                                                    <td>@d.TenDiaPhuong</td>
-                                                    <td>@d.MoTa</td>
-                                                    <td class="text-center">
-                                                        <a title="Sửa địa phương" href="/Danhmuc/Suadiaphuong/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
-                                                        <a title="Xóa địa phương" data-title="Bạn muốn xóa địa phương @d.TenDiaPhuong ?" data-url="/Danhmuc/Xoadiaphuong/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
-                       
-                    </div>
-                    <!-- /.card -->
-                </div>
-            </div>
-        </div><!-- /.container-fluid -->
-    </section>
+    <section class="content" id="view-content"></section>
     <!-- /.content -->
 </div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let element = document.getElementById('view-content')
+            loadContent('@Html.Raw(Context.Request.GetRawUrl($"{Context.Request.PathBase}/Danhmuc/DiaPhuongList/"))', element);
+        });
+    </script>
+}
 
 
 

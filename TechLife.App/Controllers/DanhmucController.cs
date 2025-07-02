@@ -152,11 +152,40 @@ namespace TechLife.App.Controllers
             ViewData["Title_parent"] = "Danh mục";
             var data = await _diaPhuongService.GetAll();
 
-            listDiaPhuong = new List<DiaPhuongModel>();
-            listDiaPhuong = ListDiaPhuong(data);
-            return View(listDiaPhuong);
+            ListDiaPhuong(data);
+
+            return View(data);
         }
-        List<DiaPhuongModel> ListDiaPhuong(List<DiaPhuongModel> list, int seletedId = 0, int parentId = 0, int level = 0)
+
+        public async Task<IActionResult> DiaPhuongList(GetPagingFormRequest request)
+        {
+            try
+            {
+                ViewData["Title"] = "Địa phương";
+                request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
+                request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+
+                var data = await _diaPhuongService.GetAll();
+
+                ListDiaPhuong(data);
+
+                if (!string.IsNullOrWhiteSpace(request.Search))
+                {
+                    string keyword = request.Search.Trim().ToLower();
+
+                    data = data.Where(x => x.TenDiaPhuong.ToLower().Contains(keyword)).ToList();
+                }
+
+                return PartialView(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem danh sách địa phương {0}", Request.GetFullUrl());
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
+        void ListDiaPhuong(List<DiaPhuongModel> list, int seletedId = 0, int parentId = 0, int level = 0)
         {
             var diaphuong = list.Where(v => v.ParentId == parentId);
             foreach (var x in diaphuong)
@@ -167,16 +196,6 @@ namespace TechLife.App.Controllers
                     space += "- ";
                 }
                 x.TenDiaPhuong = space + x.TenDiaPhuong;
-                listDiaPhuong.Add(new DiaPhuongModel()
-                {
-                    Id = x.Id,
-                    ParentId = x.ParentId,
-                    IsDelete = x.IsDelete,
-                    IsStatus = x.IsStatus,
-                    MoTa = x.MoTa,
-                    TenDiaPhuong = x.TenDiaPhuong
-                });
-
                 var list_chird = list.Where(v => v.ParentId == x.Id);
                 if (list_chird.Count() > 0)
                 {
@@ -184,158 +203,136 @@ namespace TechLife.App.Controllers
                     ListDiaPhuong(list, seletedId, x.Id, level_next);
                 }
             }
-            return listDiaPhuong;
         }
 
         [HttpGet]
         public async Task<IActionResult> Themdiaphuong()
         {
+            var list = await _diaPhuongService.GetAll();
 
-            ViewData["Title"] = "Thêm địa phương";
-            ViewData["Title_parent"] = "Danh mục";
+            ListDiaPhuong(list);
 
-            await OptionDiaPhuong();
-
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themdiaphuong(DiaPhuongModel request, string type_submit)
-        {
-
-            ViewData["Title"] = "Thêm địa phương";
-            ViewData["Title_parent"] = "Danh mục";
-
-
-
-            if (!ModelState.IsValid)
+            ViewBag.listDiaPhuong = list.Select(x => new SelectListItem
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = false,
-                    Message = "Vui lòng nhập đầy đủ thông tin bắt buộc!"
-                });
-
-                await OptionDiaPhuong();
-
-                return View(request);
-            }
-
-            var result = await _diaPhuongApiClient.Create(request);
-
-            if (result.IsSuccessed)
-            {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = "Thêm mới thành công",
-                });
-
-                if (type_submit == "save")
-                    return Redirect("/Danhmuc/Diaphuong/");
-                else
-                {
-                    await OptionDiaPhuong();
-
-                    request = new DiaPhuongModel()
-                    {
-                        ParentId = request.ParentId
-                    };
-
-                    return View(request);
-                }
-            }
-
-            TempData.AddAlert(new Result<string>()
-            {
-                IsSuccessed = result.IsSuccessed,
-                Message = result.Message
+                Text = x.TenDiaPhuong,
+                Value = x.Id.ToString()
             });
 
-            await OptionDiaPhuong();
-
-            return View(request);
+            return PartialView();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Themdiaphuong(DiaPhuongModel request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Ok(new Result<bool>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin!" });
+                }
+
+                var result = await _diaPhuongService.Create(request);
+
+                await Tracking("Thêm địa phương:" + result.Message);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi thêm mới địa phương {0}", Request.GetFullUrl());
+
+                return StatusCode(500, "Đã có lỗi xảy ra");
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Suadiaphuong(string id = "")
         {
-            ViewData["Title"] = "Sửa địa phương";
-            ViewData["Title_parent"] = "Danh mục";
+
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
-            var data = await _diaPhuongApiClient.GetById(Id);
 
-            await OptionDiaPhuong();
+            var data = await _diaPhuongService.GetById(Id);
 
-            return View(data);
+            var list = await _diaPhuongService.GetAll();
+
+            var selectListItem = new List<SelectListItem>();
+
+            ListDiaPhuong(list);
+
+            ViewBag.listDiaPhuong = list.Select(x => new SelectListItem
+            {
+                Text = x.TenDiaPhuong,
+                Value = x.Id.ToString(),
+                Selected = x.Id == data.ParentId,
+                Disabled = x.Id == data.Id
+            });
+            return PartialView(data);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Suadiaphuong(string Id, DiaPhuongModel request)
         {
-
-            ViewData["Title"] = "Sửa địa phương";
-            ViewData["Title_parent"] = "Danh mục";
-
-            ModelState.Remove("Id");
-
-            if (!ModelState.IsValid)
+            try
             {
-                TempData.AddAlert(new Result<string>()
+                ModelState.Remove("Id");
+
+                if (!ModelState.IsValid)
                 {
-                    IsSuccessed = false,
-                    Message = "Vui lòng nhập đầy đủ thông tin bắt buộc!"
-                });
+                    return Ok(new Result<bool>() { IsSuccessed = false, Message = "Vui lòng nhập đầy đủ thông tin!" });
+                }
 
-                await OptionDiaPhuong();
+                int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-                return View(request);
+                var result = await _diaPhuongService.Update(id, request);
+
+                await Tracking("Cập nhật địa phương: " + result.Message);
+
+                return Ok(result);
             }
-
-            int id = Convert.ToInt32(HashUtil.DecodeID(Id));
-
-            var result = await _diaPhuongApiClient.Update(id, request);
-            if (result.IsSuccessed)
+            catch (Exception ex)
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = "Cập nhật thành công",
-                });
+                _logger.LogError(ex, "Lỗi cập nhật địa phương {0}", Request.GetFullUrl());
 
-                return Redirect("/Danhmuc/Diaphuong");
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
+        }
 
-            await OptionDiaPhuong();
+        [HttpGet]
+        public IActionResult Xoadiaphuong(string Id)
+        {
+            var model = new FormRequest
+            {
+                Title = "Xóa địa phương",
+                Caption = "Bạn chắc chắn muốn xóa địa phương này",
+                Id = Id,
+                IsLoadPage = false,
+                Url = "/Danhmuc/Xoadiaphuong",
+                UrlBack = "/Danhmuc/DiaPhuongList"
+            };
 
-            return View(request);
+            return PartialView("_ModalConfirm", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Xoadiaphuong(string Id)
+        public async Task<IActionResult> Xoadiaphuong(FormRequest request)
         {
-
-            int id = Convert.ToInt32(HashUtil.DecodeID(Id));
-
-            var result = await _diaPhuongApiClient.Delete(id);
-            if (result.IsSuccessed)
+            try
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = "Xóa thành công",
-                });
+                int id = Convert.ToInt32(HashUtil.DecodeID(request.Id));
 
+                var result = await _diaPhuongService.Delete(id);
+
+                await Tracking("Xóa địa phương: " + result.Message);
+
+                return Ok(result);
             }
-            else
+            catch (Exception ex)
             {
-                TempData.AddAlert(new Result<string>()
-                {
-                    IsSuccessed = result.IsSuccessed,
-                    Message = result.Message
-                });
+                _logger.LogError(ex, "Lỗi xóa địa phương {0}", Request.GetFullUrl());
+                return StatusCode(500, "Đã có lỗi xảy ra");
             }
-            return Redirect("/Danhmuc/Bophan");
         }
         #endregion
 

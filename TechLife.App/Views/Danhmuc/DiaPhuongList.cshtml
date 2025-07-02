@@ -1,0 +1,57 @@
+﻿@using TechLife.Common;
+@using TechLife.Model;
+@model List<DiaPhuongModel>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <form id="form" method="get" style="width:100%">
+                    <div class="card-header">
+                        <h3 class="card-title">@ViewData["Title"]</h3>
+                        <div class="card-tools">
+                            <a href="#" data-url="/DanhMuc/Themdiaphuong/" class="btn btn-xs btn-success modal-popup">
+                                <i class="fas fa-plus-circle"></i> Thêm mới
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table-hover table-striped table-bordered table">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" class="text-center align-middle">STT</th>
+                                            <th width="35%" class="text-center align-middle">Tên</th>
+                                            <th class="text-center align-middle">Mô tả</th>
+                                            <th class="text-center align-middle" width="10%">Chức năng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Count > 0)
+                                        {
+                                            int stt = 0;
+                                            foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <th class="text-center">@(++stt)</th>
+                                                    <th class="text-left">@item.TenDiaPhuong</th>
+                                                    <td class="text-left">@item.MoTa</td>
+                                                    <td class="text-center">
+                                                        <a title="Sửa" href="#" data-url="/DanhMuc/Suadiaphuong/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-warning btn-xs modal-popup"><i class="fas fa-edit"></i> Sửa</a>
+                                                        <a title="Xóa" href="#" data-url="/DanhMuc/Xoadiaphuong/?id=@HashUtil.EncodeID(item.Id.ToString())" class="btn btn-danger btn-xs modal-popup"><i class="fas fa-trash"></i> Xóa</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

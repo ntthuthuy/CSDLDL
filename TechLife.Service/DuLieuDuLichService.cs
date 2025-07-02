@@ -166,6 +166,14 @@ namespace TechLife.Service
         {
             try
             {
+                if (request.ParentId != null)
+                {
+                    if (!await _context.HoSo.AnyAsync(x => x.Id == request.ParentId))
+                    {
+                        return new ApiErrorResult<DuLieuDuLichModel>("Dữ liệu không tồn tại");
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(request.TenNhaCungCap))
                 {
                     var ncc = new NhaCungCap()
@@ -180,6 +188,7 @@ namespace TechLife.Service
                 }
                 var coSoLuuTru = new HoSo()
                 {
+                    ParentId = request.ParentId,
                     IsDelete = request.IsDelete,
                     IsStatus = request.IsStatus,
                     NgonNguId = langId,
@@ -1184,7 +1193,8 @@ namespace TechLife.Service
                         where m.IsDelete == false && m.NgonNguId == langId
                         && (linhvucId == 0 || m.LinhVucKinhDoanhId == linhvucId)
                         && (request.hangsao == -1 || m.HangSao == request.hangsao)
-                        && (request.huyen == -1 || m.QuanHuyenId == request.huyen)
+                        //&& (request.XaPhuong == -1 || m.QuanHuyenId == request.XaPhuong)
+                        && (request.XaPhuong == -1 || m.PhuongXaId == request.XaPhuong)
                         && (request.loaihinh == -1 || m.LoaiHinhId == request.loaihinh)
                         && (request.namecslt == -1 || m.Id == request.namecslt)
                         && (request.nameddl == -1 || m.Id == request.nameddl)
@@ -3269,13 +3279,15 @@ namespace TechLife.Service
 
         public async Task<Dictionary<int, int>> DuLieuDuLichEnglish(List<DuLieuDuLichModel> items)
         {
+            int linhvucId = items.Select(x => x.LinhVucKinhDoanhId).FirstOrDefault();
+
             var data = await _context.HoSo
                 .AsNoTracking()
-                .Where(x => !x.IsDelete && x.NgonNguId.ToLower() == "en")
+                .Where(x => !x.IsDelete && x.NgonNguId.ToLower() == "en" && x.LinhVucKinhDoanhId == linhvucId)
                 .ToListAsync();
 
             var result = from d in data
-                         join m in items on d.SoDienThoai equals m.SoDienThoai
+                         join m in items on d.ParentId equals m.Id
                          select new { Key = m.Id, Value = d.Id };
 
             return result.ToDictionary(x => x.Key, x => x.Value);

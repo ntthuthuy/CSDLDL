@@ -16,7 +16,7 @@ namespace TechLife.Service
 
         Task<List<DiaPhuongModel>> GetAllByParent(int id);
 
-        Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingRequest request);
+        Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingFormRequest request);
 
         Task<DiaPhuongModel> GetById(int id);
 
@@ -25,6 +25,8 @@ namespace TechLife.Service
         Task<ApiResult<int>> Update(int id, DiaPhuongModel request);
 
         Task<ApiResult<int>> Delete(int id);
+
+        Task<List<DiaPhuongModel>> GetHierarchy();
     }
 
     public class DiaPhuongService : IDiaPhuongService
@@ -45,11 +47,11 @@ namespace TechLife.Service
             {
                 var diaPhuong = new DiaPhuong()
                 {
-                    IsDelete = request.IsDelete,
-                    IsStatus = request.IsStatus,
+                    IsDelete = false,
+                    IsStatus = true,
                     MoTa = request.MoTa,
                     ParentId = request.ParentId,
-                    TenDiaPhuong = request.TenDiaPhuong
+                    TenDiaPhuong = request.TenDiaPhuong?.Trim()
                 };
                 _context.DiaPhuong.Add(diaPhuong);
                 var result = await _context.SaveChangesAsync();
@@ -81,7 +83,16 @@ namespace TechLife.Service
                 var obj = diaPhuong.FirstOrDefault();
                 obj.IsDelete = true;
 
+                var children = await _context.DiaPhuong.Where(x => x.ParentId == obj.Id).ToListAsync();
+
+                foreach (var child in children)
+                {
+                    child.IsDelete = true;
+                }
+
                 _context.DiaPhuong.Update(obj);
+
+                if (children.Count > 0) _context.DiaPhuong.UpdateRange(children);
 
                 var result = await _context.SaveChangesAsync();
                 if (result > 0)
@@ -176,7 +187,45 @@ namespace TechLife.Service
             }
         }
 
-        public async Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingRequest request)
+        public async Task<List<DiaPhuongModel>> GetHierarchy()
+        {
+            var data = await _context.DiaPhuong
+                .Where(x => !x.IsDelete)
+                .Select(x => new DiaPhuongModel()
+                {
+                    IsDelete = x.IsDelete,
+                    IsStatus = x.IsStatus,
+                    MoTa = x.MoTa,
+                    TenDiaPhuong = x.TenDiaPhuong,
+                    ParentId = x.ParentId,
+                    Id = x.Id
+                }).ToListAsync();
+
+            ListDiaPhuong(data);
+
+            return data;
+        }
+        private static void ListDiaPhuong(List<DiaPhuongModel> list, int seletedId = 0, int parentId = 0, int level = 0)
+        {
+            var diaphuong = list.Where(v => v.ParentId == parentId);
+            foreach (var x in diaphuong)
+            {
+                string space = "";
+                for (int i = 0; i < level; i++)
+                {
+                    space += "- ";
+                }
+                x.TenDiaPhuong = space + x.TenDiaPhuong;
+                var list_chird = list.Where(v => v.ParentId == x.Id);
+                if (list_chird.Count() > 0)
+                {
+                    int level_next = level + 1;
+                    ListDiaPhuong(list, seletedId, x.Id, level_next);
+                }
+            }
+        }
+
+        public async Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingFormRequest request)
         {
             try
             {
@@ -184,10 +233,15 @@ namespace TechLife.Service
                             where m.IsDelete == false
                             select new { m };
 
-                if (!string.IsNullOrEmpty(request.Keyword))
-                    query = query.Where(x => x.m.TenDiaPhuong.Contains(request.Keyword));
+                string keyword = "";
+
+                if (!string.IsNullOrWhiteSpace(request.Search))
+                {
+                    keyword = request.Search.Trim().ToLower();
+                    query = query.Where(x => x.m.TenDiaPhuong.ToLower().Contains(keyword));
+                }
                 //3. Paging
-                int totalRow = query.Count();
+                int totalRow = await query.CountAsync();
 
                 var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
                     .Take(request.PageSize)
@@ -207,7 +261,7 @@ namespace TechLife.Service
                     TotalRecords = totalRow,
                     PageIndex = request.PageIndex,
                     PageSize = request.PageSize,
-                    Items = data
+                    Items = data,
                 };
             }
             catch (Exception ex)

@@ -69,11 +69,12 @@ namespace TechLife.Model.DuLieuDuLich
 
         public string DuongPho { get; set; }
 
+        [Range(1, Int32.MaxValue, ErrorMessage = "Vui lòng chọn phường, xã")]
+
         public int PhuongXaId { get; set; }
 
         public string PhuongXa { get; set; }
 
-        [Range(1, Int32.MaxValue, ErrorMessage = "Vui lòng chọn quận, huyện, thị xã")]
         public int QuanHuyenId { get; set; }
         public string QuanHuyen { get; set; }
         public int TinhThanhId { get; set; }
@@ -157,5 +158,6 @@ namespace TechLife.Model.DuLieuDuLich
         public int? MaSoThue { get; set; }
 
         public string NgonNguId { get; set; }
+        public int? ParentId { get; set; }
     }
 }

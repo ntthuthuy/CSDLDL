@@ -54,7 +54,7 @@ namespace TechLife.Common
     {
         public int loaihinh { get; set; } = -1;
         public int hangsao { get; set; } = -1;
-        public int huyen { get; set; } = -1;
+        public int XaPhuong { get; set; } = -1;
         public int namecslt { get; set; } = -1;
         public int nameddl { get; set; } = -1;
         public int nameluhanh { get; set; } = -1;

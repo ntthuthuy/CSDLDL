@@ -77,8 +77,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="position-relative form-group">
-                                            <label class="control-label">Quận, huyện, thành phố</label>
-                                            <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
+                                            <label class="control-label">Phường/ xã</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="PhuongXa" name="PhuongXa" asp-items="ViewBag.DiaPhuongOption">
                                                 <option value="-1">tất cả</option>
                                             </select>
                                         </div>
@@ -108,13 +108,13 @@
                                                 @{
                                                     if (Model != null && Model.Items != null)
                                                     {
-                                                        int stt = 0;
+                                                        int stt = ((Model.PageIndex - 1) * Model.PageSize) + 1;
                                                         <tr>
                                                             <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
                                                         </tr>
                                                         foreach (var d in Model.Items)
                                                         {
-                                                            stt++;
+                                                            
                                                             <tr>
                                                                 <td class="text-center">@stt</td>
                                                                 <td class="text-center">
@@ -159,7 +159,7 @@
                                                                         }
                                                                         else
                                                                         {
-                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themcosoluutru?NgonNgu=en">
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themcosoluutru?NgonNgu=en&Id=@HashUtil.EncodeID(d.Id.ToString())">
                                                                                 <i class="fas fa-globe-europe"></i>
                                                                                 <span>ENG</span>
                                                                             </a>
@@ -181,6 +181,7 @@
                                                                     }
                                                                 </td>
                                                             </tr>
+                                                            stt++;
                                                         }
                                                     }
                                                     else

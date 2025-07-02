@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Web;
-using TechLife.Model;
 
 namespace TechLife.Common
 {
@@ -49,7 +46,7 @@ namespace TechLife.Common
                 return request.HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
             else return "vi";
         }
-      
+
         public static string GetRawUrl(this HttpRequest request, string url, bool IsQuery = true)
         {
             var httpContext = request.HttpContext;
@@ -59,6 +56,11 @@ namespace TechLife.Common
             }
             else
                 return $"{url}{HttpUtility.UrlDecode(httpContext.Request.QueryString.ToString())}";
+        }
+
+        public static string GetFullUrl(this HttpRequest request)
+        {
+            return $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
         }
 
     }

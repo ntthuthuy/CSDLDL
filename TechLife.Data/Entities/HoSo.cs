@@ -113,5 +113,6 @@ namespace TechLife.Data.Entities
 
         // Lịch sử cập nhật
         public virtual List<LichSuCapNhat> LichSuCapNhat { get; set; }
+        public int? ParentId { get; set; }
     }
 }
