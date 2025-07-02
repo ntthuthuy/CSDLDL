@@ -63,7 +63,7 @@ namespace TechLife.App.Controllers
             HttpContext.Session.Remove(SystemConstants.AppSettings.UserInfo);
 
             if (user.LoginType == Common.Enums.LoginType.SSO)
-                return Redirect("/sso");
+                return Redirect("/sso/home/logout");
             else if (user.LoginType == Common.Enums.LoginType.SSOHueS)
                 return Redirect($"https://sso.huecity.vn/auth/realms/hues/protocol/openid-connect/logout?id_token_hint={user.IdToken}&post_logout_redirect_uri={Request.GetAppUrl()}");
             else
