@@ -57,7 +57,7 @@
 
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Loại nhà hàng</label>
                                             <select onchange="this.form.submit()" class="form-control" id="loaihinh" name="loaihinh" asp-items="ViewBag.listLoaiNhaHang">
                                                 <option value="-1">tất cả</option>
@@ -65,15 +65,15 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
-                                            <label class="control-label">Quận, huyện, thành phố</label>
-                                            <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
+                                        <div class="form-group">
+                                            <label class="control-label">Phường/ xã</label>
+                                            <select onchange="this.form.submit()" class="form-control option-xa" id="PhuongXa" name="PhuongXa" asp-items="ViewBag.DiaPhuongOption">
                                                 <option value="-1">tất cả</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="position-relative form-group">
+                                        <div class="form-group">
                                             <label class="control-label">Tên nhà hàng </label>
                                             <select onchange="this.form.submit()" class="form-control" id="namenhahang" name="namenhahang" asp-items="ViewBag.listGetAllNhaHang">
                                                 <option value="-1">tất cả</option>
@@ -142,7 +142,7 @@
                                                                         }
                                                                         else
                                                                         {
-                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoinhahang?NgonNgu=en">
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoinhahang?Id=@HashUtil.EncodeID(d.Id.ToString())&NgonNgu=en">
                                                                                 <i class="fas fa-globe-europe"></i>
                                                                                 <span>ENG</span>
                                                                             </a>

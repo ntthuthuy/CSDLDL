@@ -166,12 +166,20 @@ namespace TechLife.Service
         {
             try
             {
+                if (!await _context.NgonNgu.AnyAsync(x => x.Id == langId)) return new ApiErrorResult<DuLieuDuLichModel>($"Hệ thống chưa hỗ trợ ngôn ngữ {langId} này");
+
                 if (request.ParentId != null)
                 {
                     if (!await _context.HoSo.AnyAsync(x => x.Id == request.ParentId))
                     {
                         return new ApiErrorResult<DuLieuDuLichModel>("Dữ liệu không tồn tại");
                     }
+
+                    if (await _context.HoSo.AnyAsync(x => x.ParentId == request.ParentId && x.NgonNguId == langId))
+                    {
+                        return new ApiErrorResult<DuLieuDuLichModel>("Dữ liệu đã tồn tại");
+                    }
+
                 }
 
                 if (!string.IsNullOrEmpty(request.TenNhaCungCap))
@@ -743,7 +751,13 @@ namespace TechLife.Service
 
                 obj.IsDelete = true;
 
+                var children = await _context.HoSo.Where(x => x.ParentId == obj.Id).ToListAsync();
+
                 _context.HoSo.Update(obj);
+
+                foreach (var child in children) child.IsDelete = true;
+
+                if (children.Count > 0) _context.HoSo.UpdateRange(children);
 
                 var result = await _context.SaveChangesAsync();
                 if (result > 0)
@@ -1194,7 +1208,7 @@ namespace TechLife.Service
                         && (linhvucId == 0 || m.LinhVucKinhDoanhId == linhvucId)
                         && (request.hangsao == -1 || m.HangSao == request.hangsao)
                         //&& (request.XaPhuong == -1 || m.QuanHuyenId == request.XaPhuong)
-                        && (request.XaPhuong == -1 || m.PhuongXaId == request.XaPhuong)
+                        && (request.PhuongXa == -1 || m.PhuongXaId == request.PhuongXa)
                         && (request.loaihinh == -1 || m.LoaiHinhId == request.loaihinh)
                         && (request.namecslt == -1 || m.Id == request.namecslt)
                         && (request.nameddl == -1 || m.Id == request.nameddl)
@@ -1315,7 +1329,7 @@ namespace TechLife.Service
         {
             try
             {
-                request.GiaThamKhao = request.GiaThamKhao.Replace(",", "");
+                request.GiaThamKhao = request.GiaThamKhao?.Replace(",", "");
 
                 var coSoLuuTru = await _context.HoSo.FindAsync(id);
                 //if (coSoLuuTru == null || coSoLuuTru.Count() <= 0)

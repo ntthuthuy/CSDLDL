@@ -317,10 +317,10 @@ namespace TechLife.App.Controllers
             return listItem;
         }
 
-        private async Task<List<TienNghiHoSoModel>> ListMucTienNghiHoSo(int linhvucId, int hosoId = 0, List<TienNghiHoSoModel> listValue = null)
+        private async Task<List<TienNghiHoSoModel>> ListMucTienNghiHoSo(int linhvucId, int hosoId = 0, List<TienNghiHoSoModel> listValue = null, string NgonNguId = SystemConstants.DefaultLanguage)
         {
             var listItem = new List<TienNghiHoSoModel>();
-            List<TienNghiVm> list = await _tienNghiService.GetAll(linhvucId);
+            List<TienNghiVm> list = await _tienNghiService.GetAll(linhvucId, NgonNguId);
             foreach (var x in list)
             {
                 var value = listValue != null ? listValue.Where(v => v.TienNghiId == x.Id).FirstOrDefault() : null;
@@ -573,7 +573,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = phuongXa,
+                    PhuongXa = phuongXa,
                     namecslt = namecslt,
 
                 };
@@ -622,7 +622,7 @@ namespace TechLife.App.Controllers
                 csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, 0, null, ngonNguId);
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, 0, null, ngonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, 0, null, ngonNguId);
                 csltModel.Amenities = amenities;
 
@@ -791,7 +791,7 @@ namespace TechLife.App.Controllers
                     csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
                     csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
                     csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
-                    csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSTienNghi);
+                    csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
                     csltModel.DSNhaHang = ListNhaHangLuuTru(csltModel.Id, csltModel.DSNhaHang);
                     csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
                     csltModel.Amenities = amenities;
@@ -819,6 +819,11 @@ namespace TechLife.App.Controllers
                     DSLoaiPhongGiuong = csltModel.DSLoaiPhongGiuong,
 
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase))
+                {
+                    return View("SuacosoluutruEnglish", model);
+                }
 
                 return View(model);
             }
@@ -860,7 +865,7 @@ namespace TechLife.App.Controllers
                     oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo, oldValue.NgonNguId);
                     oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
                     oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
-                    oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSTienNghi);
+                    oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSTienNghi, oldValue.NgonNguId);
                     oldValue.DSNhaHang = ListNhaHangLuuTru(oldValue.Id, oldValue.DSNhaHang);
                     oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
                     oldValue.Amenities = amenities;
@@ -914,7 +919,7 @@ namespace TechLife.App.Controllers
                         newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo, newValue.NgonNguId);
                         newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
                         newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
-                        newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSTienNghi);
+                        newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSTienNghi, newValue.NgonNguId);
                         newValue.DSNhaHang = ListNhaHangLuuTru(newValue.Id, newValue.DSNhaHang);
                         newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CoSoLuuTru, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
                         newValue.Amenities = amenities;
@@ -978,11 +983,11 @@ namespace TechLife.App.Controllers
                 {
                     if (type_sumit == "save")
                     {
-                        return Redirect("/Hoso/Suacosoluutru/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                        return Redirect($"/Hoso/Suacosoluutru/?Id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={oldValue.NgonNguId}");
                     }
                     else
                     {
-                        return Redirect("/Hoso/Themcosoluutru/");
+                        return RedirectToAction("Themcosoluutru");
                     }
                 }
                 else
@@ -1089,11 +1094,16 @@ namespace TechLife.App.Controllers
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
                 int namenhahang = !String.IsNullOrEmpty(Request.Query["namenhahang"]) ? Convert.ToInt32(Request.Query["namenhahang"]) : -1;
 
                 await OptionTieuChuanCoSo(hangsao);
-                await OptionHuyen(1, huyen);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
 
                 await this.OptionLoaiNhaHang(loaihinh);
                 await this.OptionGetAllNhaHang(namenhahang);
@@ -1105,7 +1115,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = huyen,
+                    PhuongXa = phuongXa,
                     namenhahang = namenhahang
                 };
 
@@ -1132,18 +1142,28 @@ namespace TechLife.App.Controllers
                 var csltModel = new DuLieuDuLichModel();
 
                 string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                 && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
+
                 ViewBag.NgonNgu = ngonNguId;
 
-                csltModel.DSThucDon = ListThucDonHoSo();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.NhaHang);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.NhaHang);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.NhaHang);
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
 
-                await OptionHuyen();
-                await OptionXa(-1);
+                csltModel.DSThucDon = ListThucDonHoSo();
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.NhaHang, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.NhaHang, 0, null, ngonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.NhaHang, 0, null, ngonNguId);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
@@ -1155,6 +1175,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoinhahangEnglish", model);
 
                 return View(model);
             }
@@ -1168,7 +1190,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "create_nhahang,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoinhahang(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
+        public async Task<IActionResult> Themmoinhahang(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -1184,6 +1206,8 @@ namespace TechLife.App.Controllers
                 }
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
@@ -1219,8 +1243,12 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
@@ -1250,10 +1278,16 @@ namespace TechLife.App.Controllers
                     csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
                     csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
                     csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
-                    csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSTienNghi);
+                    csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
                     csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.NhaHang, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
-                    await OptionHuyen();
-                    await OptionXa(csltModel.QuanHuyenId);
+
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
+
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
@@ -1266,6 +1300,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtinnhahangEnglish", model);
 
                 return View(model);
             }
@@ -1363,19 +1399,23 @@ namespace TechLife.App.Controllers
                 {
                     if (type_sumit == "save")
                     {
-                        return Redirect("/Hoso/Suathongtinnhahang/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                        return Redirect($"/Hoso/Suathongtinnhahang/?id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={csltModel.NgonNguId}");
                     }
                     else
                     {
                         return Redirect("/Hoso/Themmoinhahang/");
                     }
                 }
-                return Redirect("/Hoso/Suathongtinnhahang/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                return Redirect($"/Hoso/Suathongtinnhahang/?id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={csltModel.NgonNguId}");
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionTieuChuanCoSo();
                 await OptionCoSoLuuTru();
                 await OptionNhaCungCap();
@@ -1412,9 +1452,9 @@ namespace TechLife.App.Controllers
             return Redirect(Request.GetBackUrl());
         }
 
-        private async Task OptionLoaiCTLuHanh(int seletedId = 0)
+        private async Task OptionLoaiCTLuHanh(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
         {
-            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.LuHanh);
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.LuHanh, ngonNguId);
 
             var list = luhanh.Select(x => new SelectListItem
             {
@@ -1449,11 +1489,16 @@ namespace TechLife.App.Controllers
                 ViewData["Title_parent"] = "Hồ sơ";
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
                 int nameluhanh = !String.IsNullOrEmpty(Request.Query["nameluhanh"]) ? Convert.ToInt32(Request.Query["nameluhanh"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
-                await OptionHuyen(1, huyen);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionNguonDongBo(nguon);
 
                 await this.OptionGetAllLuHanh(nameluhanh);
@@ -1464,13 +1509,15 @@ namespace TechLife.App.Controllers
                     Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
                     PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
-                    XaPhuong = huyen,
+                    PhuongXa = phuongXa,
                     loaihinh = loaihinh,
                     nameluhanh = nameluhanh,
                     nguon = nguon
                 };
 
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.LuHanh, pageRequest);
+                ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
+
                 return View(data);
             }
             catch (Exception ex)
@@ -1487,6 +1534,13 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới công ty lữ hành";
                 ViewData["Title_parent"] = "Hồ sơ";
 
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                 && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
@@ -1495,12 +1549,16 @@ namespace TechLife.App.Controllers
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh);
 
-                await OptionHuyen();
-                await OptionXa(-1);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiCTLuHanh();
+                await this.OptionLoaiCTLuHanh(0, ngonNguId);
                 await this.OptionDonViTinh(2);
 
                 var model = new DuLieuDuLichCreateRequest()
@@ -1508,6 +1566,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoicongtyluhanhEnglish", model);
 
                 return View(model);
             }
@@ -1522,7 +1582,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Themmoicongtyluhanh(DuLieuDuLichCreateRequest request, string type_sumit)
+        public async Task<IActionResult> Themmoicongtyluhanh(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -1537,17 +1597,26 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
+                string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
+
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
+
+                var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(-1);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
+
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
                     await this.OptionDonViTinh(2);
-                    await this.OptionLoaiCTLuHanh();
+                    await this.OptionLoaiCTLuHanh(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
 
                     ModelState.AddModelError("", result.Message);
                     return View(request);
@@ -1577,8 +1646,12 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(-1);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
@@ -1596,26 +1669,30 @@ namespace TechLife.App.Controllers
         {
             try
             {
-                ViewData["Title"] = "Sửa thông tin công ty lữ hàn   h";
+                ViewData["Title"] = "Sửa thông tin công ty lữ hành";
                 ViewData["Title_parent"] = "Hồ sơ";
 
                 var csltModel = await _duLieuDuLichService.GetById(Convert.ToInt32(HashUtil.DecodeID(id)));
 
                 if (csltModel != null)
                 {
-                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu);
-                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo);
-                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, csltModel.Id, csltModel.DSBoPhan);
-                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN);
-                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, csltModel.Id, csltModel.DSVanBan);
+                    csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(csltModel.Id, csltModel.DSNgoaiNgu, csltModel.NgonNguId);
+                    csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
+                    csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
+                    csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
+                    csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
 
-                    await OptionHuyen();
-                    await OptionXa(csltModel.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
                     await this.OptionDonViTinh(2);
-                    await this.OptionLoaiCTLuHanh();
+                    await this.OptionLoaiCTLuHanh(csltModel.LoaiHinhId, csltModel.NgonNguId);
                 }
 
                 var model = new DuLieuDuLichUpdateRequest()
@@ -1623,6 +1700,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtincongtyluhanhEnglish", model);
 
                 return View(model);
             }
@@ -1648,11 +1727,11 @@ namespace TechLife.App.Controllers
 
                 if (oldValue != null)
                 {
-                    oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu);
-                    oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo);
-                    oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, oldValue.Id, oldValue.DSBoPhan);
-                    oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN);
-                    oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, oldValue.Id, oldValue.DSVanBan);
+                    oldValue.DSNgoaiNgu = await ListNgoaiNguHoSo(oldValue.Id, oldValue.DSNgoaiNgu, oldValue.NgonNguId);
+                    oldValue.DSTrinhDo = await ListTrinhDoHoSo(oldValue.Id, oldValue.DSTrinhDo, oldValue.NgonNguId);
+                    oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
+                    oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
+                    oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
                 }
 
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
@@ -1687,12 +1766,16 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(-1);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == oldValue.PhuongXaId
+                    });
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
-                    await this.OptionLoaiCTLuHanh();
+                    await this.OptionLoaiCTLuHanh(oldValue.LoaiHinhId, oldValue.NgonNguId);
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
@@ -1702,11 +1785,11 @@ namespace TechLife.App.Controllers
                 {
                     var newValue = await _duLieuDuLichService.GetById(request.DuLieuDuLich.Id);
 
-                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu);
-                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo);
-                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, newValue.Id, newValue.DSBoPhan);
-                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN);
-                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, newValue.Id, newValue.DSVanBan);
+                    newValue.DSNgoaiNgu = await ListNgoaiNguHoSo(newValue.Id, newValue.DSNgoaiNgu, newValue.NgonNguId);
+                    newValue.DSTrinhDo = await ListTrinhDoHoSo(newValue.Id, newValue.DSTrinhDo, newValue.NgonNguId);
+                    newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.LuHanh, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
+                    newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
+                    newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.LuHanh, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
 
                     var history = new LichSuCapNhatCreateRequest
                     {
@@ -1765,8 +1848,12 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(-1);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
@@ -1839,12 +1926,11 @@ namespace TechLife.App.Controllers
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
                 int namecsms = !String.IsNullOrEmpty(Request.Query["namecsms"]) ? Convert.ToInt32(Request.Query["namecsms"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
                 await OptionTieuChuanCoSo(hangsao);
-                //await OptionHuyen(1, huyen);
                 await OptionNguonDongBo(nguon);
 
                 await this.OptionGetAllCSMS(namecsms);
@@ -1863,7 +1949,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = huyen,
+                    PhuongXa = phuongXa,
                     namecsms = namecsms,
                     nguon = nguon,
                 };
@@ -1892,17 +1978,26 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                 && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
+
                 ViewBag.NgonNgu = ngonNguId;
+
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
 
                 csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
                 csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.MuaSam, 0, null, ngonNguId);
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSTienNghi);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.MuaSam, 0, null, ngonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.MuaSam, 0, null, ngonNguId);
 
-                await OptionHuyen();
-                await OptionXa(-1);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
@@ -1914,6 +2009,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoicosomuasamEnglish", model);
 
                 return View(model);
             }
@@ -1927,7 +2024,7 @@ namespace TechLife.App.Controllers
         [Authorize(Roles = "create_muasam,root")]
         [Consumes("multipart/form-data")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoicosomuasam(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
+        public async Task<IActionResult> Themmoicosomuasam(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -1943,12 +2040,18 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(-1);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
@@ -1983,12 +2086,16 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(-1);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiCoSoMuaSam();
+                await this.OptionLoaiCoSoMuaSam(0, NgonNgu);
                 await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
@@ -2016,11 +2123,16 @@ namespace TechLife.App.Controllers
                     csltModel.DSTrinhDo = await ListTrinhDoHoSo(csltModel.Id, csltModel.DSTrinhDo, csltModel.NgonNguId);
                     csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
                     csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
-                    csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSTienNghi);
+                    csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSTienNghi, ngonNguId);
                     csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.MuaSam, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
 
-                    await OptionHuyen();
-                    await OptionXa(csltModel.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
+
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
@@ -2033,6 +2145,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtincosomuasamEnglish", model);
 
                 return View(model);
             }
@@ -2089,8 +2203,12 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
                     await OptionTieuChuanCoSo();
                     await OptionNhaCungCap();
 
@@ -2139,7 +2257,7 @@ namespace TechLife.App.Controllers
                 {
                     if (type_sumit == "save")
                     {
-                        return Redirect("/Hoso/Suathongtincosomuasam/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                        return Redirect($"/Hoso/Suathongtincosomuasam/?id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={csltModel.NgonNguId}");
                     }
                     else
                     {
@@ -2148,13 +2266,18 @@ namespace TechLife.App.Controllers
                 }
                 else
                 {
-                    return Redirect("/Hoso/Suathongtincosomuasam/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                    return Redirect($"/Hoso/Suathongtincosomuasam/?id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={csltModel.NgonNguId}");
                 }
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
+
                 await OptionTieuChuanCoSo();
                 await OptionNhaCungCap();
 
@@ -2249,7 +2372,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = phuongXa,
+                    PhuongXa = phuongXa,
                     nameddl = nameddl,
                     nguon = nguon
                 };
@@ -2274,24 +2397,24 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Thêm mới điểm du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
 
-                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
-
-                ViewBag.NgonNgu = ngonNguId;
-
                 if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
+
+                string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
                 if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
                  && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
 
+                ViewBag.NgonNgu = ngonNguId;
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, 0, null, ngonNguId);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, 0, null, ngonNguId);
 
                 //await OptionHuyen();
                 //await OptionXa();
@@ -2435,7 +2558,7 @@ namespace TechLife.App.Controllers
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSTienNghi);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
                 //await OptionHuyen();
                 //await OptionXa(csltModel.QuanHuyenId);
 
@@ -2456,6 +2579,11 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadExtRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase))
+                {
+                    return View("SuathongtindiemdulichEnglish", model);
+                }
 
                 return View(model);
             }
@@ -2489,7 +2617,7 @@ namespace TechLife.App.Controllers
                 oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
                 oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
                 oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
-                oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSTienNghi);
+                oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, oldValue.Id, oldValue.DSTienNghi, oldValue.NgonNguId);
 
                 if (request.DuLieuDuLich.DSVanBan != null)
                 {
@@ -2521,8 +2649,12 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiDiemDuLich(oldValue.LoaiHinh.Id, oldValue.NgonNguId);
@@ -2541,7 +2673,7 @@ namespace TechLife.App.Controllers
                     newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
                     newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
                     newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
-                    newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSTienNghi);
+                    newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, newValue.Id, newValue.DSTienNghi, newValue.NgonNguId);
 
                     var history = new LichSuCapNhatCreateRequest
                     {
@@ -2594,7 +2726,7 @@ namespace TechLife.App.Controllers
                 {
                     if (type_sumit == "save")
                     {
-                        return Redirect("/Hoso/Suathongtindiemdulich/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                        return Redirect($"/Hoso/Suathongtindiemdulich/?Id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={oldValue.NgonNguId}");
                     }
                     else
                     {
@@ -2603,13 +2735,17 @@ namespace TechLife.App.Controllers
                 }
                 else
                 {
-                    return Redirect("/Hoso/Suathongtindiemdulich/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                    return Redirect($"/Hoso/Suathongtindiemdulich/?Id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={oldValue.NgonNguId}");
                 }
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
                 await this.OptionDonViTinh(2);
@@ -3077,10 +3213,16 @@ namespace TechLife.App.Controllers
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
 
                 await OptionLoaiKhuDuLich(loaihinh);
-                await OptionHuyen(1, huyen);
+                //await OptionHuyen(1, huyen);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -3089,7 +3231,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = huyen
+                    PhuongXa = phuongXa
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.KhuDuLich, pageRequest);
                 ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
@@ -3126,18 +3268,32 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrEmpty(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
+
+                ViewBag.NgonNgu = ngonNguId;
+
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich);
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, 0, null, ngonNguId);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, 0, null, ngonNguId);
 
-                await OptionHuyen();
-                await OptionXa();
+                //await OptionHuyen();
+                //await OptionXa();
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionDonViTinh(2);
@@ -3147,6 +3303,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoikhudulichEnglish", model);
 
                 return View(model);
             }
@@ -3160,7 +3318,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_khudulich,root")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoikhudulich(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
+        public async Task<IActionResult> Themmoikhudulich(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -3178,11 +3336,19 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa();
+                    //await OptionHuyen();
+                    //await OptionXa();
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiKhuDuLich(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
@@ -3216,8 +3382,15 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa();
+                //await OptionHuyen();
+                //await OptionXa();
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiKhuDuLich();
@@ -3230,11 +3403,13 @@ namespace TechLife.App.Controllers
 
         [HttpGet]
         [Authorize(Roles = "edit_khudulich,root")]
-        public async Task<IActionResult> Suathongtinkhudulich(int id)
+        public async Task<IActionResult> Suathongtinkhudulich(string id)
         {
             try
             {
-                var csltModel = await _duLieuDuLichService.GetById(id);
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var csltModel = await _duLieuDuLichService.GetById(Id);
 
                 ViewData["Title"] = "Sửa thông tin khu du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
@@ -3246,9 +3421,15 @@ namespace TechLife.App.Controllers
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSTienNghi);
-                await OptionHuyen();
-                await OptionXa(csltModel.QuanHuyenId);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == csltModel.PhuongXaId
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiKhuDuLich(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
@@ -3258,6 +3439,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtinkhudulichEnglish", model);
 
                 return View(model);
             }
@@ -3286,7 +3469,7 @@ namespace TechLife.App.Controllers
                 oldValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSBoPhan, oldValue.NgonNguId);
                 oldValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(oldValue.Id, oldValue.DSMucDoTTNN, oldValue.NgonNguId);
                 oldValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSVanBan, oldValue.NgonNguId);
-                oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSTienNghi);
+                oldValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, oldValue.Id, oldValue.DSTienNghi, oldValue.NgonNguId);
 
                 var ds = await _duLieuDuLichService.GetListVanBanByHoSo(request.DuLieuDuLich.Id);
 
@@ -3317,11 +3500,15 @@ namespace TechLife.App.Controllers
                     }
                 }
 
-                var result = await _csdlDuLichApiClient.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
+                var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = oldValue.PhuongXaId == x.Id
+                    });
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiKhuDuLich();
@@ -3340,7 +3527,7 @@ namespace TechLife.App.Controllers
                     newValue.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSBoPhan, newValue.NgonNguId);
                     newValue.DSMucDoTTNN = await ListMucDoThongThaoHoSo(newValue.Id, newValue.DSMucDoTTNN, newValue.NgonNguId);
                     newValue.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSVanBan, newValue.NgonNguId);
-                    newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSTienNghi);
+                    newValue.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuDuLich, newValue.Id, newValue.DSTienNghi, newValue.NgonNguId);
 
                     var history = new LichSuCapNhatCreateRequest
                     {
@@ -3378,13 +3565,19 @@ namespace TechLife.App.Controllers
                 }
                 else
                 {
-                    return Redirect("/Hoso/Suathongtinkhudulich/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                    return Redirect($"/Hoso/Suathongtinkhudulich/?Id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={oldValue.NgonNguId}");
                 }
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                //await OptionHuyen();
+                //await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiKhuDuLich();
@@ -3437,10 +3630,14 @@ namespace TechLife.App.Controllers
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
                 int nguon = !String.IsNullOrEmpty(Request.Query["nguon"]) ? Convert.ToInt32(Request.Query["nguon"]) : -1;
 
-                await OptionHuyen(1, huyen);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
                 await OptionNguonDongBo(nguon);
 
                 await this.OptionLoaiKhuVuiChoi(loaihinh);
@@ -3452,7 +3649,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = huyen,
+                    PhuongXa = phuongXa,
                     nguon = nguon
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.KhuVuiChoi, pageRequest);
@@ -3475,7 +3672,11 @@ namespace TechLife.App.Controllers
                 ViewData["Title_parent"] = "Hồ sơ";
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                 && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
                 ViewBag.NgonNgu = ngonNguId;
+
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
 
                 var csltModel = new DuLieuDuLichModel();
 
@@ -3485,10 +3686,14 @@ namespace TechLife.App.Controllers
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, 0, null, ngonNguId);
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, 0, null, ngonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuVuiChoi);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, 0, null, ngonNguId);
 
-                await OptionHuyen();
-                await OptionXa();
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == csltModel.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiKhuVuiChoi(0, ngonNguId);
@@ -3499,6 +3704,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoikhuvcgtEnglish", model);
 
                 return View(model);
             }
@@ -3512,7 +3719,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_dichvuvuichoi,root")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoikhuvcgt(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
+        public async Task<IActionResult> Themmoikhuvcgt(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -3529,11 +3736,17 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa();
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
                     await OptionNhaCungCap();
 
                     await this.OptionDonViTinh(2);
@@ -3567,8 +3780,12 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa();
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiKhuVuiChoi();
@@ -3581,11 +3798,13 @@ namespace TechLife.App.Controllers
 
         [HttpGet]
         [Authorize(Roles = "edit_dichvuvuichoi,root")]
-        public async Task<IActionResult> Suathongtinkhuvcgt(int id)
+        public async Task<IActionResult> Suathongtinkhuvcgt(string id)
         {
             try
             {
-                var csltModel = await _duLieuDuLichService.GetById(id);
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var csltModel = await _duLieuDuLichService.GetById(Id);
 
                 ViewData["Title"] = "Sửa thông tin khu vui chơi, giải trí";
                 ViewData["Title_parent"] = "Hồ sơ";
@@ -3598,20 +3817,26 @@ namespace TechLife.App.Controllers
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
 
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSTienNghi);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.KhuVuiChoi, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
 
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == csltModel.PhuongXaId
+                });
 
-                await OptionHuyen();
-                await OptionXa(csltModel.QuanHuyenId);
                 await OptionNhaCungCap();
-
                 await this.OptionLoaiKhuVuiChoi(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
                 await this.OptionDonViTinh(2);
+
                 var model = new DuLieuDuLichUpdateRequest()
                 {
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtinkhuvcgtEnglish", model);
 
                 return View(model);
             }
@@ -3667,8 +3892,12 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiKhuVuiChoi(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
@@ -3725,13 +3954,17 @@ namespace TechLife.App.Controllers
                 }
                 else
                 {
-                    return Redirect("/Hoso/Suathongtinkhuvcgt/?id=" + HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString()));
+                    return Redirect($"/Hoso/Suathongtinkhuvcgt/?id={HashUtil.EncodeID(request.DuLieuDuLich.Id.ToString())}&NgonNgu={csltModel.NgonNguId}");
                 }
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiKhuVuiChoi();
@@ -3775,10 +4008,15 @@ namespace TechLife.App.Controllers
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
 
                 await OptionLoaiHinhCSSK(loaihinh);
-                await OptionHuyen(1, huyen);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -3787,7 +4025,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = huyen
+                    PhuongXa = phuongXa
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.CSSK, pageRequest);
                 ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
@@ -3824,7 +4062,12 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                 && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
+
                 ViewBag.NgonNgu = ngonNguId;
+
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
 
                 var csltModel = new DuLieuDuLichModel();
 
@@ -3835,10 +4078,14 @@ namespace TechLife.App.Controllers
 
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CSSK, 0, null, ngonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CSSK, 0, null, ngonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK, 0, null, ngonNguId);
 
-                await OptionHuyen();
-                await OptionXa();
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiHinhCSSK(0, ngonNguId);
@@ -3849,6 +4096,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoicsskEnglish", model);
 
                 return View(model);
             }
@@ -3861,7 +4110,7 @@ namespace TechLife.App.Controllers
         [HttpPost]
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_dichvucssk,root")]
-        public async Task<IActionResult> Themmoicssk(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
+        public async Task<IActionResult> Themmoicssk(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -3878,11 +4127,18 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa();
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
+
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiHinhCSSK(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
@@ -3916,11 +4172,15 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa();
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiHinhCSSK();
+                await this.OptionLoaiHinhCSSK(request.DuLieuDuLich.LoaiHinhId, request.DuLieuDuLich.NgonNguId);
                 await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
@@ -3930,11 +4190,13 @@ namespace TechLife.App.Controllers
 
         [HttpGet]
         [Authorize(Roles = "edit_dichvucssk,root")]
-        public async Task<IActionResult> Suathongtincssk(int id)
+        public async Task<IActionResult> Suathongtincssk(string id)
         {
             try
             {
-                var csltModel = await _duLieuDuLichService.GetById(id);
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var csltModel = await _duLieuDuLichService.GetById(Id);
 
                 ViewData["Title"] = "Sửa thông tin cơ sở chăm sóc sức khỏe";
                 ViewData["Title_parent"] = "Hồ sơ";
@@ -3946,9 +4208,15 @@ namespace TechLife.App.Controllers
                 csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSBoPhan, csltModel.NgonNguId);
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSTienNghi);
-                await OptionHuyen();
-                await OptionXa(csltModel.QuanHuyenId);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.CSSK, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == csltModel.PhuongXaId
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiHinhCSSK(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
@@ -3959,6 +4227,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtincsskEnglish", model);
 
                 return View(model);
             }
@@ -4015,8 +4285,13 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
+
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiHinhCSSK(csltModel.LoaiHinh.Id, csltModel.NgonNguId);
@@ -4078,8 +4353,13 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiHinhCSSK();
@@ -4123,10 +4403,15 @@ namespace TechLife.App.Controllers
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["loaihinh"]) ? Convert.ToInt32(Request.Query["loaihinh"]) : -1;
                 int hangsao = !String.IsNullOrEmpty(Request.Query["hangsao"]) ? Convert.ToInt32(Request.Query["hangsao"]) : -1;
-                int huyen = !String.IsNullOrEmpty(Request.Query["huyen"]) ? Convert.ToInt32(Request.Query["huyen"]) : -1;
+                int phuongXa = !String.IsNullOrEmpty(Request.Query["PhuongXa"]) ? Convert.ToInt32(Request.Query["PhuongXa"]) : -1;
 
                 await OptionLoaiHinhTheThao(loaihinh);
-                await OptionHuyen(1, huyen);
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
 
                 var pageRequest = new HoSoFromRequets()
                 {
@@ -4135,7 +4420,7 @@ namespace TechLife.App.Controllers
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
                     hangsao = hangsao,
                     loaihinh = loaihinh,
-                    XaPhuong = huyen
+                    PhuongXa = phuongXa
                 };
                 var data = await _duLieuDuLichService.GetPaging(Request.GetLanguageId(), (int)LinhVucKinhDoanh.TheThao, pageRequest);
                 ViewBag.ListDuLieuDuLichEnglish = await _duLieuDuLichService.DuLieuDuLichEnglish(data.Items);
@@ -4172,21 +4457,29 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(Request.Query["NgonNgu"]) ? Request.Query["NgonNgu"] : SystemConstants.DefaultLanguage;
 
+                if (!ngonNguId.Equals("vi", StringComparison.OrdinalIgnoreCase)
+                 && !ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) ngonNguId = SystemConstants.DefaultLanguage;
+
                 ViewBag.NgonNgu = ngonNguId;
+
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
 
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSVeDichVu = ListVeDichVuHoSo();
-                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
-                csltModel.DSTrinhDo = await ListTrinhDoHoSo();
-                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.TheThao);
-                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.TheThao);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.TheThao);
-                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo();
+                csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo(0, null, ngonNguId);
+                csltModel.DSTrinhDo = await ListTrinhDoHoSo(0, null, ngonNguId);
+                csltModel.DSBoPhan = await ListBoPhanHoSo((int)LinhVucKinhDoanh.TheThao, 0, null, ngonNguId);
+                csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.TheThao, 0, null, ngonNguId);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.TheThao, 0, null, ngonNguId);
+                csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(0, null, ngonNguId);
 
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString()
+                });
 
-                await OptionHuyen();
-                await OptionXa();
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiHinhTheThao(0, ngonNguId);
@@ -4197,6 +4490,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (ngonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("ThemmoicsttEnglish", model);
 
                 return View(model);
             }
@@ -4210,7 +4505,7 @@ namespace TechLife.App.Controllers
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "create_dichvuthethao,root")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Themmoicstt(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu)
+        public async Task<IActionResult> Themmoicstt(DuLieuDuLichCreateRequest request, string type_sumit, string NgonNgu, string ParentId)
         {
             try
             {
@@ -4227,11 +4522,18 @@ namespace TechLife.App.Controllers
 
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
+                if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa();
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                    });
+
                     await OptionNhaCungCap();
 
                     await this.OptionLoaiHinhTheThao(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
@@ -4266,10 +4568,17 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 await OptionHuyen();
-                await OptionXa();
+
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
+
                 await OptionNhaCungCap();
 
-                await this.OptionLoaiHinhTheThao();
+                await this.OptionLoaiHinhTheThao(0, NgonNgu);
                 await this.OptionDonViTinh(2);
 
                 ModelState.AddModelError("", ex.Message);
@@ -4279,11 +4588,13 @@ namespace TechLife.App.Controllers
 
         [HttpGet]
         [Authorize(Roles = "edit_dichvuthethao,root")]
-        public async Task<IActionResult> Suathongtincstt(int id)
+        public async Task<IActionResult> Suathongtincstt(string id)
         {
             try
             {
-                var csltModel = await _duLieuDuLichService.GetById(id);
+                int Id = Convert.ToInt32(HashUtil.DecodeID(id));
+
+                var csltModel = await _duLieuDuLichService.GetById(Id);
 
                 ViewData["Title"] = "Sửa thông tin cơ sở thể thao";
                 ViewData["Title_parent"] = "Hồ sơ";
@@ -4296,10 +4607,15 @@ namespace TechLife.App.Controllers
                 csltModel.DSMucDoTTNN = await ListMucDoThongThaoHoSo(csltModel.Id, csltModel.DSMucDoTTNN, csltModel.NgonNguId);
 
                 csltModel.DSVanBan = await ListVanBanHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSVanBan, csltModel.NgonNguId);
-                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSTienNghi);
+                csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.TheThao, csltModel.Id, csltModel.DSTienNghi, csltModel.NgonNguId);
 
-                await OptionHuyen();
-                await OptionXa(csltModel.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == csltModel.PhuongXaId
+                });
+
                 await OptionNhaCungCap();
 
                 await this.OptionDonViTinh(2);
@@ -4310,6 +4626,8 @@ namespace TechLife.App.Controllers
                     DuLieuDuLich = csltModel,
                     Images = new ImageUploadRequest()
                 };
+
+                if (csltModel.NgonNguId.Equals("en", StringComparison.OrdinalIgnoreCase)) return View("SuathongtincsttEnglish", model);
 
                 return View(model);
             }
@@ -4366,8 +4684,12 @@ namespace TechLife.App.Controllers
                 var result = await _csdlDuLichApiClient.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    await OptionHuyen();
-                    await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                    ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                    {
+                        Text = x.TenDiaPhuong,
+                        Value = x.Id.ToString(),
+                        Selected = x.Id == csltModel.PhuongXaId
+                    });
                     await OptionNhaCungCap();
 
                     await this.OptionDonViTinh(2);
@@ -4429,8 +4751,12 @@ namespace TechLife.App.Controllers
             }
             catch (Exception ex)
             {
-                await OptionHuyen();
-                await OptionXa(request.DuLieuDuLich.QuanHuyenId);
+                ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
+                {
+                    Text = x.TenDiaPhuong,
+                    Value = x.Id.ToString(),
+                    Selected = x.Id == request.DuLieuDuLich.PhuongXaId
+                });
                 await OptionNhaCungCap();
 
                 await this.OptionLoaiHinhTheThao();
@@ -4679,7 +5005,7 @@ namespace TechLife.App.Controllers
                     Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
                     PageIndex = !String.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex,
                     PageSize = !String.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize,
-                    XaPhuong = huyen,
+                    PhuongXa = huyen,
                     nguon = nguon,
                     loaihinh = loaihinh
                 };

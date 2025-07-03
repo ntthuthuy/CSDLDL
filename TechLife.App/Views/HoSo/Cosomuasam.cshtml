@@ -72,8 +72,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="position-relative form-group">
-                                            <label class="control-label">Quận, huyện, thành phố</label>
-                                            <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
+                                            <label class="control-label">Phường/ xã</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="PhuongXa" name="PhuongXa" asp-items="ViewBag.DiaPhuongOption">
                                                 <option value="-1">tất cả</option>
                                             </select>
                                         </div>
@@ -156,7 +156,7 @@
                                                                         }
                                                                         else
                                                                         {
-                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoicosomuasam?NgonNgu=en">
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoicosomuasam?Id=@HashUtil.EncodeID(d.Id.ToString())&NgonNgu=en">
                                                                                 <i class="fas fa-globe-europe"></i>
                                                                                 <span>ENG</span>
                                                                             </a>

@@ -68,8 +68,8 @@
 
                                     <div class="col-md-3">
                                         <div class="position-relative form-group">
-                                            <label class="control-label">Quận, huyện, thành phố</label>
-                                            <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
+                                            <label class="control-label">Phường/ xã</label>
+                                            <select onchange="this.form.submit()" class="form-control" id="PhuongXa" name="PhuongXa" asp-items="ViewBag.DiaPhuongOption">
                                                 <option value="-1">tất cả</option>
                                             </select>
                                         </div>
@@ -142,7 +142,7 @@
                                                                         }
                                                                         else
                                                                         {
-                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoicssk?NgonNgu=en">
+                                                                            <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Themmoicssk?Id=@HashUtil.EncodeID(d.Id.ToString())&NgonNgu=en">
                                                                                 <i class="fas fa-globe-europe"></i>
                                                                                 <span>ENG</span>
                                                                             </a>
@@ -155,7 +155,7 @@
                                                                     }
                                                                     @if (User.IsInRole("edit_dichvucssk") || User.IsInRole("root"))
                                                                     {
-                                                                        <a title="Sửa hồ sơ cơ sở chăm sóc sức khỏe" href="/Hoso/Suathongtincssk/?id=@d.Id" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
+                                                                        <a title="Sửa hồ sơ cơ sở chăm sóc sức khỏe" href="/Hoso/Suathongtincssk/?id=@HashUtil.EncodeID(d.Id.ToString())" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i> Sửa</a>
 
                                                                     }
                                                                     @if (User.IsInRole("delete_dichvucssk") || User.IsInRole("root"))
