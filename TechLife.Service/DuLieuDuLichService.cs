@@ -170,16 +170,15 @@ namespace TechLife.Service
 
                 if (request.ParentId != null)
                 {
-                    if (!await _context.HoSo.AnyAsync(x => x.Id == request.ParentId))
+                    if (!await _context.HoSo.AnyAsync(x => x.Id == request.ParentId && !x.IsDelete))
                     {
                         return new ApiErrorResult<DuLieuDuLichModel>("Dữ liệu không tồn tại");
                     }
 
-                    if (await _context.HoSo.AnyAsync(x => x.ParentId == request.ParentId && x.NgonNguId == langId))
+                    if (await _context.HoSo.AnyAsync(x => x.LinhVucKinhDoanhId == request.LinhVucKinhDoanhId && !x.IsDelete && x.ParentId == request.ParentId && x.NgonNguId == langId))
                     {
                         return new ApiErrorResult<DuLieuDuLichModel>("Dữ liệu đã tồn tại");
                     }
-
                 }
 
                 if (!string.IsNullOrEmpty(request.TenNhaCungCap))

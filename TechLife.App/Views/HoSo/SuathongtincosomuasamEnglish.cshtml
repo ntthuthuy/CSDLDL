@@ -51,6 +51,15 @@
 
                             <div class="card-header">
                                 <h3 class="card-title">@ViewData["Title"]</h3>
+                                <div class="card-tools">
+                                    <a title="Xóa hồ sơ cơ sở mua sắm"
+                                       data-title="Bạn muốn xóa hồ sơ @Model.DuLieuDuLich.Ten ?"
+                                       data-url="/Hoso/Xoathongtincosomuasam/?id=@HashUtil.EncodeID(Model.DuLieuDuLich.Id.ToString())"
+                                       class="btn btn-outline-danger btn-xs btn-delete"><i class="fas fa-trash"></i> Xóa</a>
+                                    <a href="@Context.Request.GetBackUrl()" class="btn btn-xs btn-outline-danger">
+                                        <i class="fas fa-arrow-circle-left"></i> Quay lại
+                                    </a>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <input type="hidden" asp-for="DuLieuDuLich.LinhVucKinhDoanhId" value="@Convert.ToInt32(LinhVucKinhDoanh.MuaSam)" />
@@ -285,7 +294,7 @@
 
 
                                                     </div>
-                                                   
+
                                                 </div>
                                                 <!-- Thông tin tiện nghi -->
                                                 <div class="tab-pane fade" id="custom-tabs-four-tiennghi" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
@@ -333,7 +342,6 @@
                                                 </div>
 
                                                 <!-- Thông tin lao động -->
-                                               
                                                 <!-- Thông tin hình ảnh -->
                                                 <div class="tab-pane fade show" id="custom-tabs-four-image" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     @{

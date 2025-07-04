@@ -710,6 +710,7 @@ namespace TechLife.App.Controllers
                     await this.OptionLoaiHinhKinhDoanh();
                     await this.OptionDonViTinh(2);
 
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
                 if (request.Images != null)
@@ -992,9 +993,6 @@ namespace TechLife.App.Controllers
                 }
                 else
                 {
-                    //await OptionHuyen();
-                    //await OptionXa(request.DuLieuDuLich.QuanHuyenId);
-
                     ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
                     {
                         Text = x.TenDiaPhuong,
@@ -1013,9 +1011,6 @@ namespace TechLife.App.Controllers
             catch (Exception ex)
             {
                 TempData.AddAlert(new Result<string>() { IsSuccessed = false, Message = ex.Message });
-
-                //await OptionHuyen();
-                //await OptionXa(request.DuLieuDuLich.QuanHuyenId);
 
                 ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
                 {
@@ -1053,7 +1048,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Cosoluutru");
         }
 
         private async Task OptionLoaiNhaHang(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
@@ -1449,7 +1444,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Nhahang");
         }
 
         private async Task OptionLoaiCTLuHanh(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
@@ -1541,6 +1536,8 @@ namespace TechLife.App.Controllers
 
                 ViewBag.NgonNgu = ngonNguId;
 
+                if (!string.IsNullOrWhiteSpace(Request.Query["Id"])) ViewBag.ParentId = Request.Query["Id"];
+
                 var csltModel = new DuLieuDuLichModel();
 
                 csltModel.DSNgoaiNgu = await ListNgoaiNguHoSo();
@@ -1619,6 +1616,11 @@ namespace TechLife.App.Controllers
                     await this.OptionLoaiCTLuHanh(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
 
                     ModelState.AddModelError("", result.Message);
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
+                    if (!string.IsNullOrWhiteSpace(ParentId))
+                    {
+                        return Redirect(Request.GetBackUrl());
+                    }
                     return View(request);
                 }
 
@@ -1885,7 +1887,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Congtyluhanh");
         }
 
         private async Task OptionLoaiCoSoMuaSam(int seletedId = 0, string NgonNgu = SystemConstants.DefaultLanguage)
@@ -2059,6 +2061,8 @@ namespace TechLife.App.Controllers
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
+
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
 
@@ -2308,7 +2312,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Cosomuasam");
         }
 
         private async Task OptionLoaiDiemDuLich(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
@@ -2476,9 +2480,6 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    //await OptionHuyen();
-                    //await OptionXa();
-
                     ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
                     {
                         Text = x.TenDiaPhuong,
@@ -2492,6 +2493,7 @@ namespace TechLife.App.Controllers
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
 
@@ -2776,7 +2778,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Diemdulich");
         }
 
         [Authorize(Roles = "view_huongdanvien,root")]
@@ -2787,9 +2789,6 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Hướng dẫn viên du lịch";
                 ViewData["Title_parent"] = "Hồ sơ";
 
-                //int namehdv = !String.IsNullOrEmpty(Request.Query["namehdv"]) ? Convert.ToInt32(Request.Query["namehdv"]) : -1;           
-                //int loaithe = !String.IsNullOrEmpty(Request.Query["loaithe"]) ? Convert.ToInt32(Request.Query["loaithe"]) : -1;           
-                //await OptionGetAllHDV(namehdv);
                 var pageRequest = new GetPagingRequest()
                 {
                     Keyword = !String.IsNullOrEmpty(Request.Query["search"]) ? Request.Query["search"].ToString() : "",
@@ -3341,8 +3340,6 @@ namespace TechLife.App.Controllers
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
-                    //await OptionHuyen();
-                    //await OptionXa();
                     ViewBag.DiaPhuongOption = (await _diaPhuongService.GetHierarchy()).Select(x => new SelectListItem
                     {
                         Text = x.TenDiaPhuong,
@@ -3355,6 +3352,8 @@ namespace TechLife.App.Controllers
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
+
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
 
@@ -3603,7 +3602,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Khudulich");
         }
 
         private async Task OptionLoaiKhuVuiChoi(int seletedId = 0, string ngonNguId = SystemConstants.DefaultLanguage)
@@ -3753,6 +3752,8 @@ namespace TechLife.App.Controllers
                     await this.OptionLoaiKhuVuiChoi(request.DuLieuDuLich.LoaiHinhId, ngonNguId);
 
                     ModelState.AddModelError("", result.Message);
+
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
 
@@ -3995,7 +3996,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Vcgt");
         }
 
         [Authorize(Roles = "view_dichvucssk,root")]
@@ -4145,6 +4146,7 @@ namespace TechLife.App.Controllers
                     await this.OptionDonViTinh(2);
                     ViewBag.NgonNgu = ngonNguId;
                     ModelState.AddModelError("", result.Message);
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
 
@@ -4390,7 +4392,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Cssk");
         }
 
         [Authorize(Roles = "view_dichvuthethao,root")]
@@ -4540,6 +4542,7 @@ namespace TechLife.App.Controllers
                     await this.OptionDonViTinh(2);
 
                     ModelState.AddModelError("", result.Message);
+                    TempData.AddAlert(new Result<string> { IsSuccessed = false, Message = result.Message });
                     return View(request);
                 }
 
@@ -4787,7 +4790,7 @@ namespace TechLife.App.Controllers
                 Message = result.Message,
             });
             await Tracking(result.Message);
-            return Redirect(Request.GetBackUrl());
+            return RedirectToAction("Thethao");
         }
 
         [Authorize(Roles = "view_luutru,view_nhahang" +

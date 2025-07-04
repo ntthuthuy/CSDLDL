@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using TechLife.App.ApiClients;
 using TechLife.Common;
 using TechLife.Common.Enums;
@@ -19,6 +18,8 @@ namespace TechLife.App.Controllers
     {
         readonly private ITourApiClient _tourApiClient;
         readonly private ITourService _tourService;
+        private readonly IDuLieuDuLichService _duLieuDuLichService;
+        private readonly IDanhMucService _danhMucService;
         private readonly IFileApiClient _fileApiClient;
         public DichvuController(IUserService userService
             , IConfiguration configuration
@@ -47,6 +48,8 @@ namespace TechLife.App.Controllers
             , ITourApiClient tourApiClient
             , ITrackingService trackingService
             , ITourService tourService
+            , IDuLieuDuLichService duLieuDuLichService
+            , IDanhMucService danhMucService
             , IFileApiClient fileApiClient)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
@@ -66,6 +69,8 @@ namespace TechLife.App.Controllers
         {
             _tourApiClient = tourApiClient;
             _tourService = tourService;
+            _duLieuDuLichService = duLieuDuLichService;
+            _danhMucService = danhMucService;
             _fileApiClient = fileApiClient;
         }
         public async Task<IActionResult> Tour_chitiet(int tourId)
@@ -77,6 +82,51 @@ namespace TechLife.App.Controllers
 
             return View(data);
         }
+
+        private async Task OptionCongTyLuHanh(int seletedId = 0)
+        {
+            var luhanh = await _duLieuDuLichService.GetAll((int)LinhVucKinhDoanh.LuHanh);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listCongTyLuHanh = list;
+        }
+
+        private async Task OptionHinhThucTour(int seletedId = 0)
+        {
+            await Task.Run(() =>
+            {
+                var list = Enum.GetValues(typeof(HinhThucTour)).Cast<HinhThucTour>()
+                 .Select(x => new SelectListItem
+                 {
+                     Text = StringEnum.GetStringValue(x),
+                     Value = Convert.ToInt32(x).ToString(),
+                     Selected = (int)x == seletedId ? true : false
+                 });
+
+                ViewBag.listHinhThuc = list;
+            });
+        }
+
+        private async Task OptionLoaiDiemDuLich(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiDDL = list;
+        }
+
         public async Task<IActionResult> Tour(string id)
         {
             ViewData["Title"] = "Tour du lịch";
@@ -100,9 +150,9 @@ namespace TechLife.App.Controllers
             ViewData["Title_parent"] = "Dịch vụ du lịch";
 
             int id = !String.IsNullOrEmpty(Request.Query["id"]) ? Convert.ToInt32(HashUtil.DecodeID(Request.Query["id"])) : 0;
-            await OptionCongTyLuHanh(id);
-            await OptionHinhThucTour();
-            await OptionLoaiDiemDuLich();
+            await this.OptionCongTyLuHanh(id);
+            await this.OptionHinhThucTour();
+            await this.OptionLoaiDiemDuLich();
 
             return View();
         }
@@ -151,9 +201,9 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Sửa Tour";
             ViewData["Title_parent"] = "Dịch vụ du lịch";
 
-            await OptionCongTyLuHanh();
-            await OptionHinhThucTour();
-            await OptionLoaiDiemDuLich();
+            await this.OptionCongTyLuHanh();
+            await this.OptionHinhThucTour();
+            await this.OptionLoaiDiemDuLich();
 
             var data = await _tourService.GetById(id);
             var model = new TourUpdateRequest()
@@ -225,7 +275,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Hành trình tour";
             ViewData["Title_parent"] = "Dịch vụ du lịch";
 
-            await OptionDuLieuDuLich();
+            await this.OptionDuLieuDuLich();
 
             if (id != 0)
             {
@@ -330,7 +380,7 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Phòng";
             ViewData["Title_parent"] = "Dịch vụ du lịch";
 
-            await OptionCongTyLuHanh();
+            await this.OptionCongTyLuHanh();
 
             return View();
         }
