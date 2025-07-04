@@ -16,7 +16,7 @@ namespace TechLife.Service
 
         Task<List<DiaPhuongModel>> GetAllByParent(int id);
 
-        Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingFormRequest request);
+        Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingRequest request);
 
         Task<DiaPhuongModel> GetById(int id);
 
@@ -225,7 +225,7 @@ namespace TechLife.Service
             }
         }
 
-        public async Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingFormRequest request)
+        public async Task<PagedResult<DiaPhuongModel>> GetPaging(GetPagingRequest request)
         {
             try
             {
@@ -235,9 +235,9 @@ namespace TechLife.Service
 
                 string keyword = "";
 
-                if (!string.IsNullOrWhiteSpace(request.Search))
+                if (!string.IsNullOrWhiteSpace(request.Keyword))
                 {
-                    keyword = request.Search.Trim().ToLower();
+                    keyword = request.Keyword.Trim().ToLower();
                     query = query.Where(x => x.m.TenDiaPhuong.ToLower().Contains(keyword));
                 }
                 //3. Paging

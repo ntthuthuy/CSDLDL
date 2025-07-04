@@ -346,12 +346,13 @@ namespace TechLife.App.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Quoctichlist(GetPagingFormRequest request)
+        public async Task<IActionResult> Quoctichlist(GetPagingRequest request)
         {
             ViewData["Title"] = "Quốc tịch";
 
             request.PageIndex = !string.IsNullOrEmpty(Request.Query["page"]) ? Convert.ToInt32(Request.Query["page"]) : SystemConstants.pageIndex;
             request.PageSize = !string.IsNullOrEmpty(Request.Query["page_size"]) ? Convert.ToInt32(Request.Query["page_size"]) : SystemConstants.pageSize;
+            request.Keyword = Request.Query["search"];
 
             var data = await _quocTichService.GetPaging(request);
 

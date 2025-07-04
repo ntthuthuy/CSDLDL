@@ -153,7 +153,10 @@ namespace TechLife.Service
                     UocThangHienTai = item?.UocThangHienTai ?? 0,
                     LuyKeTuDauNam = item?.LuyKeTuDauNam ?? 0,
                     DuTinhUocThangSau = item?.DuTinhUocThangSau ?? 0,
-                    Level = c.Level
+                    Level = c.Level,
+                    DanhMucId = c.Id,
+                    Thang = item.Thang,
+                    Nam = item.Nam
                 });
             }
 
