@@ -233,5 +233,11 @@ namespace TechLife.Common.Extension
         {
             return $"{request.Scheme}://{request.Host}";
         }
+
+        public static string GetRawUrlSSO(this HttpRequest request)
+        {
+            var httpContext = request.HttpContext;
+            return $"{request.Scheme}://{request.Host}/sso";
+        }
     }
 }

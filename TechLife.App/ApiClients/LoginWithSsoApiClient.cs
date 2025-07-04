@@ -18,8 +18,22 @@ namespace TechLife.App.ApiClients
         Task<TokenDetails> AuthenticateSSOVNeID(string urlSSO, string code);
 
         Task<ApiResult<UserDetail>> GetUserInfo(string access_token);
+        Task<KetQuaXacThuc> Authenticate(string urlSSO, string token);
     }
+    public class KetQuaXacThuc
+    {
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; }
+        public UserSSo UserObj { get; set; }
 
+    }
+    public class UserSSo
+    {
+        public string TaiKhoan { get; set; }
+        public string HoVaTen { get; set; }
+        public string MaDonVi { get; set; }
+        public string EmailCaNhan { get; set; }
+    }
     public class LoginWithSsoApiClient : BaseApiClient, ILoginWithSsoApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -35,7 +49,44 @@ namespace TechLife.App.ApiClients
             _configuration = configuration;
             _logger = logger;
         }
+        public async Task<KetQuaXacThuc> Authenticate(string urlSSO, string token)
+        {
+            try
+            {
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
 
+                var client = new HttpClient(handler);
+
+                //var client = _httpClientFactory.CreateClient();
+                var response = await client.PostAsync($"{urlSSO}/Authenticate/?token={token}", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<KetQuaXacThuc>(result);
+                }
+
+                return new KetQuaXacThuc()
+                {
+                    IsSuccess = false,
+                    Message = "Xác thực không thành công",
+                    UserObj = null
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xác thực tài khoản {0}", $"{urlSSO}/Authenticate/?token={token}");
+                return new KetQuaXacThuc()
+                {
+                    IsSuccess = false,
+                    Message = "Xác thực không thành công",
+                    UserObj = null
+                };
+            }
+        }
+     
         public async Task<TokenDetails> AuthenticateSSOVNeID(string urlSSO, string code)
         {
             try
