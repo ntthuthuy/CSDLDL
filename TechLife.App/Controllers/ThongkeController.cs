@@ -20,6 +20,11 @@ namespace TechLife.App.Controllers
     [Authorize(Roles = "report,root")]
     public class ThongkeController : BaseController
     {
+        private readonly IDichVuService dichVuService;
+        private readonly IDonViTinhService donViTinhService;
+        private readonly ILoaiHinhService loaiHinhService;
+        private readonly ILoaiDichVuService loaiDichVuService;
+        private readonly IDanhMucService danhMucService;
         private readonly IDuLieuDuLichService _duLieuDuLichService;
         private readonly ITienNghiService _tienNghiService;
         private readonly IHoSoThanhTraService _hoSoThanhTraService;
@@ -28,8 +33,11 @@ namespace TechLife.App.Controllers
             , IConfiguration configuration
             , IDiaPhuongApiClient diaPhuongApiClient
             , IDichVuApiClient dichVuApiClient
+            , IDichVuService dichVuService
             , IDonViTinhApiClient donViTinhApiClient
+            , IDonViTinhService donViTinhService
             , ILoaiHinhApiClient loaiHinhApiClient
+            , ILoaiHinhService loaiHinhService
             , INgoaiNguApiClient ngoaiNguApiClient
             , ITrinhDoApiClient trinhDoApiClient
             , IBoPhanApiClient boPhanApiClient
@@ -41,7 +49,9 @@ namespace TechLife.App.Controllers
             , ILoaiGiuongApiClient loaiGiuongApiClient
             , IQuocTichApiClient quocTichApiClient
             , ILoaiDichVuApiClient loaiDichVuApiClient
+            , ILoaiDichVuService loaiDichVuService
             , IDanhMucApiClient danhMucApiClient
+            , IDanhMucService danhMucService
             , ILoaiHinhLaoDongApiClient loaiHinhLaoDongApiClient
             , ITinhChatLaoDongApiClient tinhChatLaoDongApiClient
             , IDuLieuDuLichApiClient csdlDuLichApiClient
@@ -51,8 +61,8 @@ namespace TechLife.App.Controllers
             , ITrackingService trackingService
             , IDanhGiaService danhGiaService
             , IDuLieuDuLichService duLieuDuLichService
-            , ITienNghiService tienNghiService,
-             IHoSoThanhTraService hoSoThanhTraService)
+            , ITienNghiService tienNghiService
+            , IHoSoThanhTraService hoSoThanhTraService)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
                   , dichVuApiClient, ngoaiNguApiClient
@@ -68,6 +78,11 @@ namespace TechLife.App.Controllers
                   , fileUploadService
                   , nhaCungCapService, trackingService)
         {
+            this.dichVuService = dichVuService;
+            this.donViTinhService = donViTinhService;
+            this.loaiHinhService = loaiHinhService;
+            this.loaiDichVuService = loaiDichVuService;
+            this.danhMucService = danhMucService;
             _duLieuDuLichService = duLieuDuLichService;
             _tienNghiService = tienNghiService;
             _hoSoThanhTraService = hoSoThanhTraService;
@@ -211,7 +226,7 @@ namespace TechLife.App.Controllers
                     Keyword = !String.IsNullOrEmpty(Request.Query["Keyword"]) ? Request.Query["Keyword"].ToString() : "",
                     LoaiTheId = !String.IsNullOrEmpty(Request.Query["LoaiTheId"]) ? Convert.ToInt32(Request.Query["LoaiTheId"]) : 0,
                     NgonNguId = !String.IsNullOrEmpty(Request.Query["NgonNguId"]) ? Convert.ToInt32(Request.Query["NgonNguId"]) : 0,
-                    TinhTrang = !String.IsNullOrEmpty(Request.Query["TinhTrang"]) ? Request.Query["TinhTrang"].ToString(): "" 
+                    TinhTrang = !String.IsNullOrEmpty(Request.Query["TinhTrang"]) ? Request.Query["TinhTrang"].ToString() : ""
                 };
 
                 await OptionLoaiTheHDV();
@@ -415,7 +430,7 @@ namespace TechLife.App.Controllers
                 var request_cslt = new DuLieuDuLichNhaHangSearchRequest()
                 {
                     Keyword = !String.IsNullOrEmpty(Request.Query["Keyword"]) ? Request.Query["Keyword"].ToString() : "",
-                    LoaiId = !String.IsNullOrEmpty(Request.Query["LoaiId"]) ? Convert.ToInt32(Request.Query["LoaiId"]) :0,
+                    LoaiId = !String.IsNullOrEmpty(Request.Query["LoaiId"]) ? Convert.ToInt32(Request.Query["LoaiId"]) : 0,
 
                 };
                 var data = await _duLieuDuLichService.TimKiemDuLieuNhaHang(request_cslt);
@@ -559,7 +574,7 @@ namespace TechLife.App.Controllers
                             worksheet.Cell(1, index).Style.Alignment.WrapText = true;
 
                         }
-                       
+
                         for (int index = 1; index <= data.Items.Count(); index++)
                         {
                             for (int idx = 1; idx <= 6; idx++)
@@ -678,7 +693,7 @@ namespace TechLife.App.Controllers
                             worksheet.Cell(index + 1, 4).Value = data.Items[index - 1].TenDanhMuc;
                             worksheet.Cell(index + 1, 5).Value = data.Items[index - 1].SoLuongLaoDong;
                             worksheet.Cell(index + 1, 6).Value = data.Items[index - 1].DienTichMatbang;
-                            worksheet.Cell(index + 1, 7).Value = Functions.GetDatetimeToVn(data.Items[index - 1].ThoiDiembatDauKinhDoanh);             
+                            worksheet.Cell(index + 1, 7).Value = Functions.GetDatetimeToVn(data.Items[index - 1].ThoiDiembatDauKinhDoanh);
                             worksheet.Cell(index + 1, 8).Value = data.Items[index - 1].DuongPho;
 
                         }
@@ -773,7 +788,7 @@ namespace TechLife.App.Controllers
                             worksheet.Cell(index + 1, 2).Value = data.Items[index - 1].Ten;
                             worksheet.Cell(index + 1, 3).Value = data.Items[index - 1].SoDienThoai;
                             worksheet.Cell(index + 1, 4).Value = data.Items[index - 1].TenDanhMuc;
-                            worksheet.Cell(index + 1, 5).Value = data.Items[index - 1].SoGiayPhep;                     
+                            worksheet.Cell(index + 1, 5).Value = data.Items[index - 1].SoGiayPhep;
                             worksheet.Cell(index + 1, 6).Value = Functions.GetDatetimeToVn(data.Items[index - 1].ThoiDiemBatDauKinhDoanh);
                             worksheet.Cell(index + 1, 7).Value = data.Items[index - 1].DienTichMatBang;
                             worksheet.Cell(index + 1, 8).Value = data.Items[index - 1].DiaChi;
@@ -897,15 +912,16 @@ namespace TechLife.App.Controllers
                 ViewData["Title"] = "Tùy chọn báo cáo";
 
                 await OptionLinhVucKinhDoanh();
-                await OptionLoaiHinhKinhDoanh();
                 await OptionTieuChuanCoSo();
+                await OptionLoaiTheHDV();
+
                 await OptionLoaiNhaHang();
                 await OptionLoaiCoSoMuaSam();
                 await OptionLoaiDiemDuLich();
                 await OptionLoaiKhuDuLich();
                 await OptionLoaiKhuVuiChoi();
-                await OptionLoaiTheHDV();
                 await OptionLoaiCTLuHanh();
+                await OptionLoaiHinhKinhDoanh();
 
                 ViewBag.TienNghi = await _tienNghiService.GetAll(0);
 
@@ -1009,23 +1025,112 @@ namespace TechLife.App.Controllers
             ViewData["Title_parent"] = "Thống kê";
 
             await OptionLinhVucKinhDoanh();
-
-            await OptionLoaiHinhKinhDoanh();
             await OptionTieuChuanCoSo();
-            await OptionLoaiNhaHang();
-            await OptionLoaiCoSoMuaSam();
-            await OptionLoaiDiemDuLich();
-            await OptionLoaiKhuDuLich();
-            await OptionLoaiKhuVuiChoi();
             await OptionLoaiTheHDV();
-            await OptionLoaiCTLuHanh();
+
+            await this.OptionLoaiHinhKinhDoanh();
+            await this.OptionLoaiNhaHang();
+            await this.OptionLoaiCoSoMuaSam();
+            await this.OptionLoaiDiemDuLich();
+            await this.OptionLoaiKhuDuLich();
+            await this.OptionLoaiKhuVuiChoi();
+            await this.OptionLoaiCTLuHanh();
 
             ViewBag.TienNghi = await _tienNghiService.GetAll(0);
 
             return View();
         }
+        private async Task OptionLoaiHinhKinhDoanh(int seletedId = 0)
+        {
+            var loaihinhkinhdoanh = await loaiHinhService.GetAll();
 
+            var list = loaihinhkinhdoanh.Select(x => new SelectListItem
+            {
+                Text = x.TenLoai.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
 
+            ViewBag.listLoaiHinhKD = list;
+        }
+        private async Task OptionLoaiNhaHang(int seletedId = 0)
+        {
+            var luhanh = await dichVuService.GetAll();
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.TenDichVu.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiNhaHang = list;
+        }
+        private async Task OptionLoaiCoSoMuaSam(int seletedId = 0)
+        {
+            var luhanh = await loaiDichVuService.GetAll();
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.TenLoai.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiDichVu = list;
+        }
+        private async Task OptionLoaiDiemDuLich(int seletedId = 0)
+        {
+            var luhanh = await danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiDDL = list;
+        }
+        private async Task OptionLoaiKhuDuLich(int seletedId = 0)
+        {
+            var luhanh = await danhMucService.GetAll((int)LinhVucKinhDoanh.KhuDuLich);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiKhuDL = list;
+        }
+        private async Task OptionLoaiKhuVuiChoi(int seletedId = 0)
+        {
+            var luhanh = await danhMucService.GetAll((int)LinhVucKinhDoanh.KhuVuiChoi);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiKhuVuiChoi = list;
+        }
+        private async Task OptionLoaiCTLuHanh(int seletedId = 0)
+        {
+            var luhanh = await danhMucService.GetAll((int)LinhVucKinhDoanh.LuHanh);
+
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiCTLH = list;
+        }
         public async Task<IActionResult> Tuychon_ketqua(int linhvuc
             , int[] loaihinh, int[] hangsao, int[] tiennghi)
         {
@@ -1263,7 +1368,7 @@ namespace TechLife.App.Controllers
         public async Task<IActionResult> SearchCSLT(DuLieuDuLichCSLTSearchRequest request)
         {
 
-            var loaihinh = await _loaiHinhApiClient.GetAll();
+            var loaihinh = await loaiHinhService.GetAll();
             request.LoaiHinhItems = loaihinh.Select(v => new SelectListItem()
             {
                 Text = v.TenLoai,
@@ -1338,9 +1443,9 @@ namespace TechLife.App.Controllers
                 ViewData["Title_parent"] = "Điểm du lịch";
 
                 int loaihinh = !String.IsNullOrEmpty(Request.Query["LoaiHinh"]) ? Convert.ToInt32(Request.Query["LoaiHinh"]) : 0;
-               
+
                 await OptionLoaiDiemDuLich(loaihinh);
-                                   
+
                 return PartialView(request);
             }
             catch (Exception ex)
