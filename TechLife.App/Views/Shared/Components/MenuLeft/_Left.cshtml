@@ -15,7 +15,7 @@
         }
         else
         {
-        <img src="~/img/avata_blank.png" class="brand-image img-circle elevation-3" style="opacity: .8; width: 35px; height: 35px;">
+            <img src="~/img/avata_blank.png" class="brand-image img-circle elevation-3" style="opacity: .8; width: 35px; height: 35px;">
         }
 
         <span class="brand-text font-weight-light">@(user.FullName)</span>
@@ -32,9 +32,11 @@
 
                     string url_curent = TempData.GetTempData(SystemConstants.UrlIndex);
 
-                    if (Model.Where(v => v.Url == Context.Request.Path.ToString()).Count() > 0)
+                    string url = Context.Request.Path.ToString() + Context.Request.QueryString.ToString();
+
+                    if (Model.Any(v => v.Url == Context.Request.Path.ToString()) || Model.Any(v => v.Url == url))
                     {
-                        url_curent = Context.Request.Path.ToString();
+                        url_curent = url;
                     }
 
                     TempData.AddTempData(SystemConstants.UrlIndex, url_curent);
@@ -50,41 +52,41 @@
                             string active = active_chirld.Count() > 0 ? "active" : "";
                             string open = active_chirld.Count() > 0 ? "menu-is-opening menu-open" : "";
 
-                    <li class="nav-item @open">
-                        <a href="@d.Url" class="nav-link @active">
-                            <i class="nav-icon fas @d.Icon"></i>
-                            <p>
-                                @d.Name
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            @{
+                            <li class="nav-item @open">
+                                <a href="@d.Url" class="nav-link @active">
+                                    <i class="nav-icon fas @d.Icon"></i>
+                                    <p>
+                                        @d.Name
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    @{
                                         foreach (var c in list_chirld)
                                         {
                                             active = c.Url == url_curent ? "active" : "";
-                                <li class="nav-item">
-                                    <a href="@c.Url" class="nav-link @active">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>@c.Name</p>
-                                    </a>
-                                </li>
+                                            <li class="nav-item">
+                                                <a href="@c.Url" class="nav-link @active">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>@c.Name</p>
+                                                </a>
+                                            </li>
                                         }
-                            }
-                        </ul>
-                    </li>
+                                    }
+                                </ul>
+                            </li>
                         }
                         else
                         {
                             string active = d.Url == url_curent ? "active" : "";
-                    <li class="nav-item">
-                        <a href="@d.Url" class="nav-link @active">
-                            <i class="nav-icon fas @d.Icon"></i>
-                            <p>
-                                @d.Name
-                            </p>
-                        </a>
-                    </li>
+                            <li class="nav-item">
+                                <a href="@d.Url" class="nav-link @active">
+                                    <i class="nav-icon fas @d.Icon"></i>
+                                    <p>
+                                        @d.Name
+                                    </p>
+                                </a>
+                            </li>
                         }
                     }
                 }

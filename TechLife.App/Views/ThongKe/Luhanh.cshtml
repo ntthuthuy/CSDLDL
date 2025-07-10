@@ -8,7 +8,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+               @*  <div class="col-sm-6">
                     <form id="form" method="get" asp-action="Index">
                         <div class="position-relative form-group">
                             <select class="form-control" asp-for="Id" asp-items="ViewBag.ListLoaiThongKe">
@@ -17,9 +17,9 @@
                             <span asp-validation-for="Id" class="text-danger"></span>
                         </div>
                     </form>
-                </div><!-- /.col -->
+                </div><!-- /.col --> *@
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                    <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
                         <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
                         <li class="breadcrumb-item active">@ViewData["Title"]</li>

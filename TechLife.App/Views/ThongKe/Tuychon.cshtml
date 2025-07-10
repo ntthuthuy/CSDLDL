@@ -117,7 +117,7 @@
             </div>
         </div>
          <div class="col-md-12">
-            <div class="position-relative form-group">
+            <div class="form-group">
                 <label class="control-label">Thông tin hiển thị</label>
                 <div class="row">
                    <div style="padding-left: 30px;" class="form-check col-md-3">
@@ -144,6 +144,14 @@
                     <input class="form-check-input" value="email" type="checkbox" name="thongtin">
                     <label class="form-check-label">Email</label>
                   </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
                 </div>
                 
             </div>
@@ -160,7 +168,7 @@
         </div>
 
         <div class="col-md-12">
-            <div class="position-relative form-group">
+            <div class="form-group">
                 <label class="control-label">Có các dịch vụ / tiện nghi</label>
                 @{
                     int loaiNhaHang = (int)LinhVucKinhDoanh.NhaHang;
@@ -177,6 +185,45 @@
                 }
             </div>
         </div>
+         <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label">Thông tin hiển thị</label>
+                <div class="row">
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="loaihinh" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Loại hình</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="ten" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Tên gọi</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="hangsao" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Hạng sao</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="diachi" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Địa chỉ</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="sodienthoai" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Số điện thoại</label>
+                  </div>
+                    <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="email" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Email</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
+                </div>
+            </div>
+        </div>
     </script>
 
     <script type="text/html" id="tmp_muasam">
@@ -189,7 +236,7 @@
         </div>
 
         <div class="col-md-12">
-            <div class="position-relative form-group">
+            <div class="form-group">
                 <label class="control-label">Có các dịch vụ / tiện nghi</label>
                 @{
                     int loaiMuaSam = (int)LinhVucKinhDoanh.MuaSam;
@@ -207,6 +254,45 @@
                 }
             </div>
         </div>
+          <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label">Thông tin hiển thị</label>
+                <div class="row">
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="loaihinh" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Loại hình</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="ten" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Tên gọi</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="hangsao" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Hạng sao</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="diachi" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Địa chỉ</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="sodienthoai" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Số điện thoại</label>
+                  </div>
+                    <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="email" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Email</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
+                </div>
+            </div>
+        </div>
     </script>
 
     <script type="text/html" id="tmp_diemdulich">
@@ -217,7 +303,45 @@
                 </select>
             </div>
         </div>
-
+          <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label">Thông tin hiển thị</label>
+                <div class="row">
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="loaihinh" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Loại hình</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="ten" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Tên gọi</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="hangsao" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Hạng sao</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="diachi" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Địa chỉ</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="sodienthoai" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Số điện thoại</label>
+                  </div>
+                    <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="email" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Email</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
+                </div>
+            </div>
+        </div>
     </script>
 
     <script type="text/html" id="tmp_khudulich">
@@ -228,7 +352,45 @@
                 </select>
             </div>
         </div>
-
+          <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label">Thông tin hiển thị</label>
+                <div class="row">
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="loaihinh" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Loại hình</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="ten" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Tên gọi</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="hangsao" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Hạng sao</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="diachi" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Địa chỉ</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="sodienthoai" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Số điện thoại</label>
+                  </div>
+                    <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="email" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Email</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
+                </div>
+            </div>
+        </div>
     </script>
 
     <script type="text/html" id="tmp_luhanh">
@@ -239,6 +401,45 @@
                 </select>
             </div>
         </div>
+          <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label">Thông tin hiển thị</label>
+                <div class="row">
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="loaihinh" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Loại hình</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="ten" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Tên gọi</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="hangsao" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Hạng sao</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="diachi" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Địa chỉ</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="sodienthoai" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Số điện thoại</label>
+                  </div>
+                    <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="email" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Email</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
+                </div>
+            </div>
+        </div>
     </script>
 
     <script type="text/html" id="tmp_huongdanvien">
@@ -247,6 +448,45 @@
                 <label class="control-label">Loại thẻ</label>
                 <select multiple asp-items="ViewBag.listLoaiThe" class="form-control" name="loaihinh">
                 </select>
+            </div>
+        </div>
+          <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label">Thông tin hiển thị</label>
+                <div class="row">
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="loaihinh" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Loại hình</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="ten" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Tên gọi</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="hangsao" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Hạng sao</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="diachi" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Địa chỉ</label>
+                  </div>
+                  <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="sodienthoai" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Số điện thoại</label>
+                  </div>
+                    <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="email" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Email</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="nguoidaidien" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Người đại diện</label>
+                  </div>
+                   <div style="padding-left: 30px;" class="form-check col-md-3">
+                    <input class="form-check-input" value="giayphep" type="checkbox" name="thongtin">
+                    <label class="form-check-label">Giấy phép kinh doanh</label>
+                  </div>
+                </div>
             </div>
         </div>
     </script>
