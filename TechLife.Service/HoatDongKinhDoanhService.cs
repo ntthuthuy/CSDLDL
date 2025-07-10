@@ -155,8 +155,8 @@ namespace TechLife.Service
                     DuTinhUocThangSau = item?.DuTinhUocThangSau ?? 0,
                     Level = c.Level,
                     DanhMucId = c.Id,
-                    Thang = item.Thang,
-                    Nam = item.Nam
+                    Thang = item?.Thang ?? request.Thang,
+                    Nam = item?.Nam ?? request.Nam
                 });
             }
 

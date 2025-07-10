@@ -224,18 +224,22 @@ namespace TechLife.App.Component
                     if (User.IsInRole("report") || User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 40, Name = "Thống kê, báo cáo", Url = "/Thongke/", Icon = "fa-database" });
-                        //model.Add(new MenuViewModel() { Id = 41, Name = "Biểu đồ số liệu lưu trú", Url = "/Thongke/Cosoluutru/", Icon = "fa-circle", GroupId = 40 });
-                        //model.Add(new MenuViewModel() { Id = 42, Name = "Biểu đồ số liệu nhà hàng", Url = "/Thongke/Nhahang/", Icon = "fa-circle", GroupId = 40 });
-                        //model.Add(new MenuViewModel() { Id = 43, Name = "Biểu đồ số liệu lữ hành", Url = "/Thongke/Luhanh/", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 41, Name = "Số liệu CS lưu trú", Url = "/Thongke?Id=bieudocosoluutru", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 42, Name = "Số liệu nhà hàng", Url = "/Thongke?Id=bieudonhahang", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 43, Name = "Số liệu CS mua sắm", Url = "/Thongke?Id=bieudocosomuasam", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 44, Name = "Số liệu DN lữ hành", Url = "/Thongke?Id=bieudocongtyluhanh", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 45, Name = "Số liệu điểm du lịch", Url = "/Thongke?Id=bieudodiemdulich", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 46, Name = "Số liệu Hướng dẫn viên", Url = "/Thongke?Id=bieudohuongdanvien ", Icon = "fa-circle", GroupId = 40 });
+                        model.Add(new MenuViewModel() { Id = 47, Name = "Tùy chọn báo cáo", Url = "/Thongke?Id=thongketuychon ", Icon = "fa-circle", GroupId = 40 });
                         //model.Add(new MenuViewModel() { Id = 44, Name = "Biểu đồ số liệu cơ sở mua sắm", Url = "/Thongke/Cosomuasam/", Icon = "fa-circle", GroupId = 40 });
                         ////model.Add(new MenuViewModel() { Id = 45, Name = "Tour du lịch", Url = "/Thongke/Tour/", Icon = "fa-circle", GroupId = 40 });
                         //model.Add(new MenuViewModel() { Id = 47, Name = "Hướng dẫn viên", Url = "/Thongke/Huongdanvien/", Icon = "fa-circle", GroupId = 40 });
-                        //model.Add(new MenuViewModel() { Id = 47, Name = "Tùy chọn báo cáo", Url = "/Thongke/Tuychon/", Icon = "fa-circle", GroupId = 40 });
+                       // model.Add(new MenuViewModel() { Id = 47, Name = "Tùy chọn báo cáo", Url = "/Thongke/Tuychon/", Icon = "fa-circle", GroupId = 40 });
                     }
 
                     if (User.IsInRole("root"))
                     {
-                        model.Add(new MenuViewModel() { Id = 47, Name = "Quản trị hệ thống", Url = "#", Icon = "fa-users-cog" });
+                        model.Add(new MenuViewModel() { Id = 48, Name = "Quản trị hệ thống", Url = "#", Icon = "fa-users-cog" });
                         model.Add(new MenuViewModel() { Id = 49, Name = "Phòng ban, trung tâm", Url = "/User/Phongban/", Icon = "fa-circle", GroupId = 47 });
                         model.Add(new MenuViewModel() { Id = 50, Name = "Tài khoản", Url = "/User/Index/", Icon = "fa-circle", GroupId = 47 });
                         model.Add(new MenuViewModel() { Id = 51, Name = "Nhóm quyền", Url = "/User/Group/", Icon = "fa-circle", GroupId = 47 });
