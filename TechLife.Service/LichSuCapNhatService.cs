@@ -74,7 +74,7 @@ namespace TechLife.Service
         {
             try
             {
-                var data = await _context.LichSuCapNhat.Where(x => !x.IsDelete && x.HoSoId == id).ToListAsync();
+                var data = await _context.LichSuCapNhat.Where(x => !x.IsDelete && x.HoSoId == id).OrderByDescending(x => x.UpdatedAt).ToListAsync();
                 var user = await _context.Users.Where(x => !x.IsDelete).Select(x => new UserModel
                 {
                     Id = x.Id,

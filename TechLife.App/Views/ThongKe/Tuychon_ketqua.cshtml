@@ -3,17 +3,16 @@
 @{
     ViewData["Title"] = ViewData["Title"];
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var thongTin = (string[])ViewBag.ThongTin;
 }
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
-
-                </div><!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
                         <li class="breadcrumb-item active">@ViewData["Title_parent"]</li>
                         <li class="breadcrumb-item active">@ViewData["Title"]</li>
@@ -39,12 +38,43 @@
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-                                <div class="col-md-12">
+                                <div class="col-md-12 table-responsive">
                                     <table class="table table-hover table-striped table-bordered">
                                         <thead>
                                             <tr>
                                                 <th width="5%" class="text-center">STT</th>
-                                                <th>Thông tin cơ bản</th>
+                                                @if (thongTin != null && thongTin.Contains("ten"))
+                                                {
+                                                    <th width="20%" class="text-center">Tên gọi</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("loaihinh"))
+                                                {
+                                                    <th width="15%" class="text-center">Loại hình</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("hangsao"))
+                                                {
+                                                    <th width="15%" class="text-center">Hạng sao</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("diachi"))
+                                                {
+                                                    <th class="text-center">Địa chỉ</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("sodienthoai"))
+                                                {
+                                                    <th width="15%" class="text-center">Số điện thoại</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("email"))
+                                                {
+                                                    <th width="15%" class="text-center">Email</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("nguoidaidien"))
+                                                {
+                                                    <th width="15%" class="text-center">Người đại diện</th>
+                                                }
+                                                @if (thongTin != null && thongTin.Contains("giayphep"))
+                                                {
+                                                    <th width="15%" class="text-center">Giấy phép KD</th>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -57,22 +87,57 @@
                                                         stt++;
                                                         <tr>
                                                             <td class="text-center">@stt</td>
-                                                            <td>
-                                                                <strong>
-                                                                    <a href="/Hoso/Chitiet/?id=@HashUtil.EncodeID(d.Id.ToString())">
-                                                                        @{
-                                                                            if (d.HangSao > 0)
-                                                                            {
-                                                                                <strong class="text-yellow">(@d.HangSao.ToString() <i class="fas fa-star"></i>)</strong>
-                                                                            }
-
-                                                                        }@d.Ten
-                                                                    </a>
-                                                                </strong>
-                                                                <br /><strong>Số điện thoại:</strong> @d.SoDienThoai
-                                                                <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen)
-                                                            </td>
-
+                                                            @if (thongTin != null && thongTin.Contains("ten"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @d.Ten
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("loaihinh"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @d.LoaiHinh
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("hangsao"))
+                                                            {
+                                                                <td nowrap class="text-center">
+                                                                    @if (d.HangSao > 0)
+                                                                    {
+                                                                        <strong class="text-yellow">(@d.HangSao.ToString() <i class="fas fa-star"></i>)</strong>
+                                                                    }
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("diachi"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen)
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("sodienthoai"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @d.SoDienThoai
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("email"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @d.Email
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("nguoidaidien"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @d.NguoiDaiDien
+                                                                </td>
+                                                            }
+                                                            @if (thongTin != null && thongTin.Contains("giayphep"))
+                                                            {
+                                                                <td nowrap>
+                                                                    @d.SoGiayPhep
+                                                                </td>
+                                                            }
                                                         </tr>
                                                     }
                                                 }
@@ -87,13 +152,13 @@
                                     </table>
                                 </div>
                             </div>
-                          
+
                         </form>
                     </div>
                     <!-- /.card -->
                 </div>
             </div>
-          
+
         </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->

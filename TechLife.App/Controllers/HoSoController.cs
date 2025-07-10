@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -739,6 +740,17 @@ namespace TechLife.App.Controllers
                     IsSuccessed = result.IsSuccessed,
                     Message = "Thêm mới thành công",
                 });
+
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = result.ResultObj.Id,
+                    OldValue = new DuLieuDuLichModel(),
+                    NewValue = result.ResultObj,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+
+                };
+
+                await _lichSuCapNhatService.Create(history);
 
                 await Tracking("Thêm cơ sở lưu trú " + request.DuLieuDuLich.Ten);
                 if (type_sumit == "save")

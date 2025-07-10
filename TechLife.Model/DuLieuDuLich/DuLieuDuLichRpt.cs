@@ -33,6 +33,7 @@ namespace TechLife.Model.DuLieuDuLich
         public string MoTa { get; set; }
         public string LoiKhuyen { get; set; }
         public string GiaThamKhao { get; set; }
+        public string SoGiayPhep { get; set; }
         public bool IsDatChuan { get; set; }
         public ImageVm Avata { get; set; }
         public string UrlAvata { get; set; }

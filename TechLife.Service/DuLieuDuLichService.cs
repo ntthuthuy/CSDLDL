@@ -2385,8 +2385,12 @@ namespace TechLife.Service
                     {
                         Id = x.m.Id,
                         Ten = x.m.HoVaTen,
+                        LoaiHinh = x.m.LoaiTheId == 1 ? "Thẻ nội địa" : "Thẻ quốc tế",
+                        SoGiayPhep = x.m.SoTheHDV,
                         SoDienThoai = x.m.SoDienThoai,
                         DiaChi = x.m.DiaChi,
+                        Email = x.m.Email,
+                        
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.Type == LoaiFile.hosohuongdanvien.ToString()).Select(v => new ImageVm()
                         {
                             Name = v.FileName,
@@ -2504,6 +2508,7 @@ namespace TechLife.Service
                          GioMoCua = x.m.GioMoCua,
                          MoTa = x.m.GhiChu,
                          GioiThieu = x.m.GioiThieu,
+                         SoGiayPhep = x.m.SoGiayPhep,
                          LoiKhuyen = "",
                          ViTriTrenBanDo = x.m.ViTriTrenBanDo,
                          GiaThamKhao = "0",

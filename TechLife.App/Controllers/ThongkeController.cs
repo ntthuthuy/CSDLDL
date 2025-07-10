@@ -1131,8 +1131,10 @@ namespace TechLife.App.Controllers
 
             ViewBag.listLoaiCTLH = list;
         }
-        public async Task<IActionResult> Tuychon_ketqua(int linhvuc
-            , int[] loaihinh, int[] hangsao, int[] tiennghi)
+
+        [HttpPost]
+        public async Task<IActionResult> Tuychon_ketqua(int linhvuc, string type_submit
+            , int[] loaihinh, int[] hangsao, int[] tiennghi, string[] thongtin)
         {
             ViewData["Title"] = "Kết quả thống kê";
             ViewData["Title_parent"] = "Thống kê";
@@ -1146,7 +1148,117 @@ namespace TechLife.App.Controllers
             };
             request.PageSize = 10000;
             var data = await _duLieuDuLichService.DuLieuDuLich(Request.GetLanguageId(), linhvuc, request);
+            #region Tải file
+            if (type_submit == "download")
+            {
 
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                string fileName = $"DuLieuDuLich.xlsx";
+
+                using (var workbook = new XLWorkbook())
+                {
+                    IXLWorksheet worksheet = workbook.Worksheets.Add("ThongKe");
+
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
+                    worksheet.Range(1, 1, 1, 1 + thongtin.Length).Style.Font.Bold = true;
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Border.TopBorder = XLBorderStyleValues.Thin;
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Border.LeftBorder = XLBorderStyleValues.Thin;
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Border.RightBorder = XLBorderStyleValues.Thin;
+                    worksheet.Range(1, 1, 1 + data.TotalRecords, 1 + thongtin.Length).Style.Alignment.WrapText = true;
+                    int col = 1;
+                    worksheet.Cell(1, col).Value = "STT";
+                    if (thongtin != null && thongtin.Contains("ten"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Tên";
+                        worksheet.Column(col).Width = 30;
+                    }
+                    if (thongtin != null && thongtin.Contains("loaihinh"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Loại hình";
+                        worksheet.Column(col).Width = 15;
+                    }
+                    if (thongtin != null && thongtin.Contains("hangsao"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Hạng sao";
+                        worksheet.Column(col).Width = 15;
+                    }
+                    if (thongtin != null && thongtin.Contains("diachi"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Địa chỉ";
+                        worksheet.Column(col).Width = 40;
+                    }
+                    if (thongtin != null && thongtin.Contains("sodienthoai"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Số điện thoại";
+                        worksheet.Column(col).Width = 15;
+                    }
+                    if (thongtin != null && thongtin.Contains("email"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Email";
+                        worksheet.Column(col).Width = 15;
+                    }
+                    if (thongtin != null && thongtin.Contains("nguoidaidien"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Người đại diện";
+                        worksheet.Column(col).Width = 15;
+                    }
+                    if (thongtin != null && thongtin.Contains("giayphep"))
+                    {
+                        worksheet.Cell(1, ++col).Value = "Giấy phép kinh doanh";
+                        worksheet.Column(col).Width = 15;
+                    }
+                    worksheet.Row(1).Height = 35;
+
+                    for (int index = 1; index <= data.Items.Count; index++)
+                    {
+                        col = 1;
+                        worksheet.Cell(index + 1, col).Value = index;
+                        if (thongtin != null && thongtin.Contains("ten"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].Ten;
+                        }
+                        if (thongtin != null && thongtin.Contains("loaihinh"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].LoaiHinh;
+                        }
+                        if (thongtin != null && thongtin.Contains("hangsao"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].HangSao;
+                        }
+                        if (thongtin != null && thongtin.Contains("diachi"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].DiaChi;
+                        }
+                        if (thongtin != null && thongtin.Contains("sodienthoai"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].SoDienThoai;
+                        }
+                        if (thongtin != null && thongtin.Contains("email"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].Email;
+                        }
+                        if (thongtin != null && thongtin.Contains("nguoidaidien"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].NguoiDaiDien;
+                        }
+                        if (thongtin != null && thongtin.Contains("giayphep"))
+                        {
+                            worksheet.Cell(index + 1, ++col).Value = data.Items[index - 1].SoGiayPhep;
+                        }
+                    }
+                    using (var stream = new MemoryStream())
+                    {
+
+                        workbook.SaveAs(stream);
+                        var content = stream.ToArray();
+                        return File(content, contentType, fileName);
+                    }
+                }
+            }
+            #endregion
+            ViewBag.ThongTin = thongtin;
 
             return View(data);
         }
