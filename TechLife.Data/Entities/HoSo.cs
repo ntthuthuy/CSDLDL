@@ -53,6 +53,7 @@ namespace TechLife.Data.Entities
         public int QuanHuyenId { get; set; }
         public int TinhThanhId { get; set; }
         // Liên hệ
+        public string DiaChiCu { get; set; }
         public string SoDienThoai { get; set; }
         public string Fax { get; set; }
         public string Email { get; set; }
@@ -114,5 +115,10 @@ namespace TechLife.Data.Entities
         // Lịch sử cập nhật
         public virtual List<LichSuCapNhat> LichSuCapNhat { get; set; }
         public int? ParentId { get; set; }
+
+        public string CreateByUserId { get; set; }
+        public string LastModifiedByUserId { get; set; }
+        public DateTime CreateOnDate { get; set; }
+        public DateTime LastModifiedOnDate { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace TechLife.Model.LichSuCapNhat
         public DuLieuDuLichModel NewValue { get; set; }
         public Guid UpdateByUserId { get; set; }
         public int HoSoId { get; set; }
+        public string HanhDong { get; set; }
     }
 }

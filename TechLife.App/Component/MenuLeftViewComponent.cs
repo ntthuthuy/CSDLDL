@@ -239,11 +239,11 @@ namespace TechLife.App.Component
                     if (User.IsInRole("root"))
                     {
                         model.Add(new MenuViewModel() { Id = 48, Name = "Quản trị hệ thống", Url = "#", Icon = "fa-users-cog" });
-                        model.Add(new MenuViewModel() { Id = 49, Name = "Phòng ban, trung tâm", Url = "/User/Phongban/", Icon = "fa-circle", GroupId = 47 });
-                        model.Add(new MenuViewModel() { Id = 50, Name = "Tài khoản", Url = "/User/Index/", Icon = "fa-circle", GroupId = 47 });
-                        model.Add(new MenuViewModel() { Id = 51, Name = "Nhóm quyền", Url = "/User/Group/", Icon = "fa-circle", GroupId = 47 });
-                        model.Add(new MenuViewModel() { Id = 52, Name = "Chức năng", Url = "/User/Role/", Icon = "fa-circle", GroupId = 47 });
-                        model.Add(new MenuViewModel() { Id = 53, Name = "Lịch sử sử dụng", Url = "/User/Tracking/", Icon = "fa-circle", GroupId = 47 });
+                        model.Add(new MenuViewModel() { Id = 49, Name = "Phòng ban, trung tâm", Url = "/User/Phongban/", Icon = "fa-circle", GroupId = 48 });
+                        model.Add(new MenuViewModel() { Id = 50, Name = "Tài khoản", Url = "/User/Index/", Icon = "fa-circle", GroupId = 48 });
+                        model.Add(new MenuViewModel() { Id = 51, Name = "Nhóm quyền", Url = "/User/Group/", Icon = "fa-circle", GroupId = 48 });
+                        model.Add(new MenuViewModel() { Id = 52, Name = "Chức năng", Url = "/User/Role/", Icon = "fa-circle", GroupId = 48 });
+                        model.Add(new MenuViewModel() { Id = 53, Name = "Lịch sử sử dụng", Url = "/User/Tracking/", Icon = "fa-circle", GroupId = 48 });
                     }
                 }
             }

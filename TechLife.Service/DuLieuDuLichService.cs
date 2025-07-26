@@ -41,7 +41,7 @@ namespace TechLife.Service
 
         Task<DuLieuDuLichModel> GetById(int id);
 
-        Task<ApiResult<int>> Delete(int id);
+        Task<ApiResult<int>> Delete(int id,string userRqId);
 
         Task<ApiResult<int>> DeleteNhaHangLuuTru(int id);
 
@@ -98,7 +98,7 @@ namespace TechLife.Service
         Task<List<DuLieuDuLichAPI>> GetAll_VanChuyen();
 
         Task<Dictionary<int, int>> DuLieuDuLichEnglish(List<DuLieuDuLichModel> items);
-
+        Task<ApiResult<int>> UpdateDiaPhuong(int id, DuLieuDuLichModel request);
         //HueCIT
         Task<List<HoSoVanBanVm>> GetListVanBanByHoSo(int hosoId);
 
@@ -220,7 +220,7 @@ namespace TechLife.Service
                     NgayQuyetDinh = request.NgayQuyetDinh,
                     PhongChayNo = request.PhongChayNo,
                     PhuongXaId = request.PhuongXaId,
-                    QuanHuyenId = request.QuanHuyenId,
+                    QuanHuyenId = request.PhuongXaId,
                     SoDienThoai = request.SoDienThoai,
                     SoDienThoaiNguoiDaiDien = request.SoDienThoaiNguoiDaiDien,
                     SoGiayPhep = request.SoGiayPhep,
@@ -264,7 +264,11 @@ namespace TechLife.Service
                     PhucVu = request.PhucVu,
                     ToaDoX = request.ToaDoX,
                     ToaDoY = request.ToaDoY,
-                    MaDoanhNghiep = request.MaDoanhNghiep
+                    MaDoanhNghiep = request.MaDoanhNghiep,
+                    CreateByUserId = request.UserRqId,
+                    LastModifiedByUserId = request.UserRqId,
+                    CreateOnDate = DateTime.Now,
+                    LastModifiedOnDate = DateTime.Now,
                 };
                 _context.HoSo.Add(coSoLuuTru);
                 var result = await _context.SaveChangesAsync();
@@ -736,7 +740,7 @@ namespace TechLife.Service
         //    }
         //}
 
-        public async Task<ApiResult<int>> Delete(int id)
+        public async Task<ApiResult<int>> Delete(int id, string userRqId)
         {
             try
             {
@@ -749,7 +753,9 @@ namespace TechLife.Service
                 var obj = coSoLuuTru.FirstOrDefault();
 
                 obj.IsDelete = true;
-
+                //TechLife
+                obj.LastModifiedByUserId = userRqId;
+                obj.LastModifiedOnDate = DateTime.Now;
                 var children = await _context.HoSo.Where(x => x.ParentId == obj.Id).ToListAsync();
 
                 _context.HoSo.Update(obj);
@@ -960,41 +966,6 @@ namespace TechLife.Service
             {
 
                 var query = from m in _context.HoSo
-                                //join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
-                                //from xa in dp.DefaultIfEmpty()
-                                //join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
-                                //from huyen in dph.DefaultIfEmpty()
-
-                                //join loaihinh in _context.LoaiHinh on m.LoaiHinhId equals loaihinh.Id into lh
-                                //from loaihinh in lh.DefaultIfEmpty()
-
-                                //join loainhahang in _context.DichVu on m.LoaiHinhId equals loainhahang.Id into lnh
-                                //from loainhahang in lnh.DefaultIfEmpty()
-
-                                //join loaimuasam in _context.LoaiDichVu on m.LoaiHinhId equals loaimuasam.Id into lms
-                                //from loaimuasam in lms.DefaultIfEmpty()
-
-                                //join loaidiemdulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich) on m.LoaiHinhId equals loaidiemdulich.Id into lddl
-                                //from loaidiemdulich in lddl.DefaultIfEmpty()
-
-                                //join loaikhudulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich) on m.LoaiHinhId equals loaikhudulich.Id into lkhudl
-                                //from loaikhudulich in lkhudl.DefaultIfEmpty()
-
-                                //join loaikhuvuichoi in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi) on m.LoaiHinhId equals loaikhuvuichoi.Id into lkhuvc
-                                //from loaikhuvuichoi in lkhuvc.DefaultIfEmpty()
-
-                                //join loaithethao in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.TheThao) on m.LoaiHinhId equals loaithethao.Id into ltt
-                                //from loaithethao in ltt.DefaultIfEmpty()
-
-                                //join loaicssk in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.CSSK) on m.LoaiHinhId equals loaicssk.Id into lcssk
-                                //from loaicssk in lcssk.DefaultIfEmpty()
-
-                                //join loailuhanh in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.LuHanh) on m.LoaiHinhId equals loailuhanh.Id into lluhanh
-                                //from loailuhanh in lluhanh.DefaultIfEmpty()
-
-                                //join nhacungcap in _context.NhaCungCap on m.NhaCungCapId equals nhacungcap.Id into ncc
-                                //from nhacungcap in ncc.DefaultIfEmpty()
-
                             where m.IsDelete == false && m.Id == id
                             select new { m };
 
@@ -1034,11 +1005,9 @@ namespace TechLife.Service
                     LoaiHinhId = x.m.LoaiHinhId,
                     NgayQuyetDinh = x.m.NgayQuyetDinh,
                     PhongChayNo = x.m.PhongChayNo,
-                    PhuongXaId = x.m.PhuongXaId,
-                    //PhuongXa = x.xa.TenDiaPhuong,
+                    PhuongXaId = x.m.QuanHuyenId,
                     QuanHuyenId = x.m.QuanHuyenId,
-                    //QuanHuyen = x.huyen.TenDiaPhuong,
-                    TinhThanh = "Thừa Thiên Huế",
+                    TinhThanh = "Thành phố Huế",
 
                     SoDienThoai = x.m.SoDienThoai,
                     SoDienThoaiNguoiDaiDien = x.m.SoDienThoaiNguoiDaiDien,
@@ -1048,8 +1017,6 @@ namespace TechLife.Service
                     SoNha = x.m.SoNha,
                     SoQuyetDinh = x.m.SoQuyetDinh,
                     SoTang = x.m.SoTang,
-                    //NhaCungCap = new NhaCungCapVm() { Ten = x.nhacungcap.Ten },
-                    //TenCongTy = x.m.TenCongTy,
                     NhaCungCapId = x.m.NhaCungCapId,
                     ThoiDiemBatDauKinhDoanh = x.m.ThoiDiemBatDauKinhDoanh,
                     TinhThanhId = x.m.TinhThanhId,
@@ -1061,15 +1028,6 @@ namespace TechLife.Service
                     Website = x.m.Website,
                     GioDongCua = x.m.GioDongCua,
                     GioMoCua = x.m.GioMoCua,
-                    //LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? new LoaiHinhModel() { Id = x.loaihinh.Id, TenLoai = x.loaihinh.TenLoai }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? new LoaiHinhModel() { Id = x.loainhahang.Id, TenLoai = x.loainhahang.TenDichVu }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? new LoaiHinhModel() { Id = x.loaidiemdulich.Id, TenLoai = x.loaidiemdulich.Ten }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? new LoaiHinhModel() { Id = x.loaikhudulich.Id, TenLoai = x.loaikhudulich.Ten }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? new LoaiHinhModel() { Id = x.loaikhuvuichoi.Id, TenLoai = x.loaikhuvuichoi.Ten }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? new LoaiHinhModel() { Id = x.loaithethao.Id, TenLoai = x.loaithethao.Ten }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? new LoaiHinhModel() { Id = x.loaicssk.Id, TenLoai = x.loaicssk.Ten }
-                    //    : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? new LoaiHinhModel() { Id = x.loailuhanh.Id, TenLoai = x.loailuhanh.Ten }
-                    //    : new LoaiHinhModel() { Id = x.loaimuasam.Id, TenLoai = x.loaimuasam.TenLoai },
                     SoLDGianTiep = x.m.SoLDGianTiep,
                     SoLDNamNgoaiNuoc = x.m.SoLDNamNgoaiNuoc,
                     SoLDNamTrongNuoc = x.m.SoLDNamTrongNuoc,
@@ -1079,8 +1037,6 @@ namespace TechLife.Service
                     SoLDThuongXuyen = x.m.SoLDThuongXuyen,
                     SoLDTrucTiep = x.m.SoLDTrucTiep,
                     GioiThieu = x.m.GioiThieu,
-                    //Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
-
                     GiaThamKhao = x.m.GiaThamKhao != null ? Functions.ConvertDecimalVND(Convert.ToDecimal(x.m.GiaThamKhao)) : "0",
                     //HueCIT
                     ToaDoX = x.m.ToaDoX,
@@ -1164,50 +1120,15 @@ namespace TechLife.Service
         public async Task<PagedResult<DuLieuDuLichModel>> GetPaging(string langId, int linhvucId, HoSoFromRequets request)
         {
             var query = from m in _context.HoSo
-                            //join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
-                            //from xa in dp.DefaultIfEmpty()
-                            //join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
-                            //from huyen in dph.DefaultIfEmpty()
 
-                            //join loaihinh in _context.LoaiHinh on m.LoaiHinhId equals loaihinh.Id into lh
-                            //from loaihinh in lh.DefaultIfEmpty()
-
-                            //join loainhahang in _context.DichVu on m.LoaiHinhId equals loainhahang.Id into lnh
-                            //from loainhahang in lnh.DefaultIfEmpty()
-
-                            //join loaimuasam in _context.LoaiDichVu on m.LoaiHinhId equals loaimuasam.Id into lms
-                            //from loaimuasam in lms.DefaultIfEmpty()
-
-                            //join loaidiemdulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.DiemDuLich) on m.LoaiHinhId equals loaidiemdulich.Id into lddl
-                            //from loaidiemdulich in lddl.DefaultIfEmpty()
-
-                            //join loaikhudulich in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuDuLich) on m.LoaiHinhId equals loaikhudulich.Id into lkhudl
-                            //from loaikhudulich in lkhudl.DefaultIfEmpty()
-
-                            //join loaikhuvuichoi in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.KhuVuiChoi) on m.LoaiHinhId equals loaikhuvuichoi.Id into lkhuvc
-                            //from loaikhuvuichoi in lkhuvc.DefaultIfEmpty()
-
-                            //join loaithethao in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.TheThao) on m.LoaiHinhId equals loaithethao.Id into ltt
-                            //from loaithethao in ltt.DefaultIfEmpty()
-
-                            //join loaicssk in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.CSSK) on m.LoaiHinhId equals loaicssk.Id into lcssk
-                            //from loaicssk in lcssk.DefaultIfEmpty()
-
-                            //join loailuhanh in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.LuHanh) on m.LoaiHinhId equals loailuhanh.Id into lluhanh
-                            //from loailuhanh in lluhanh.DefaultIfEmpty()
-
-                            //join vanchuyen in _context.DanhMuc.Where(v => v.LoaiId == (int)LinhVucKinhDoanh.VanChuyen) on m.LoaiHinhId equals vanchuyen.Id into vc
-                            //from vanchuyen in vc.DefaultIfEmpty()
-
-                            //join nhacungcap in _context.NhaCungCap on m.NhaCungCapId equals nhacungcap.Id into ncc
-                            //from nhacungcap in ncc.DefaultIfEmpty()
-
+                        join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
+                        from huyen in dph.DefaultIfEmpty()
                         orderby m.Ten
                         where m.IsDelete == false && m.NgonNguId == langId
                         && (linhvucId == 0 || m.LinhVucKinhDoanhId == linhvucId)
                         && (request.hangsao == -1 || m.HangSao == request.hangsao)
                         //&& (request.XaPhuong == -1 || m.QuanHuyenId == request.XaPhuong)
-                        && (request.PhuongXa == -1 || m.PhuongXaId == request.PhuongXa)
+                        && (request.PhuongXa == -1 || m.QuanHuyenId == request.PhuongXa)
                         && (request.loaihinh == -1 || m.LoaiHinhId == request.loaihinh)
                         && (request.namecslt == -1 || m.Id == request.namecslt)
                         && (request.nameddl == -1 || m.Id == request.nameddl)
@@ -1215,7 +1136,7 @@ namespace TechLife.Service
                         && (request.namenhahang == -1 || m.Id == request.namenhahang)
                         && (request.namecsms == -1 || m.Id == request.namecsms)
                         && (request.nguon == -1 ? true : request.nguon == 0 ? m.NguonDongBo == null : m.NguonDongBo == request.nguon)
-                        select new { m };
+                        select new { m, huyen };
 
             if (!string.IsNullOrEmpty(request.Keyword))
                 query = query.Where(x => x.m.Ten.Contains(request.Keyword));
@@ -1231,6 +1152,7 @@ namespace TechLife.Service
                     IsDelete = x.m.IsDelete,
                     IsStatus = x.m.IsStatus,
                     Ten = x.m.Ten,
+                    IsDatChuan = x.m.IsDatChuan,
                     ChucVuNguoiDaiDien = x.m.ChucVuNguoiDaiDien,
                     CNVSMoiTruong = x.m.CNVSMoiTruong,
                     DienTichMatBang = x.m.DienTichMatBang,
@@ -1250,11 +1172,11 @@ namespace TechLife.Service
                     LoaiHinhId = x.m.LoaiHinhId,
                     NgayQuyetDinh = x.m.NgayQuyetDinh,
                     PhongChayNo = x.m.PhongChayNo,
-                    PhuongXaId = x.m.PhuongXaId,
-                    //PhuongXa = x.xa.TenDiaPhuong,
+                    PhuongXaId = x.m.QuanHuyenId,
                     QuanHuyenId = x.m.QuanHuyenId,
-                    //QuanHuyen = x.huyen.TenDiaPhuong,
-                    TinhThanh = "Thừa Thiên Huế",
+                    QuanHuyen = x.huyen.TenDiaPhuong,
+                    TinhThanh = "Thành phố Huế",
+                    DiaChiCu = x.m.DiaChiCu,
                     SoDienThoai = x.m.SoDienThoai,
                     SoDienThoaiNguoiDaiDien = x.m.SoDienThoaiNguoiDaiDien,
                     SoGiayPhep = x.m.SoGiayPhep,
@@ -1274,16 +1196,6 @@ namespace TechLife.Service
                     Website = x.m.Website,
                     GioDongCua = x.m.GioDongCua,
                     GioMoCua = x.m.GioMoCua,
-                    //LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? new LoaiHinhModel() { Id = x.loaihinh.Id, TenLoai = x.loaihinh.TenLoai }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang ? new LoaiHinhModel() { Id = x.loainhahang.Id, TenLoai = x.loainhahang.TenDichVu }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? new LoaiHinhModel() { Id = x.loaidiemdulich.Id, TenLoai = x.loaidiemdulich.Ten }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? new LoaiHinhModel() { Id = x.loaikhudulich.Id, TenLoai = x.loaikhudulich.Ten }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? new LoaiHinhModel() { Id = x.loaikhuvuichoi.Id, TenLoai = x.loaikhuvuichoi.Ten }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? new LoaiHinhModel() { Id = x.loaithethao.Id, TenLoai = x.loaithethao.Ten }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? new LoaiHinhModel() { Id = x.loaicssk.Id, TenLoai = x.loaicssk.Ten }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? new LoaiHinhModel() { Id = x.loailuhanh.Id, TenLoai = x.loailuhanh.Ten }
-                    //: x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VanChuyen ? new LoaiHinhModel() { Id = x.vanchuyen.Id, TenLoai = x.vanchuyen.Ten }
-                    //: new LoaiHinhModel() { Id = x.loaimuasam.Id, TenLoai = x.loaimuasam.TenLoai },
                     SoLDGianTiep = x.m.SoLDGianTiep,
                     SoLDNamNgoaiNuoc = x.m.SoLDNamNgoaiNuoc,
                     SoLDNamTrongNuoc = x.m.SoLDNamTrongNuoc,
@@ -1295,7 +1207,6 @@ namespace TechLife.Service
                     GioiThieu = x.m.GioiThieu,
                     ToaDoX = x.m.ToaDoX,
                     ToaDoY = x.m.ToaDoY,
-                    //Images = _fileUploadService.GetImageByHoSoId(x.m.Id, LoaiFile.hosodulich.ToString()).Result,
                 }).ToListAsync();
 
             foreach (var item in data)
@@ -1359,7 +1270,7 @@ namespace TechLife.Service
                 model.NgayHetHan = request.NgayHetHan;
                 model.PhongChayNo = request.PhongChayNo;
                 model.PhuongXaId = request.PhuongXaId;
-                model.QuanHuyenId = request.QuanHuyenId;
+                model.QuanHuyenId = request.PhuongXaId;
                 model.SoDienThoai = request.SoDienThoai;
                 model.SoDienThoaiNguoiDaiDien = request.SoDienThoaiNguoiDaiDien;
                 model.SoGiayPhep = request.SoGiayPhep;
@@ -1406,6 +1317,10 @@ namespace TechLife.Service
                 model.ToaDoY = request.ToaDoY;
                 model.MaDoanhNghiep = request.MaDoanhNghiep;
                 model.GiaThamKhao = decimal.TryParse(request.GiaThamKhao, out _) ? request.GiaThamKhao : "0";
+                //TechLife
+                model.LastModifiedByUserId = request.UserRqId;
+                model.LastModifiedOnDate = DateTime.Now;
+                //
                 if (request.DSDichVu != null && request.DSDichVu.Count() > 0)
                 {
                     var dichvu = _context.DichVuHoSo.Where(v => v.HoSoId == model.Id);
@@ -1682,7 +1597,24 @@ namespace TechLife.Service
                 return new ApiErrorResult<int>("Sửa lỗi!");
             }
         }
+        public async Task<ApiResult<int>> UpdateDiaPhuong(int id, DuLieuDuLichModel request)
+        {
+            try
+            {
 
+                var hoSo = await _context.HoSo.FindAsync(id);
+                hoSo.SoNha = request.SoNha;
+                hoSo.DuongPho = request.DuongPho;
+                hoSo.QuanHuyenId = request.QuanHuyenId;
+                _context.HoSo.Update(hoSo);
+                await _context.SaveChangesAsync();
+                return new ApiResult<int>() { IsSuccessed = false, Message = "Cập nhật thành công!" };
+            }
+            catch
+            {
+                return new ApiResult<int>() { IsSuccessed = false, Message = "Cập nhật địa phương thất bại!" };
+            }
+        }
         private async Task<string> SaveFile(IFormFile file)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
@@ -2390,7 +2322,7 @@ namespace TechLife.Service
                         SoDienThoai = x.m.SoDienThoai,
                         DiaChi = x.m.DiaChi,
                         Email = x.m.Email,
-                        
+
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.Type == LoaiFile.hosohuongdanvien.ToString()).Select(v => new ImageVm()
                         {
                             Name = v.FileName,

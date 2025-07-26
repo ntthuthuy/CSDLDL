@@ -89,6 +89,7 @@
                                                     <th width="5%" class="text-center">STT</th>
                                                     <th width="20%" class="text-center">Loại nhà hàng</th>
                                                     <th>Thông tin nhà hàng</th>
+                                                    <th width="10%" class="text-center">Cơ sở đạt chuẩn</th>
                                                     <th width="5%" class="text-center">Bản đồ</th>
                                                     <th width="15%" class="text-center">Chức năng</th>
                                                 </tr>
@@ -99,7 +100,7 @@
                                                     {
                                                         int stt = 0;
                                                         <tr>
-                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                            <td class="text-blue text-center" colspan="15">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
                                                         </tr>
                                                         foreach (var d in Model.Items)
                                                         {
@@ -116,7 +117,17 @@
                                                                         </a>
                                                                     </strong>
                                                                     <br /><strong>Số điện thoại:</strong> @d.SoDienThoai
-                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen)
+                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen, d.TinhThanh)
+                                                                    @if (!String.IsNullOrWhiteSpace(d.DiaChiCu))
+                                                                    {
+                                                                      <br /> <small><em class="text-danger">(@d.DiaChiCu)</em></small>
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (d.IsDatChuan)
+                                                                    {
+                                                                        <span class="text-success"> <i class="fa fa-check-circle"></i></span>
+                                                                    }
                                                                 </td>
                                                                 <td class="text-center">
                                                                     @if (d.ToaDoX != null && d.ToaDoX != 0 && d.ToaDoY != null && d.ToaDoY != 0)

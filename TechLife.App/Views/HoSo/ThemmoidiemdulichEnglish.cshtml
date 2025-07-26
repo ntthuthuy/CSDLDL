@@ -112,25 +112,18 @@
                                                     <div class="form-row">
                                                         <div class="col-md-3">
                                                             <div class="form-group">
-                                                                <label class="control-label">Số nhà</label>
-                                                                <input asp-for="DuLieuDuLich.SoNha" class="form-control" />
-                                                                <span asp-validation-for="DuLieuDuLich.SoNha" class="text-danger"></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="control-label">Đường phố</label>
-                                                                <input asp-for="DuLieuDuLich.DuongPho" class="form-control" />
-                                                                <span asp-validation-for="DuLieuDuLich.DuongPho" class="text-danger"></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="form-group">
-                                                                <label class="control-label">Xã/ phường <span class="text-red">*</span></label>
+                                                                <label class="control-label">Phường/Xã <span class="text-red">*</span></label>
                                                                 <select class="form-control option-xa" asp-for="DuLieuDuLich.PhuongXaId" asp-items="ViewBag.DiaPhuongOption">
                                                                     <option value="0">Chọn</option>
                                                                 </select>
                                                                 <span asp-validation-for="DuLieuDuLich.PhuongXaId" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Địa chỉ <span class="text-red">*</span></label>
+                                                                <input asp-for="DuLieuDuLich.DuongPho" placeholder="Số nhà, kiệt, đường phố hoặc thôn tổ..." class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.DuongPho" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -140,13 +133,6 @@
                                                                 <label class="control-label">Số điện thoại</label>
                                                                 <input asp-for="DuLieuDuLich.SoDienThoai" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoDienThoai" class="text-danger"></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="form-group">
-                                                                <label class="control-label">Fax</label>
-                                                                <input asp-for="DuLieuDuLich.Fax" class="form-control" />
-                                                                <span asp-validation-for="DuLieuDuLich.Fax" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
@@ -229,12 +215,12 @@
                                                             <label class="control-label"></label>
                                                             <div class="form-check">
                                                                 <input input asp-for="DuLieuDuLich.IsDatChuan" type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1"><strong>Cơ sở đạt chuẩn</strong></label>
+                                                                <label class="form-check-label" for="exampleCheck1"><strong> Đã được công nhận điểm du lịch cấp tỉnh</strong></label>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="form-group">
-                                                                <label class="control-label">Số VB đạt chuẩn</label>
+                                                                <label class="control-label">Số Quyết định công nhận</label>
                                                                 <input asp-for="DuLieuDuLich.SoCVDatChuan" class="form-control" />
                                                                 <span asp-validation-for="DuLieuDuLich.SoCVDatChuan" class="text-danger"></span>
                                                             </div>

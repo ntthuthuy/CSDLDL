@@ -66,20 +66,19 @@ namespace TechLife.Model.DuLieuDuLich
 
         // Địa chỉ
         public string SoNha { get; set; }
-
+        [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
         public string DuongPho { get; set; }
 
         [Range(1, Int32.MaxValue, ErrorMessage = "Vui lòng chọn phường, xã")]
-
         public int PhuongXaId { get; set; }
-
         public string PhuongXa { get; set; }
-
+        [Range(1, Int32.MaxValue, ErrorMessage = "Vui lòng chọn phường, xã")]
         public int QuanHuyenId { get; set; }
         public string QuanHuyen { get; set; }
         public int TinhThanhId { get; set; }
         public string TinhThanh { get; set; }
         public string DiaChi { get; set; }
+        public string DiaChiCu { get; set; }
 
         // Liên hệ
         public string SoDienThoai { get; set; }
@@ -158,6 +157,7 @@ namespace TechLife.Model.DuLieuDuLich
         public int? MaSoThue { get; set; }
 
         public string NgonNguId { get; set; }
+        public string UserRqId { get; set; }
         public int? ParentId { get; set; }
     }
 }

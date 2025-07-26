@@ -50,6 +50,7 @@ namespace TechLife.Service
                 {
                     OldValue = jsonOldValue,
                     NewValue = jsonNewValue,
+                    NoiDung = request.HanhDong,
                     HoSoId = request.HoSoId,
                     UpdateByUserId = request.UpdateByUserId,
                     UpdatedAt = DateTime.Now,
@@ -99,6 +100,7 @@ namespace TechLife.Service
                         UpdatedAt = item.UpdatedAt,
                         UpdateByUser = user.FirstOrDefault(x => x.Id == item.UpdateByUserId),
                         HoSoId = item.HoSoId,
+                        HanhDong = item.NoiDung
                     });
                 }
                 return new ApiResult<List<LichSuCapNhatModel>> { IsSuccessed = true, Message = $"Xem lịch sử cập nhật hồ sơ {id}", ResultObj = result };

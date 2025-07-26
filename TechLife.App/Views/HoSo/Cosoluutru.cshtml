@@ -83,10 +83,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="position-relative form-group">
                                             <label class="control-label">Cơ sở lưu trú</label>
-                                            <select onchange="this.form.submit()" class="form-control" id="namecslt" name="namecslt">
+                                            <select onchange="this.form.submit()" class="form-control" id="namecslt" name="namecslt" asp-items="ViewBag.listGetAllCSLT">
                                                 <option value="-1">tất cả</option>
                                             </select>
                                         </div>
@@ -100,6 +100,7 @@
                                                     <th width="5%" class="text-center">STT</th>
                                                     <th width="15%" class="text-center">Loại hình</th>
                                                     <th>Thông tin cơ sở lưu trú</th>
+                                                    <th width="10%" class="text-center">Cơ sở đạt chuẩn</th>
                                                     <th width="5%" class="text-center">Bản đồ</th>
                                                     <th width="15%" class="text-center">Chức năng</th>
                                                 </tr>
@@ -110,11 +111,11 @@
                                                     {
                                                         int stt = ((Model.PageIndex - 1) * Model.PageSize) + 1;
                                                         <tr>
-                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                            <td class="text-blue text-center" colspan="10">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
                                                         </tr>
                                                         foreach (var d in Model.Items)
                                                         {
-                                                            
+
                                                             <tr>
                                                                 <td class="text-center">@stt</td>
                                                                 <td class="text-center">
@@ -126,14 +127,27 @@
                                                                             @{
                                                                                 if (d.HangSao > 0)
                                                                                 {
-                                                                                    <strong class="text-yellow">(@d.HangSao.ToString() <i class="fas fa-star"></i>)</strong>
+                                                                                    for (int i = 1; i <= d.HangSao; i++)
+                                                                                    {
+                                                                                        <strong class="text-yellow"><i class="fas fa-star"></i></strong>
+                                                                                    }
                                                                                 }
-
-                                                                            }@d.Ten
+                                                                            }
+                                                                            @d.Ten
                                                                         </a>
                                                                     </strong>
                                                                     <br /><strong>Số điện thoại:</strong> @d.SoDienThoai
-                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen)
+                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen, d.TinhThanh)
+                                                                     @if (!String.IsNullOrWhiteSpace(d.DiaChiCu))
+                                                                    {
+                                                                      <br /> <small><em class="text-danger">(@d.DiaChiCu)</em></small>
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (d.IsDatChuan)
+                                                                    {
+                                                                        <span class="text-success"> <i class="fa fa-check-circle"></i></span>
+                                                                    }
                                                                 </td>
                                                                 <td class="text-center">
                                                                     @if (d.ToaDoX != null && d.ToaDoX != 0 && d.ToaDoY != null && d.ToaDoY != 0)
@@ -150,7 +164,7 @@
                                                                     {
                                                                         int item = dict.GetValueOrDefault(d.Id);
 
-                                                                        if(item != 0)
+                                                                        if (item != 0)
                                                                         {
                                                                             <a title="English" class="btn btn-primary btn-xs" href="/Hoso/Suacosoluutru?Id=@HashUtil.EncodeID(item.ToString())&NgonNgu=en">
                                                                                 <i class="fas fa-globe-europe"></i>
@@ -257,35 +271,6 @@
             $(".btn-upload").off("click").on("click", function () {
                 $(".modal-title").html("Import dữ liệu cơ sở lưu trú");
                 $("#modal-upload").modal("show");
-            });
-            $('#namecslt').select2({
-                width: '100%',
-                minimumInputLength: 2,
-                ajax: {
-                    url: '/HoSo/Option_CSLT',
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            term: params.term, // search term
-                            page: params.page
-                        };
-                    },
-                    processResults: function (data, page) {
-                        return {
-                            results: $.map(data, function (item) {
-                                return {
-                                    text: item.ten,
-                                    name: item.ten,
-                                    id: item.id
-                                }
-                            })
-                        };
-                    },
-                    cache: true
-                },
-                escapeMarkup: function (markup) { return markup; },
-                templateResult: formatCus,
-                templateSelection: formatCusSelection
             });
         });
         function formatCus(repo) {

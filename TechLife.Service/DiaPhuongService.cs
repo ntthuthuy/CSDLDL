@@ -27,6 +27,7 @@ namespace TechLife.Service
         Task<ApiResult<int>> Delete(int id);
 
         Task<List<DiaPhuongModel>> GetHierarchy();
+        Task<int> InsertDiaPhuongAndGetByName(string tenDiaPhuong);
     }
 
     public class DiaPhuongService : IDiaPhuongService
@@ -205,7 +206,7 @@ namespace TechLife.Service
 
             return data;
         }
-        private static void ListDiaPhuong(List<DiaPhuongModel> list, int seletedId = 0, int parentId = 0, int level = 0)
+        private static void ListDiaPhuong(List<DiaPhuongModel> list, int seletedId = 0, int parentId = 1, int level = 0)
         {
             var diaphuong = list.Where(v => v.ParentId == parentId);
             foreach (var x in diaphuong)
@@ -295,6 +296,45 @@ namespace TechLife.Service
                     return new ApiSuccessResult<int>(id, "Sửa thành công!");
                 }
                 return new ApiErrorResult<int>("Sửa lỗi!");
+            }
+            catch (Exception ex)
+            {
+                await _logService.Create(ex.Message, ex.StackTrace);
+
+                throw new TLException("Đã có lỗi trong quá trình xử lý", ex);
+            }
+        }
+
+        public async Task<int> InsertDiaPhuongAndGetByName(string tenDiaPhuong)
+        {
+            try
+            {
+                var isAny = await _context.DiaPhuong.AnyAsync(x => !x.IsDelete && x.TenDiaPhuong.Trim().ToUpper() == tenDiaPhuong.Trim().ToUpper());
+                if (isAny)
+                {
+                    var diaPhuong = await _context.DiaPhuong.FirstOrDefaultAsync(x => !x.IsDelete && x.ParentId == 1 && x.TenDiaPhuong.Trim().ToUpper() == tenDiaPhuong.Trim().ToUpper());
+
+                    return diaPhuong.Id;
+                }
+                else
+                {
+                    var diaPhuong = new DiaPhuong()
+                    {
+                        IsDelete = false,
+                        IsStatus = true,
+                        MoTa = "",
+                        ParentId = 1,
+                        TenDiaPhuong = tenDiaPhuong?.Trim(),
+                    };
+                    _context.DiaPhuong.Add(diaPhuong);
+                    var result = await _context.SaveChangesAsync();
+                    if (result > 0)
+                    {
+                        return diaPhuong.Id;
+                    }
+                    return 0;
+                }
+
             }
             catch (Exception ex)
             {

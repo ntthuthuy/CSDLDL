@@ -1,9 +1,17 @@
-﻿@using TechLife.Common;
+﻿@using TechLife.App.Extensions.Authorizations
+@using TechLife.Common;
 @using TechLife.Model.DuLieuDuLich;
 @model PagedResult<DuLieuDuLichModel>
 @{
     ViewData["Title"] = ViewData["Title"];
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@inject TechLife.Service.IUserService userService;
+@using TechLife.Common.Extension;
+@{
+    var user = Context.Request.GetUser();
+    var User = new CustomClaimsPrincipal(userService, this.User);
+    var dict = (Dictionary<int, int>)ViewBag.ListDuLieuDuLichEnglish;
 }
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -65,7 +73,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="position-relative form-group">
-                                            <label class="control-label">Quận, huyện, thành phố</label>
+                                            <label class="control-label">Phường/ xã</label>
                                             <select onchange="this.form.submit()" class="form-control" id="huyen" name="huyen" asp-items="ViewBag.listHuyen">
                                                 <option value="-1">tất cả</option>
                                             </select>
@@ -88,6 +96,7 @@
                                                     <th width="5%" class="text-center">STT</th>
                                                     <th width="15%" class="text-center">Loại công ty</th>
                                                     <th>Thông tin công ty vận chuyển</th>
+                                                    <th width="10%" class="text-center">Cơ sở đạt chuẩn</th>
                                                     <th width="5%" class="text-center">Bản đồ</th>
                                                     <th width="15%" class="text-center">Chức năng</th>
                                                 </tr>
@@ -98,7 +107,7 @@
                                                     {
                                                         int stt = 0;
                                                         <tr>
-                                                            <td class="text-blue text-center" colspan="5">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
+                                                            <td class="text-blue text-center" colspan="15">Danh sách hiển thị <strong>@Model.Items.Count</strong> trên tổng số <strong>@Model.TotalRecords</strong> dòng </td>
                                                         </tr>
                                                         foreach (var d in Model.Items)
                                                         {
@@ -115,7 +124,17 @@
                                                                         </a>
                                                                     </strong>
                                                                     <br /><strong>Số điện thoại:</strong> @d.SoDienThoai
-                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen)
+                                                                    <br /><strong>Địa chỉ:</strong> @Functions.GetFullDiaPhuong(d.SoNha, d.DuongPho, d.PhuongXa, d.QuanHuyen, d.TinhThanh)
+                                                                    @if (!String.IsNullOrWhiteSpace(d.DiaChiCu))
+                                                                    {
+                                                                      <br /> <small><em class="text-danger">(@d.DiaChiCu)</em></small>
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if (d.IsDatChuan)
+                                                                    {
+                                                                        <span class="text-success"> <i class="fa fa-check-circle"></i></span>
+                                                                    }
                                                                 </td>
                                                                 <td class="text-center">
                                                                     @if (d.ToaDoX != null && d.ToaDoX != 0 && d.ToaDoY != null && d.ToaDoY != 0)

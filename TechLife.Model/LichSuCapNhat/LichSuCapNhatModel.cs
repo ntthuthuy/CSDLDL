@@ -12,5 +12,6 @@ namespace TechLife.Model.LichSuCapNhat
         //public string UpdateByUserId { get; set; }
         public UserModel UpdateByUser { get; set; }
         public int HoSoId { get; set; }
+        public string HanhDong { get; set; }
     }
 }

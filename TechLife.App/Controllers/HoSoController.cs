@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
+﻿
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ using TechLife.App.ApiClients;
 using TechLife.App.Areas.HueCIT.Models;
 using TechLife.Common;
 using TechLife.Common.Enums;
+using TechLife.Common.Extension;
 using TechLife.Model;
 using TechLife.Model.BoPhan;
 using TechLife.Model.DuLieuDuLich;
@@ -691,6 +693,8 @@ namespace TechLife.App.Controllers
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
@@ -747,7 +751,7 @@ namespace TechLife.App.Controllers
                     OldValue = new DuLieuDuLichModel(),
                     NewValue = result.ResultObj,
                     UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
-
+                    HanhDong = "Thêm mới " + request.DuLieuDuLich.Ten,
                 };
 
                 await _lichSuCapNhatService.Create(history);
@@ -919,7 +923,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
 
                 if (result.IsSuccessed)
@@ -950,7 +954,8 @@ namespace TechLife.App.Controllers
                         HoSoId = newValue.Id,
                         OldValue = oldValue,
                         NewValue = newValue,
-                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                        HanhDong = "Cập nhật thông tin cơ sở lưu trú " + request.DuLieuDuLich.Ten,
                     };
 
                     await _lichSuCapNhatService.Create(history);
@@ -1054,11 +1059,20 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.CoSoLuuTru);
+
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá cơ sở lưu trú",
+                };
+
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -1231,6 +1245,8 @@ namespace TechLife.App.Controllers
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
+
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (result.IsSuccessed)
@@ -1243,8 +1259,17 @@ namespace TechLife.App.Controllers
                     {
                         var upload = await _csdlDuLichApiClient.UploadFile(result.ResultObj.Id, request.Files);
                     }
+
+                    var history = new LichSuCapNhatCreateRequest
+                    {
+                        HoSoId = result.ResultObj.Id,
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                        HanhDong = "Thêm nhà hàng " + request.DuLieuDuLich.Ten,
+                    };
+                    await _lichSuCapNhatService.Create(history);
                 }
                 await Tracking("Thêm nhà hàng " + request.DuLieuDuLich.Ten);
+
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
 
                 if (result.IsSuccessed)
@@ -1378,6 +1403,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
 
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
@@ -1416,7 +1442,13 @@ namespace TechLife.App.Controllers
 
                     AddEditGIS(data, geo);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Sửa nhà hàng " + request.DuLieuDuLich.Ten,
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Sửa nhà hàng " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -1461,11 +1493,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.NhaHang);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá nhà hàng",
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -1636,6 +1675,7 @@ namespace TechLife.App.Controllers
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
@@ -1670,6 +1710,13 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm công ty lữ hành " + request.DuLieuDuLich.Ten,
+                };
+                await _lichSuCapNhatService.Create(history);
 
                 await Tracking("Thêm công ty lữ hành " + request.DuLieuDuLich.Ten);
 
@@ -1805,7 +1852,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -1839,7 +1886,8 @@ namespace TechLife.App.Controllers
                         HoSoId = newValue.Id,
                         OldValue = oldValue,
                         NewValue = newValue,
-                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                        HanhDong = "Sửa công ty lữ hành " + newValue.Ten,
                     };
 
                     await _lichSuCapNhatService.Create(history);
@@ -1915,11 +1963,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.LuHanh);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá công ty lữ hành"
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -2092,7 +2147,7 @@ namespace TechLife.App.Controllers
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
@@ -2123,6 +2178,14 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
+
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm cơ sở mua sắm " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
 
                 await Tracking("Thêm cơ sở mua sắm " + request.DuLieuDuLich.Ten);
 
@@ -2256,6 +2319,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -2305,7 +2369,13 @@ namespace TechLife.App.Controllers
 
                     AddEditGIS(data, geo);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Sửa cơ sở mua sắm " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Sửa cơ sở mua sắm " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -2351,11 +2421,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.MuaSam);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá cơ sở mua sắm"
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -2532,6 +2609,7 @@ namespace TechLife.App.Controllers
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -2562,6 +2640,15 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
+
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm điểm du lịch " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
+
                 await Tracking("Thêm điểm du lịch " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -2701,7 +2788,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -2736,9 +2823,9 @@ namespace TechLife.App.Controllers
                         HoSoId = newValue.Id,
                         OldValue = oldValue,
                         NewValue = newValue,
-                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                        HanhDong = "Sửa điểm du lịch " + request.DuLieuDuLich.Ten
                     };
-
                     await _lichSuCapNhatService.Create(history);
                 }
 
@@ -2819,11 +2906,19 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.DiemDuLich);
+
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá điểm du lịch "
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -3074,7 +3169,7 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             TempData.AddAlert(new Result<string>()
             {
@@ -3396,7 +3491,7 @@ namespace TechLife.App.Controllers
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -3425,7 +3520,13 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm khu du lịch " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Thêm khu du lịch " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -3562,7 +3663,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -3597,7 +3698,8 @@ namespace TechLife.App.Controllers
                         HoSoId = newValue.Id,
                         OldValue = oldValue,
                         NewValue = newValue,
-                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id
+                        UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                        HanhDong = "Sửa khu du lịch " + request.DuLieuDuLich.Ten
                     };
 
                     await _lichSuCapNhatService.Create(history);
@@ -3658,7 +3760,19 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
+
+            if (result.IsSuccessed)
+            {
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá khu du lịch "
+                };
+                await _lichSuCapNhatService.Create(history);
+            }
+
 
             TempData.AddAlert(new Result<string>()
             {
@@ -3806,6 +3920,7 @@ namespace TechLife.App.Controllers
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -3834,7 +3949,13 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm khu vui chơi, giải trí " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Thêm khu vui chơi, giải trí " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -3962,6 +4083,7 @@ namespace TechLife.App.Controllers
                         }
                     }
                 }
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -4010,7 +4132,13 @@ namespace TechLife.App.Controllers
 
                     AddEditGIS(data, geo);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Sửa khu vui chơi, giải trí " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Sửa khu vui chơi, giải trí " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -4055,11 +4183,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.KhuVuiChoi);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá khu vui chơi, giải trí "
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -4206,7 +4341,7 @@ namespace TechLife.App.Controllers
                 string ngonNguId = !string.IsNullOrWhiteSpace(NgonNgu) ? NgonNgu : SystemConstants.DefaultLanguage;
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
-
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -4235,7 +4370,13 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm cơ sở chăm sóc sức khoẻ " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Thêm cơ sở chăm sóc sức khỏe " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -4364,6 +4505,7 @@ namespace TechLife.App.Controllers
                     }
                 }
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -4413,7 +4555,13 @@ namespace TechLife.App.Controllers
 
                     AddEditGIS(data, geo);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Sửa cơ sở chăm sóc sức khoẻ " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Sửa cơ sở chăm sóc sức khỏe " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -4459,11 +4607,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.CSSK);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá cơ sở chăm sóc sức khoẻ "
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -4611,6 +4766,7 @@ namespace TechLife.App.Controllers
 
                 if (!string.IsNullOrWhiteSpace(ParentId)) request.DuLieuDuLich.ParentId = Convert.ToInt32(HashUtil.DecodeID(ParentId));
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(ngonNguId, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -4639,7 +4795,13 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm cơ sở thể thao " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Thêm cơ sở thể thao " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -4772,6 +4934,7 @@ namespace TechLife.App.Controllers
                     }
                 }
 
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _csdlDuLichApiClient.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -4820,7 +4983,13 @@ namespace TechLife.App.Controllers
 
                     AddEditGIS(data, geo);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Sửa cơ sở thể thao " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Sửa cơ sở thể thao " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -4865,11 +5034,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.TheThao);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá cơ sở thể thao "
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()
@@ -5179,6 +5355,7 @@ namespace TechLife.App.Controllers
                         v.FileName = v.Files != null ? v.Files.FileName : "";
                     }
                 }
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Create(Request.GetLanguageId(), request.DuLieuDuLich);
 
                 if (!result.IsSuccessed)
@@ -5202,7 +5379,13 @@ namespace TechLife.App.Controllers
                 {
                     var upload = await _csdlDuLichApiClient.UploadFile(request.DuLieuDuLich.Id, request.Files);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Thêm công ty vận chuyển " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Thêm công ty vận chuyển " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công!" });
@@ -5294,6 +5477,7 @@ namespace TechLife.App.Controllers
                         v.FileName = v.Files != null ? v.Files.FileName : v.FileName;
                     }
                 }
+                request.DuLieuDuLich.UserRqId = Request.GetUser().Id.ToString();
                 var result = await _duLieuDuLichService.Update(request.DuLieuDuLich.Id, request.DuLieuDuLich);
                 if (!result.IsSuccessed)
                 {
@@ -5338,7 +5522,13 @@ namespace TechLife.App.Controllers
 
                     AddEditGIS(data, geo);
                 }
-
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = request.DuLieuDuLich.Id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Sửa công ty vận chuyển " + request.DuLieuDuLich.Ten
+                };
+                await _lichSuCapNhatService.Create(history);
                 await Tracking("Sửa công ty lữ hành " + request.DuLieuDuLich.Ten);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = "Cập nhật thành công" });
@@ -5373,11 +5563,18 @@ namespace TechLife.App.Controllers
         {
             int id = Convert.ToInt32(HashUtil.DecodeID(Id));
 
-            var result = await _duLieuDuLichService.Delete(id);
+            var result = await _duLieuDuLichService.Delete(id, Request.GetUser().Id.ToString());
 
             if (result.IsSuccessed)
             {
                 RemoveGIS(Id, (int)LinhVucKinhDoanh.VanChuyen);
+                var history = new LichSuCapNhatCreateRequest
+                {
+                    HoSoId = id,
+                    UpdateByUserId = Common.Extension.HttpRequestExtensions.GetUser(Request).Id,
+                    HanhDong = "Xoá công ty vận chuyển "
+                };
+                await _lichSuCapNhatService.Create(history);
             }
 
             TempData.AddAlert(new Result<string>()

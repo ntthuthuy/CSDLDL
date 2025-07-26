@@ -39,13 +39,7 @@ namespace TechLife.Common
             };
             return uriBuilder.Uri;
         }
-        public static string GetLanguageId(this HttpRequest request)
-        {
-            string langId = request.HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
-            if (!string.IsNullOrEmpty(langId))
-                return request.HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
-            else return "vi";
-        }
+       
 
         public static string GetRawUrl(this HttpRequest request, string url, bool IsQuery = true)
         {

@@ -11,6 +11,7 @@ namespace TechLife.Data.Entities
         public string OldValue { get; set; }
 
         public string NewValue { get; set; }
+        public string NoiDung { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
 

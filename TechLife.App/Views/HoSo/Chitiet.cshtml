@@ -63,7 +63,7 @@
                                         <div class="col-md-3">
                                             <div class="position-relative form-group">
                                                 <label class="control-label">Loại hình: </label>
-                                                <span>@Model.LoaiHinh.TenLoai</span>
+                                                <span>@Model.LoaiHinh?.TenLoai</span>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -75,7 +75,7 @@
                                         <div class="col-md-12">
                                             <div class="position-relative form-group">
                                                 <label class="control-label">Địa chỉ: </label>
-                                                <span>@Functions.GetFullDiaPhuong(Model.SoNha, Model.DuongPho, Model.PhuongXa, Model.QuanHuyen)</span>
+                                                <span>@Functions.GetFullDiaPhuong(Model.SoNha, Model.DuongPho, Model.PhuongXa, Model.QuanHuyen, Model.TinhThanh)</span>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -248,7 +248,7 @@
                                                                     <td class="tcenter">
                                                                         @if (!String.IsNullOrEmpty(list[i].FilePath))
                                                                         {
-                                                                            <a target="_blank" href="@(Configuration["BaseAddress"]+list[i].FilePath)"><i class="fas fa-download"></i></a>
+                                                                            <a target="_blank" href="@(Configuration["BaseAddress"] + list[i].FilePath)"><i class="fas fa-download"></i></a>
                                                                             <br />
                                                                         }
 
@@ -616,7 +616,8 @@
                                             <tr>
                                                 <th width="12%" class="text-center">STT</th>
                                                 <th width="20%" class="text-center">Ngày cập nhật</th>
-                                                <th>Người cập nhật</th>
+                                                <th width="20%" class="text-center">Người cập nhật</th>
+                                                <th>Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -628,6 +629,7 @@
                                                         <td class="text-center">@(++stt)</td>
                                                         <td class="text-center">@Functions.GetTimeToVn((DateTime)item.UpdatedAt)</td>
                                                         <td class="text-left">@item.UpdateByUser.FullName</td>
+                                                        <td class="text-left">@item.HanhDong</td>
                                                     </tr>
                                                 }
                                             }

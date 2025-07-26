@@ -113,25 +113,18 @@
                                                     <div class="form-row">
                                                         <div class="col-md-3">
                                                             <div class="form-group">
-                                                                <label class="control-label">Số nhà</label>
-                                                                <input asp-for="DuLieuDuLich.SoNha" class="form-control" />
-                                                                <span asp-validation-for="DuLieuDuLich.SoNha" class="text-danger"></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="control-label">Đường phố</label>
-                                                                <input asp-for="DuLieuDuLich.DuongPho" class="form-control" />
-                                                                <span asp-validation-for="DuLieuDuLich.DuongPho" class="text-danger"></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="form-group">
-                                                                <label class="control-label">Xã/ phường <span class="text-red">*</span></label>
+                                                                <label class="control-label">Phường/Xã <span class="text-red">*</span></label>
                                                                 <select class="form-control option-xa" asp-for="DuLieuDuLich.PhuongXaId" asp-items="ViewBag.DiaPhuongOption">
                                                                     <option value="0">Chọn</option>
                                                                 </select>
                                                                 <span asp-validation-for="DuLieuDuLich.PhuongXaId" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Địa chỉ <span class="text-red">*</span></label>
+                                                                <input asp-for="DuLieuDuLich.DuongPho" placeholder="Số nhà, kiệt, đường phố hoặc thôn tổ..." class="form-control" />
+                                                                <span asp-validation-for="DuLieuDuLich.DuongPho" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -17,6 +17,7 @@ using TechLife.App.Areas.HueCIT.Repository;
 using TechLife.App.Controllers;
 using TechLife.App.Models;
 using TechLife.Common;
+using TechLife.Common.Extension;
 using TechLife.Common.Enums;
 using TechLife.Model;
 using TechLife.Model.BoPhan;
@@ -478,7 +479,7 @@ namespace TechLife.App.Areas.HueCIT.Controllers
         {
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
 
-            var result = await _duLieuDuLichService.Delete(Id);
+            var result = await _duLieuDuLichService.Delete(Id,Request.GetUser().Id.ToString());
 
             TempData.AddAlert(new Result<string>()
             {
