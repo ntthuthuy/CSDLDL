@@ -7,6 +7,24 @@
     int nam = ViewBag.Nam;
 }
 
+<style>
+    #form table thead {
+        position: sticky;
+        background-color: #fff;
+        top: 56px;
+    }
+
+    #form table thead:after {
+        position: absolute;
+        content: '';
+        bottom: 1px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #e5e5e5;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
@@ -84,7 +102,7 @@
                                                             {
                                                                 decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu;
                                                                 <td class="text-right align-middle @(total ? "font-weight-bold" : "")">
-                                                                    @(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))
+                                                                    @(soLieu == null ? 0 : Functions.ConvertDecimalVND((decimal)soLieu))
                                                                 </td>
                                                             }
                                                         }
@@ -92,20 +110,20 @@
                                                         {
                                                             decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == thang)?.SoLieu;
                                                             <td class="text-right align-middle @(total ? "font-weight-bold" : "")">
-                                                                @(soLieu == null ? "" : Functions.ConvertDecimalVND((decimal)soLieu))
+                                                                @(soLieu == null ? 0 : Functions.ConvertDecimalVND((decimal)soLieu))
                                                             </td>
                                                         }
                                                         <td class="font-weight-bold text-right align-middle">
                                                             @{
                                                                 decimal? congDon = item.List.FirstOrDefault(x => x.Thang == (int)lastMonth)?.CongDon;
                                                             }
-                                                            @(congDon == null ? "" : Functions.ConvertDecimalVND((decimal)congDon))
+                                                            @(congDon == null ? 0 : Functions.ConvertDecimalVND((decimal)congDon))
                                                         </td>
                                                         <td class="font-weight-bold text-right align-middle">
                                                             @{
                                                                 decimal? thiPhan = item.List.FirstOrDefault(x => x.Thang == (int)lastMonth)?.ThiPhan;
                                                             }
-                                                            @(thiPhan == null ? "" : $"{thiPhan}%")
+                                                            @(thiPhan == null ? "0%" : $"{thiPhan}%")
                                                         </td>
                                                     </tr>
                                                     stt++;

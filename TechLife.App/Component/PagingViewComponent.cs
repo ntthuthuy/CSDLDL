@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TechLife.App.Models;
 using TechLife.Common;
@@ -23,6 +21,7 @@ namespace TechLife.App.Component
                     list.Add(new SelectListItem() { Text = "60", Value = "60" });
                     list.Add(new SelectListItem() { Text = "90", Value = "90" });
                     list.Add(new SelectListItem() { Text = "120", Value = "120" });
+                    list.Add(new SelectListItem() { Text = "Tất cả", Value = int.MaxValue.ToString() });
                 }
 
                 ViewBag.listPage = list;

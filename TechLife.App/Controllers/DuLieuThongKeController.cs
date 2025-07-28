@@ -424,40 +424,49 @@ namespace TechLife.App.Controllers
 
                 var stream = request.File.OpenReadStream();
 
-                var fileImport = new TongHopImportRequest();
-
-                fileImport.Thang = request.Month;
-                fileImport.Nam = request.Year;
-                fileImport.Items = new();
+                var listImport = new List<TongHopImportRequest>();
 
                 using var workbook = new XLWorkbook(stream);
 
-                IXLWorksheet worksheet = workbook.Worksheet(1);
-                var lastCol = worksheet.LastColumnUsed().ColumnNumber();
-                var lastRow = worksheet.LastRowUsed().RowNumber();
-
-                for (int i = 2; i <= lastRow - 1; i++)
+                for (int sheet = 2; sheet <= 13; sheet++)
                 {
-                    var item = new TongHopImportVm();
+                    var fileImport = new TongHopImportRequest
+                    {
+                        Nam = request.Year,
+                        Items = new(),
+                        Thang = sheet - 1
+                    };
+                    IXLWorksheet worksheet = workbook.Worksheet(sheet);
+                    var lastCol = worksheet.LastColumnUsed().ColumnNumber();
+                    var lastRow = worksheet.LastRowUsed().RowNumber();
+                    int i = 2;
+                    while (true)
+                    {
+                        var item = new TongHopImportVm();
 
-                    item.TenQuocTich = worksheet.Cell(i, 2).Value.ToString().Trim();
+                        item.TenQuocTich = worksheet.Cell(i, 2).Value.ToString().Trim();
 
-                    item.SoLieu = worksheet.Cell(i, 3).Value.ToString().Trim();
-                    item.SoLieu = Regex.Replace(item.SoLieu, "[,.]", "");
-                    item.SoLieu = decimal.TryParse(item.SoLieu, out _) ? item.SoLieu : "0";
+                        if (string.IsNullOrWhiteSpace(item.TenQuocTich)) break;
 
-                    item.CongDon = worksheet.Cell(i, 4).Value.ToString().Trim();
-                    item.CongDon = Regex.Replace(item.CongDon, "[,.]", "");
-                    item.CongDon = decimal.TryParse(item.CongDon, out _) ? item.CongDon : "0";
+                        item.SoLieu = worksheet.Cell(i, 3).Value.ToString().Trim();
+                        item.SoLieu = Regex.Replace(item.SoLieu, "[,.]", "");
+                        item.SoLieu = decimal.TryParse(item.SoLieu, out _) ? item.SoLieu : "0";
 
-                    item.ThiPhan = worksheet.Cell(i, 5).Value.ToString().Trim();
-                    item.ThiPhan = Regex.Replace(item.ThiPhan, "[,%]", "");
-                    item.ThiPhan = decimal.TryParse(item.ThiPhan, out _) ? item.ThiPhan : "0";
+                        //item.CongDon = worksheet.Cell(i, 4).Value.ToString().Trim();
+                        //item.CongDon = Regex.Replace(item.CongDon, "[,.]", "");
+                        //item.CongDon = decimal.TryParse(item.CongDon, out _) ? item.CongDon : "0";
 
-                    fileImport.Items.Add(item);
+                        //item.ThiPhan = worksheet.Cell(i, 5).Value.ToString().Trim();
+                        //item.ThiPhan = Regex.Replace(item.ThiPhan, "[,%]", "");
+                        //item.ThiPhan = decimal.TryParse(item.ThiPhan, out _) ? item.ThiPhan : "0";
+
+                        fileImport.Items.Add(item);
+                        i++;
+                    }
+                    listImport.Add(fileImport);
                 }
 
-                var result = await _tongHopService.Import(fileImport);
+                var result = await _tongHopService.Import(listImport);
 
                 await Tracking(result.Message);
 

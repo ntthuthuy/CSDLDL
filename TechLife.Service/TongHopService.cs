@@ -19,7 +19,7 @@ namespace TechLife.Service
         Task<Result<bool>> Create(TongHopCreateRequest request);
         Task<Result<bool>> Update(TongHopUpdateRequest request);
         Task<Result<bool>> Delete(TongHopDeleteRequest request);
-        Task<Result<bool>> Import(TongHopImportRequest request);
+        Task<Result<bool>> Import(List<TongHopImportRequest> request);
     }
 
     public class TongHopService : ITongHopService
@@ -177,79 +177,86 @@ namespace TechLife.Service
             }
         }
 
-        public async Task<Result<bool>> Import(TongHopImportRequest request)
+        public async Task<Result<bool>> Import(List<TongHopImportRequest> request)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
                 var quocTichDict = await _context.QuocTich.Where(x => !x.IsDelete).ToDictionaryAsync(x => x.TenQuocTich.ToLowerInvariant());
 
-                var existData = await _context.TongHop
-                    .Where(x => !x.IsDelete && x.Thang == request.Thang && x.Nam == request.Nam)
+                foreach (var items in request)
+                {
+                    var existData = await _context.TongHop
+                    .Where(x => !x.IsDelete && x.Thang == items.Thang && x.Nam == items.Nam)
                     .Include(x => x.QuocTich)
                     .ToListAsync();
 
-                var dataDict = existData.ToDictionary(x => x.QuocTich.TenQuocTich.ToLowerInvariant());
+                    var dataDict = existData.ToDictionary(x => x.QuocTich.TenQuocTich.ToLowerInvariant());
 
-                existData.Clear();
+                    existData.Clear();
 
-                var newQuocTich = new List<QuocTich>();
+                    var newQuocTich = new List<QuocTich>();
 
-                var newData = new List<TongHop>();
+                    var newData = new List<TongHop>();
 
-                foreach (var item in request.Items)
-                {
-                    string key = item.TenQuocTich.ToLowerInvariant();
-
-                    if (!quocTichDict.TryGetValue(key, out var quocTich))
+                    foreach (var item in items.Items)
                     {
-                        quocTich = new QuocTich
+                        string key = item.TenQuocTich.ToLowerInvariant();
+
+                        if (!quocTichDict.TryGetValue(key, out var quocTich))
                         {
-                            TenQuocTich = item.TenQuocTich,
-                            IsDelete = false,
-                            IsStatus = true
-                        };
+                            quocTich = new QuocTich
+                            {
+                                TenQuocTich = item.TenQuocTich,
+                                IsDelete = false,
+                                IsStatus = true
+                            };
 
-                        newQuocTich.Add(quocTich);
-                        quocTichDict[key] = quocTich;
-                    }
+                            newQuocTich.Add(quocTich);
+                            quocTichDict[key] = quocTich;
+                        }
 
-                    if (!dataDict.TryGetValue(key, out var entity))
-                    {
-                        entity = new TongHop
+                        if (!dataDict.TryGetValue(key, out var entity))
                         {
-                            SoLieu = decimal.Parse(item.SoLieu),
-                            Thang = request.Thang,
-                            Nam = request.Nam,
-                            CongDon = decimal.Parse(item.CongDon),
-                            ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m,
-                            QuocTich = quocTich
-                        };
+                            entity = new TongHop
+                            {
+                                SoLieu = decimal.Parse(item.SoLieu),
+                                Thang = items.Thang,
+                                Nam = items.Nam,
+                                //CongDon = decimal.Parse(item.CongDon),
+                                //ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m,
+                                QuocTich = quocTich
+                            };
 
-                        newData.Add(entity);
-                        dataDict[key] = entity;
-                    }
-                    else
-                    {
-                        entity.SoLieu = decimal.Parse(item.SoLieu);
-                        entity.CongDon = decimal.Parse(item.CongDon);
-                        entity.ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m;
+                            newData.Add(entity);
+                            dataDict[key] = entity;
+                        }
+                        else
+                        {
+                            entity.SoLieu = decimal.Parse(item.SoLieu);
+                            //entity.CongDon = decimal.Parse(item.CongDon);
+                            //entity.ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m;
 
-                        existData.Add(entity);
+                            existData.Add(entity);
+                        }
                     }
+
+                    if (newQuocTich.Count > 0) await _context.QuocTich.AddRangeAsync(newQuocTich);
+
+                    if (newData.Count > 0) await _context.TongHop.AddRangeAsync(newData);
+
+                    if (existData.Count > 0) _context.TongHop.UpdateRange(existData);
+
+                    await _context.SaveChangesAsync();
                 }
-
-                if (newQuocTich.Count > 0) await _context.QuocTich.AddRangeAsync(newQuocTich);
-
-                if (newData.Count > 0) await _context.TongHop.AddRangeAsync(newData);
-
-                if (existData.Count > 0) _context.TongHop.UpdateRange(existData);
-
-                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 return new Result<bool>() { IsSuccessed = true, Message = "Import thành công" };
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, ex.Message);
                 throw;
             }
