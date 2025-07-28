@@ -81,15 +81,7 @@ namespace TechLife.Service
                 Id = id,
                 QuocTichId = data.QuocTichId,
                 TenQuocTich = data.QuocTich.TenQuocTich,
-                List = new()
-                {
-                    new()
-                    {
-                        SoLieu = data.SoLieu,
-                        CongDon = data.CongDon,
-                        ThiPhan = data.ThiPhan
-                    }
-                }
+                SoLieu = new Dictionary<int, decimal> { { data.Thang, data.SoLieu } }
             };
         }
 
@@ -98,7 +90,6 @@ namespace TechLife.Service
             try
             {
                 var query = _context.TongHop
-                    .AsNoTracking()
                     .Where(x => !x.IsDelete && x.Nam == request.Nam && (request.Thang == 0 || request.Thang == x.Thang));
 
                 if (!string.IsNullOrWhiteSpace(request.Search))
@@ -106,60 +97,26 @@ namespace TechLife.Service
                     query = query.Where(x => x.QuocTich.TenQuocTich.ToLower().Contains(request.Search.ToLower()));
                 }
 
-                var data = await query
-                    .GroupBy(g => new
-                    {
-                        g.QuocTichId
-                    })
-                    .Select(x => new TongHopVm
-                    {
-                        QuocTichId = x.Key.QuocTichId,
-                        TenQuocTich = _context.QuocTich.First(v => v.Id == x.Key.QuocTichId).TenQuocTich,
-                        List = x.Select(v => new ListSoLieu
-                        {
-                            Thang = v.Thang,
-                            Nam = v.Nam,
-                            SoLieu = v.SoLieu,
-                            CongDon = v.CongDon,
-                            ThiPhan = v.ThiPhan
-                        }).ToList()
-                    }).ToListAsync();
+                var data = await query.ToListAsync();
 
-                if (data.Count > 0)
-                {
-                    data.Add(new TongHopVm
-                    {
-                        TenQuocTich = "Tổng cộng",
-                        List = data.SelectMany(x => x.List)
-                        .GroupBy(g => new { g.Thang, g.Nam })
-                        .Select(x => new ListSoLieu
-                        {
-                            Thang = x.Key.Thang,
-                            Nam = x.Key.Nam,
-                            SoLieu = x.Sum(v => v.SoLieu),
-                            CongDon = x.Sum(v => v.CongDon),
-                            ThiPhan = 100
-                        }).ToList()
-                    });
-                }
-                else
-                {
-                    var listQuocTich = await _context.QuocTich.Where(x => !x.IsDelete && x.IsStatus).ToListAsync();
+                var listQuocTich = await _context.QuocTich.Where(x => !x.IsDelete).ToListAsync();
 
-                    foreach (var item in listQuocTich)
+                var result = new List<TongHopVm>();
+
+                var allMonths = Enumerable.Range(1, 12).ToList();
+
+                foreach (var month in allMonths)
+                {
+                    foreach (var quocTich in listQuocTich)
                     {
-                        data.Add(new()
+                        result.Add(new()
                         {
-                            TenQuocTich = item.TenQuocTich,
-                            List = new()
+                            QuocTichId = quocTich.Id,
+                            TenQuocTich = quocTich.TenQuocTich,
+                            SoLieu = data.Where(x => x.QuocTichId == quocTich.Id && x.Thang == month)
+                                .ToDictionary(x => month, x => data.Where(v => v.Thang == x.Thang).Sum(v => x.SoLieu))
                         });
                     }
-
-                    data.Add(new()
-                    {
-                        TenQuocTich = "Tổng cộng",
-                        List = new()
-                    });
                 }
 
                 return new PagedResult<TongHopVm>
@@ -167,7 +124,7 @@ namespace TechLife.Service
                     PageIndex = request.PageIndex,
                     PageSize = request.PageSize,
                     TotalRecords = data.Count,
-                    Items = data.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize).ToList(),
+                    Items = result.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize).ToList(),
                 };
             }
             catch (Exception ex)
