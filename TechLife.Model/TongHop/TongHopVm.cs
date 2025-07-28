@@ -11,5 +11,7 @@ namespace TechLife.Model.TongHop
         public string TenQuocTich { get; set; }
 
         public Dictionary<int, decimal> SoLieu { get; set; }
+
+        public decimal ThiPhan { get; set; }
     }
 }

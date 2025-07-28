@@ -14,15 +14,15 @@
         top: 56px;
     }
 
-    #form table thead:after {
-        position: absolute;
-        content: '';
-        bottom: 1px;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background-color: #e5e5e5;
-    }
+        #form table thead:after {
+            position: absolute;
+            content: '';
+            bottom: 1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: #e5e5e5;
+        }
 </style>
 
 <div class="container-fluid">
@@ -79,55 +79,34 @@
                                             {
                                                 <th class="text-center align-middle" width="70%">@($"Th {thang}")</th>
                                             }
-                                            <th class="text-center align-middle" width="8%">Cộng dồn</th>
-                                            <th class="text-center align-middle" width="8%">Thị phần</th>
+                                            @if(thang == 0)
+                                            {
+                                                <th class="text-center align-middle" width="8%">Cộng dồn</th>
+                                                <th class="text-center align-middle" width="8%">Thị phần</th>
+                                            }
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if (Model != null && Model.Items != null)
                                         {
-                                            int? lastMonth = Model.Items.SelectMany(x => x.List).Max(x => (int?)x.Thang);
                                             int stt = (Model.PageIndex - 1) * Model.PageSize + 1;
-                                            if (Model.Items.Count > 0)
+                                            foreach (var item in Model.Items)
                                             {
-                                                foreach (var item in Model.Items)
-                                                {
-                                                    bool total = stt == Model.TotalRecords;
-                                                    <tr>
-                                                        <td class="text-right align-middle">@(total ? "" : stt)</td>
-                                                        <td class="text-left align-middle @(total ? "font-weight-bold" : "")">@item.TenQuocTich</td>
-                                                        @if (thang == 0)
-                                                        {
-                                                            for (int i = 1; i <= 12; i++)
-                                                            {
-                                                                decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == i)?.SoLieu;
-                                                                <td class="text-right align-middle @(total ? "font-weight-bold" : "")">
-                                                                    @(soLieu == null ? 0 : Functions.ConvertDecimalVND((decimal)soLieu))
-                                                                </td>
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            decimal? soLieu = item.List.FirstOrDefault(x => x.Thang == thang)?.SoLieu;
-                                                            <td class="text-right align-middle @(total ? "font-weight-bold" : "")">
-                                                                @(soLieu == null ? 0 : Functions.ConvertDecimalVND((decimal)soLieu))
-                                                            </td>
-                                                        }
-                                                        <td class="font-weight-bold text-right align-middle">
-                                                            @{
-                                                                decimal? congDon = item.List.FirstOrDefault(x => x.Thang == (int)lastMonth)?.CongDon;
-                                                            }
-                                                            @(congDon == null ? 0 : Functions.ConvertDecimalVND((decimal)congDon))
-                                                        </td>
-                                                        <td class="font-weight-bold text-right align-middle">
-                                                            @{
-                                                                decimal? thiPhan = item.List.FirstOrDefault(x => x.Thang == (int)lastMonth)?.ThiPhan;
-                                                            }
-                                                            @(thiPhan == null ? "0%" : $"{thiPhan}%")
-                                                        </td>
-                                                    </tr>
-                                                    stt++;
-                                                }
+                                                bool flag = stt == Model.TotalRecords;
+                                                <tr>
+                                                    <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@(flag ? "" : stt)</td>
+                                                    <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@item.TenQuocTich</td>
+                                                    @foreach (var d in item.SoLieu)
+                                                    {
+                                                        <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@d.Value</td>
+                                                    }
+                                                    @if(thang == 0)
+                                                    {
+                                                        <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@item.SoLieu.Values.Sum()</td>
+                                                        <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@item.ThiPhan %</td>
+                                                    }
+                                                </tr>
+                                                stt++;
                                             }
                                         }
                                     </tbody>

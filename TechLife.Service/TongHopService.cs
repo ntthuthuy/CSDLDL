@@ -90,6 +90,7 @@ namespace TechLife.Service
             try
             {
                 var query = _context.TongHop
+                    .Include(x => x.QuocTich)
                     .Where(x => !x.IsDelete && x.Nam == request.Nam && (request.Thang == 0 || request.Thang == x.Thang));
 
                 if (!string.IsNullOrWhiteSpace(request.Search))
@@ -105,25 +106,62 @@ namespace TechLife.Service
 
                 var allMonths = Enumerable.Range(1, 12).ToList();
 
-                foreach (var month in allMonths)
+                var total = new TongHopVm
                 {
-                    foreach (var quocTich in listQuocTich)
+                    TenQuocTich = "Tổng cộng",
+                    SoLieu = new(),
+                    ThiPhan = 100
+                };
+
+                if (request.Thang == 0)
+                {
+                    foreach (var month in allMonths)
                     {
-                        result.Add(new()
-                        {
-                            QuocTichId = quocTich.Id,
-                            TenQuocTich = quocTich.TenQuocTich,
-                            SoLieu = data.Where(x => x.QuocTichId == quocTich.Id && x.Thang == month)
-                                .ToDictionary(x => month, x => data.Where(v => v.Thang == x.Thang).Sum(v => x.SoLieu))
-                        });
+                        total.SoLieu.Add(month, data.Where(x => x.Thang == month).Sum(x => x.SoLieu));
                     }
                 }
+                else
+                {
+                    total.SoLieu.Add(request.Thang, data.Where(x => x.Thang == request.Thang).Sum(x => x.SoLieu));
+                }
+
+                foreach (var quocTich in listQuocTich)
+                {
+                    var t = new TongHopVm
+                    {
+                        QuocTichId = quocTich.Id,
+                        TenQuocTich = quocTich.TenQuocTich,
+                        SoLieu = new()
+                    };
+
+                    var list = data.Where(x => x.QuocTichId == quocTich.Id).ToList();
+
+                    if (request.Thang != 0)
+                    {
+                        decimal soLieu = list.Where(x => x.Thang == request.Thang).Sum(x => (decimal?)x.SoLieu) ?? 0;
+                        t.SoLieu.Add(request.Thang, soLieu);
+                        t.ThiPhan = (soLieu / total.SoLieu.Values.Sum()) * 100;
+                    }
+                    else
+                    {
+                        foreach (var month in allMonths)
+                        {
+                            decimal soLieu = list.Where(x => x.Thang == month).Sum(x => (decimal?)x.SoLieu) ?? 0;
+                            t.SoLieu.Add(month, soLieu);
+                            t.ThiPhan = (soLieu / total.SoLieu.Values.Sum()) * 100;
+                        }
+                    }
+
+                    result.Add(t);
+                }
+
+                result.Add(total);
 
                 return new PagedResult<TongHopVm>
                 {
                     PageIndex = request.PageIndex,
                     PageSize = request.PageSize,
-                    TotalRecords = data.Count,
+                    TotalRecords = result.Count,
                     Items = result.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize).ToList(),
                 };
             }
