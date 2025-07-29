@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TechLife.Common;
+using TechLife.Common.Extension;
 using TechLife.Model;
 using TechLife.Model.DuLieuDuLich;
 using TechLife.Model.HoSoVanBan;
@@ -153,7 +153,8 @@ namespace TechLife.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _duLieuDuLichService.Delete(id);
+            var user = Request.GetUser();
+            var result = await _duLieuDuLichService.Delete(id, user.Id.ToString());
             if (!result.IsSuccessed)
             {
                 return BadRequest(result);

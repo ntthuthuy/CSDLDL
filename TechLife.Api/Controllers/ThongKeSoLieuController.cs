@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TechLife.Common;
@@ -95,17 +94,7 @@ namespace TechLife.Api.Controllers
                     Search = ""
                 });
 
-                var tempDict = new Dictionary<string, decimal>();
-
-                foreach (var item in dataTongHop.Items)
-                {
-                    if (item.List.Count > 0)
-                        tempDict[item.TenQuocTich] = item.List[0].SoLieu;
-                }
-
-                tempDict = tempDict.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-
-                result.Top10 = tempDict.Skip(1).Take(10).Select(x => x.Key).ToList();
+                result.Top10 = dataTongHop.Items.Select(x => x.TenQuocTich).Take(10).ToList();
 
                 return Ok(result);
             }
