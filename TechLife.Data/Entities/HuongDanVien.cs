@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TechLife.Data.Entities
 {
@@ -25,7 +24,8 @@ namespace TechLife.Data.Entities
         public DateTime NgayHetHan { get; set; }
         public bool IsStatus { get; set; }
         public bool IsDelete { get; set; }
-
+        public DateTime CreateOnDate { get; set; }
+        public DateTime LastModifiedOnDate { get; set; }
 
         public List<QuaTrinhHoatDong> DSQuaTrinhHoatDong { get; set; }
     }

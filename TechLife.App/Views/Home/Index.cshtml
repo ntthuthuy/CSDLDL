@@ -1,8 +1,9 @@
-﻿@{
+﻿@using TechLife.Common.Enums
+@{
     ViewData["Title"] = "Trang chủ";
     ViewData["searchUrl"] = "/Thongke/Timkiemdulieu";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    
+
     var listLuuTru = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LuuTru;
     var listKhachSan = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.KhachSan;
     var listNhaHang = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.NhaHang;
@@ -11,7 +12,7 @@
     var listTour = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.Tour;
     var listDiemDuLich = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.DiemDuLich;
     var listLuHanh = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LuHanh;
-
+    var countModifiedByYear = (Dictionary<int, int>)ViewBag.CountModifiedByYear;
 
 }
 <style>
@@ -20,6 +21,10 @@
         width: 100%;
         height: 500px;
     }
+
+    small {
+        color: inherit !important;
+    }
 </style>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -27,10 +32,8 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-
                 </div><!-- /.col -->
                 <div class="col-sm-6">
-
                 </div><!-- /.col -->
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -39,7 +42,7 @@
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-           
+
             <div class="row">
                 <!-- ./col -->
                 <div class="col-lg-3 col-6">
@@ -47,8 +50,10 @@
                     <div class="small-box bg-fuchsia">
                         <div class="inner">
                             <h3>@listLuuTru.Sum(v => v.SoLuong)</h3>
-
-                            <p>Cơ sở lưu trú</p>
+                            <div>
+                                <p>Cơ sở lưu trú</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.CoSoLuuTru)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-hotel"></i>
@@ -64,7 +69,10 @@
                     <div class="small-box bg-gradient-indigo">
                         <div class="inner">
                             <h3>@listLuHanh.Sum(v => v.SoLuong)</h3>
-                            <p>Công ty lữ hành</p>
+                            <div>
+                                <p>Công ty lữ hành</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.LuHanh)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-umbrella-beach"></i>
@@ -80,7 +88,10 @@
                     <div class="small-box bg-gradient-maroon">
                         <div class="inner">
                             <h3>@listDiemDuLich.Sum(v => v.SoLuong)</h3>
-                            <p>Điểm du lịch</p>
+                            <div>
+                                <p>Điểm du lịch</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.DiemDuLich)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-map-marked-alt"></i>
@@ -96,8 +107,10 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>@listHDV.Sum(v => v.SoLuong)</h3>
-
-                            <p>Hướng dẫn viên</p>
+                            <div>
+                                <p>Hướng dẫn viên</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.HuongDanVien)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-user-friends"></i>
@@ -112,7 +125,10 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>@ViewBag.DiSan</h3>
-                            <p>Di sản văn hóa</p>
+                            <div>
+                                <p>Di sản văn hóa</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.DiSanVanHoa)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-university"></i>
@@ -127,7 +143,10 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>@ViewBag.DiaDiemAnUong</h3>
-                            <p>Địa điểm ăn uống</p>
+                            <div>
+                                <p>Địa điểm ăn uống</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.NhaHang)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-utensils"></i>
@@ -143,7 +162,10 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>@listMuaSam.Sum(v => v.SoLuong)</h3>
-                            <p>Cơ sở mua sắm</p>
+                            <div>
+                                <p>Cơ sở mua sắm</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.MuaSam)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-shopping-cart"></i>
@@ -159,7 +181,10 @@
                     <div class="small-box bg-olive">
                         <div class="inner">
                             <h3>@ViewBag.VuiChoi</h3>
-                            <p>Khu vui chơi giải trí</p>
+                            <div>
+                                <p>Khu vui chơi giải trí</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.KhuVuiChoi)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-gamepad"></i>
@@ -175,7 +200,10 @@
                     <div class="small-box bg-lime">
                         <div class="inner">
                             <h3>@ViewBag.VeSinh</h3>
-                            <p>Vệ sinh công cộng</p>
+                            <div>
+                                <p>Vệ sinh công cộng</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.VSCC)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-restroom"></i>
@@ -191,7 +219,10 @@
                     <div class="small-box bg-orange">
                         <div class="inner">
                             <h3>@ViewBag.DiemGiaoDich</h3>
-                            <p>Điểm giao dịch</p>
+                            <div>
+                                <p>Điểm giao dịch</p>
+                                <p class="mb-0"><small class="m-0">&nbsp;</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-money-check-alt"></i>
@@ -207,7 +238,10 @@
                     <div class="small-box bg-blue">
                         <div class="inner">
                             <h3>@listTour.Sum(v => v.SoLuong)</h3>
-                            <p>Tour du lịch</p>
+                            <div>
+                                <p>Tour du lịch</p>
+                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.Tour)</small></p>
+                            </div>
                         </div>
                         <div class="icon">
                             <i class="fas fa-bus"></i>

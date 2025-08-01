@@ -221,8 +221,6 @@ namespace TechLife.Service
                                 SoLieu = decimal.Parse(item.SoLieu),
                                 Thang = items.Thang,
                                 Nam = items.Nam,
-                                //CongDon = decimal.Parse(item.CongDon),
-                                //ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m,
                                 QuocTich = quocTich
                             };
 
@@ -232,9 +230,6 @@ namespace TechLife.Service
                         else
                         {
                             entity.SoLieu = decimal.Parse(item.SoLieu);
-                            //entity.CongDon = decimal.Parse(item.CongDon);
-                            //entity.ThiPhan = Math.Truncate(Math.Round(decimal.Parse(item.ThiPhan), 4) * 100 * 100) / 100.0m;
-
                             existData.Add(entity);
                         }
                     }

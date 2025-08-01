@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
 using TechLife.App.ApiClients;
 using TechLife.App.Models;
@@ -103,6 +104,9 @@ namespace TechLife.App.Controllers
 
             var diemgiaodich = await _thongKeService.DiemGiaoDich();
             ViewBag.DiemGiaoDich = diemgiaodich;
+
+            var countModifiedByYear = await _thongKeService.CountModifiedByYear(DateTime.Now.Year);
+            ViewBag.CountModifiedByYear = countModifiedByYear;
 
             return View();
         }
