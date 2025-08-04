@@ -12,7 +12,7 @@
     var listTour = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.Tour;
     var listDiemDuLich = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.DiemDuLich;
     var listLuHanh = (List<TechLife.Model.DuLieuDuLich.DuLieuDuLichTheoLoaiHinhVrm>)ViewBag.LuHanh;
-    var countModifiedByYear = (Dictionary<int, int>)ViewBag.CountModifiedByYear;
+    var countModifiedByYear = (List<TechLife.Model.ThongKe.ThongKeVm>)ViewBag.CountModifiedByYear;
 
 }
 <style>
@@ -52,7 +52,11 @@
                             <h3>@listLuuTru.Sum(v => v.SoLuong)</h3>
                             <div>
                                 <p>Cơ sở lưu trú</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.CoSoLuuTru)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -71,7 +75,11 @@
                             <h3>@listLuHanh.Sum(v => v.SoLuong)</h3>
                             <div>
                                 <p>Công ty lữ hành</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.LuHanh)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -90,7 +98,11 @@
                             <h3>@listDiemDuLich.Sum(v => v.SoLuong)</h3>
                             <div>
                                 <p>Điểm du lịch</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.DiemDuLich)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -109,7 +121,11 @@
                             <h3>@listHDV.Sum(v => v.SoLuong)</h3>
                             <div>
                                 <p>Hướng dẫn viên</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.HuongDanVien)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.HuongDanVien)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.HuongDanVien)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -127,7 +143,11 @@
                             <h3>@ViewBag.DiSan</h3>
                             <div>
                                 <p>Di sản văn hóa</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.DiSanVanHoa)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiSanVanHoa)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiSanVanHoa)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -145,7 +165,11 @@
                             <h3>@ViewBag.DiaDiemAnUong</h3>
                             <div>
                                 <p>Địa điểm ăn uống</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.NhaHang)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -164,7 +188,11 @@
                             <h3>@listMuaSam.Sum(v => v.SoLuong)</h3>
                             <div>
                                 <p>Cơ sở mua sắm</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.MuaSam)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.MuaSam)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.MuaSam)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -183,7 +211,11 @@
                             <h3>@ViewBag.VuiChoi</h3>
                             <div>
                                 <p>Khu vui chơi giải trí</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.KhuVuiChoi)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -202,7 +234,11 @@
                             <h3>@ViewBag.VeSinh</h3>
                             <div>
                                 <p>Vệ sinh công cộng</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.VSCC)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VSCC)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VSCC)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">
@@ -240,7 +276,11 @@
                             <h3>@listTour.Sum(v => v.SoLuong)</h3>
                             <div>
                                 <p>Tour du lịch</p>
-                                <p class="mb-0"><small class="m-0">@countModifiedByYear.GetValueOrDefault((int)LinhVucKinhDoanh.Tour)</small></p>
+                                <p class="mb-0 d-flex">
+                                    <small class="m-0">Thêm mới: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.Tour)?.Create ?? 0)</small>
+                                    <small class="m-0 px-1">-</small>
+                                    <small class="m-0">Cập nhật: @(countModifiedByYear.FirstOrDefault(x => x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.Tour)?.Update ?? 0)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="icon">

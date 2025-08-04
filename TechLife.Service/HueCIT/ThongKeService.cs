@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TechLife.Common.Enums;
 using TechLife.Data;
+using TechLife.Model.ThongKe;
 
 namespace TechLife.Service.HueCIT
 {
@@ -19,7 +20,7 @@ namespace TechLife.Service.HueCIT
         Task<int> DiSanVanHoa();
         Task<int> VeSinhCongCong();
         Task<int> DiemGiaoDich();
-        Task<Dictionary<int, int>> CountModifiedByYear(int year);
+        Task<List<ThongKeVm>> CountModifiedByYear(int year);
     }
 
     public class ThongKeService : Connect, IThongKeService
@@ -158,25 +159,30 @@ namespace TechLife.Service.HueCIT
             }
         }
 
-        public async Task<Dictionary<int, int>> CountModifiedByYear(int year)
+        public async Task<List<ThongKeVm>> CountModifiedByYear(int year)
         {
             try
             {
                 var result = await _context.HoSo
-                    .Where(x => !x.IsDelete && (x.CreateOnDate.Year == DateTime.Now.Year || x.LastModifiedOnDate.Year == DateTime.Now.Year))
+                    .Where(x => !x.IsDelete)
                     .GroupBy(g => g.LinhVucKinhDoanhId)
-                    .Select(x => new
+                    .Select(x => new ThongKeVm
                     {
                         LinhVucKinhDoanhId = x.Key,
-                        Count = x.Count()
-                    })
-                    .ToDictionaryAsync(x => x.LinhVucKinhDoanhId, x => x.Count);
+                        Create = x.Where(v => v.CreateOnDate.Year == DateTime.Now.Year).Count(),
+                        Update = x.Where(v => v.LastModifiedOnDate.Year == DateTime.Now.Year).Count()
+                    }).ToListAsync();
 
-                var countHDV = await _context.HuongDanVien
-                    .Where(x => !x.IsDelete && (x.CreateOnDate.Year == DateTime.Now.Year || x.LastModifiedOnDate.Year == DateTime.Now.Year))
-                    .CountAsync();
+                var queryHDV = _context.HuongDanVien.Where(x => !x.IsDelete);
 
-                result.Add((int)LinhVucKinhDoanh.HuongDanVien, countHDV);
+                var countHDV = new ThongKeVm
+                {
+                    LinhVucKinhDoanhId = (int)LinhVucKinhDoanh.HuongDanVien,
+                    Create = await queryHDV.Where(x => x.CreateOnDate.Year == DateTime.Now.Year).CountAsync(),
+                    Update = await queryHDV.Where(x => x.LastModifiedOnDate.Year == DateTime.Now.Year).CountAsync()
+                };
+
+                result.Add(countHDV);
 
                 return result;
             }
