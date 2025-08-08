@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TechLife.Common.Enums
+﻿namespace TechLife.Common.Enums
 {
     public enum LinhVucKinhDoanh : int
     {
@@ -92,8 +88,8 @@ namespace TechLife.Common.Enums
     }
     public enum TieuChuanCoSo : int
     {
-        //[StringValue(@"Không xếp hạng")]
-        //Khong = 0,
+        [StringValue(@"Không xếp hạng")]
+        Khong = 0,
         [StringValue(@"1 Sao")]
         MotSao = 1,
         [StringValue(@"2 Sao")]
