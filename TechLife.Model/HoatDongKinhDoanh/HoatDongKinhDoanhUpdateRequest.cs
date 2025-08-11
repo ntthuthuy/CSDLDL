@@ -24,7 +24,6 @@ namespace TechLife.Model.HoatDongKinhDoanh
         [Required]
         public string LuyKeTuDauNam { get; set; }
 
-        [Required]
         public string DuTinhUocThangSau { get; set; }
         public string ParentId { get; set; }
 

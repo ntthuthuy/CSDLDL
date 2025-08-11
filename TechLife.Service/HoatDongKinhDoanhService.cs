@@ -250,7 +250,7 @@ namespace TechLife.Service
 
             data.ChinhThucThangTruoc = decimal.Parse(request.ChinhThucThangTruoc);
             data.UocThangHienTai = decimal.Parse(request.UocThangHienTai);
-            data.DuTinhUocThangSau = decimal.Parse(request.DuTinhUocThangSau);
+            data.DuTinhUocThangSau = request.Thang == 5 ? decimal.Parse(request.DuTinhUocThangSau) : 0;
             data.LuyKeTuDauNam = decimal.Parse(request.LuyKeTuDauNam);
 
             _context.HoatDongKinhDoanh.Update(data);

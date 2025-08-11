@@ -251,12 +251,12 @@ namespace TechLife.App.Controllers
                 request.ChinhThucThangTruoc = Regex.Replace(request.ChinhThucThangTruoc.Trim(), "[,.]", "");
                 request.UocThangHienTai = Regex.Replace(request.UocThangHienTai.Trim(), "[,.]", "");
                 request.LuyKeTuDauNam = Regex.Replace(request.LuyKeTuDauNam.Trim(), "[,.]", "");
-                request.DuTinhUocThangSau = Regex.Replace(request.DuTinhUocThangSau.Trim(), "[,.]", "");
+                request.DuTinhUocThangSau = request.Thang == 5 ? Regex.Replace(request.DuTinhUocThangSau.Trim(), "[,.]", "") : "";
 
                 if (!decimal.TryParse(request.ChinhThucThangTruoc, out _)
                 || !decimal.TryParse(request.UocThangHienTai, out _)
                 || !decimal.TryParse(request.LuyKeTuDauNam, out _)
-                || !decimal.TryParse(request.DuTinhUocThangSau, out _))
+                || (request.Thang == 5 && !decimal.TryParse(request.DuTinhUocThangSau, out _)))
                 {
                     return Ok(new Result<string>() { IsSuccessed = false, Message = "Vui lòng kiểm tra lại thông tin" });
                 }

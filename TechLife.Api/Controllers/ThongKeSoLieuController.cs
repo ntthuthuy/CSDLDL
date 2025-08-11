@@ -86,7 +86,7 @@ namespace TechLife.Api.Controllers
                     },
                     new()
                     {
-                        Name = "2. Khách do các cơ sở lưu trú phục vụ",
+                        Name = "2. Khách do các cơ sở lưu trú phục vụ (1)",
                         DVT = dataHoatDongKinhDoanh.Items[15].DVT,
                         ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[15].ChinhThucThangTruoc,
                         UocThangHienTai = dataHoatDongKinhDoanh.Items[15].UocThangHienTai,
