@@ -98,7 +98,7 @@ namespace TechLife.Api.Controllers
                     new()
                     {
                         Name = "Trong đó, Khách quốc tế",
-                        DVT = "",
+                        DVT = dataHoatDongKinhDoanh.Items[17].DVT,
                         ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[17].ChinhThucThangTruoc + dataHoatDongKinhDoanh.Items[20].ChinhThucThangTruoc,
                         UocThangHienTai = dataHoatDongKinhDoanh.Items[17].UocThangHienTai + dataHoatDongKinhDoanh.Items[20].UocThangHienTai,
                         LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[17].LuyKeTuDauNam + dataHoatDongKinhDoanh.Items[20].LuyKeTuDauNam,
@@ -128,7 +128,9 @@ namespace TechLife.Api.Controllers
                     Search = ""
                 });
 
-                result.Top10 = dataTongHop.Items.LastOrDefault().SoLieu.Values.Sum() == 0m ? new() : dataTongHop.Items.Select(x => x.TenQuocTich).Take(10).ToList();
+                result.Top10 = dataTongHop.Items.LastOrDefault().SoLieu.Values.Sum() == 0m
+                    ? new()
+                    : dataTongHop.Items.Where(x => x.SoLieu.Values.Sum() > 0 && x.QuocTichId != 0).Select(x => x.TenQuocTich).Take(10).ToList();
 
                 return Ok(result);
             }
