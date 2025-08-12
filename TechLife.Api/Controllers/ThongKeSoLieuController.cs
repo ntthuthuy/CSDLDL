@@ -36,7 +36,7 @@ namespace TechLife.Api.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            return Ok("Hello word");
+            return Ok("Hello world");
         }
 
         [HttpGet("GetSoLieu")]

@@ -191,7 +191,7 @@ namespace TechLife.App.Controllers
                     item.ChinhThucThangTruoc = decimal.TryParse(worksheet.Cell(i, 5).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 5).Value.ToString().Trim() : "0";
                     item.UocThangHienTai = decimal.TryParse(worksheet.Cell(i, 6).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 6).Value.ToString().Trim() : "0";
                     item.LuyKeTuDauNam = decimal.TryParse(worksheet.Cell(i, 7).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 7).Value.ToString().Trim() : "0";
-                    item.DuTinhUocThangSau = decimal.TryParse(worksheet.Cell(i, 8).Value.ToString().Trim(), out _) ? worksheet.Cell(i, 8).Value.ToString().Trim() : "0";
+                    item.DuTinhUocThangSau = decimal.TryParse(worksheet.Cell(i, 8).Value.ToString().Trim(), out _) && request.Month == 5 ? worksheet.Cell(i, 8).Value.ToString().Trim() : "0";
 
                     fileImport.Add(item);
                 }
