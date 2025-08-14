@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TechLife.Common;
+using TechLife.Model.HoatDongKinhDoanh;
 using TechLife.Model.ThongKeSoLieu;
 using TechLife.Service;
 
@@ -34,7 +36,7 @@ namespace TechLife.Api.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            return Ok("Hello word");
+            return Ok("Hello world");
         }
 
         [HttpGet("GetSoLieu")]
@@ -47,11 +49,6 @@ namespace TechLife.Api.Controllers
 
                 var result = new ThongKeSoLieuVm() { ListHoatDongKinhDoanh = new(), Top10 = new() };
 
-                for (int i = 0; i < 5; i++)
-                {
-                    result.ListHoatDongKinhDoanh.Add(new());
-                }
-
                 var request = new HoatDongKinhDoanhFormRequest
                 {
                     Nam = nam,
@@ -63,27 +60,64 @@ namespace TechLife.Api.Controllers
 
                 var dataHoatDongKinhDoanh = await _hoatDongKinhDoanhService.GetPaging(request);
 
-                foreach (var item in dataHoatDongKinhDoanh.Items)
+                result.ListHoatDongKinhDoanh = new List<HoatDongKinhDoanhVm>
                 {
-                    if (item.DanhMucId == 1)
-                        result.ListHoatDongKinhDoanh[0] = item;
-                    else if (item.DanhMucId == 9)
-                        result.ListHoatDongKinhDoanh[1] = item;
-                    else if (item.DanhMucId == 23)
-                        result.ListHoatDongKinhDoanh[2] = item;
-                    else if (item.DanhMucId == 25 || item.DanhMucId == 28)
+                    new()
                     {
-                        var t = result.ListHoatDongKinhDoanh[3];
-                        t.Name = item.Name;
-                        t.ChinhThucThangTruoc += item.ChinhThucThangTruoc;
-                        t.UocThangHienTai += item.UocThangHienTai;
-                        t.DuTinhUocThangSau += item.DuTinhUocThangSau;
-                        t.Thang = thang;
-                        t.Nam = nam;
-                    }
-                    else if (item.DanhMucId == 3)
-                        result.ListHoatDongKinhDoanh[4] = item;
-                }
+                        Name = "1. Khách du lịch",
+                        DVT = dataHoatDongKinhDoanh.Items[0].DVT,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[0].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[0].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[0].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[0].DuTinhUocThangSau,
+                        Thang = thang,
+                        Nam = nam
+                    },
+                    new()
+                    {
+                        Name = "Trong đó, Khách quốc tế",
+                        DVT = dataHoatDongKinhDoanh.Items[1].DVT,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[1].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[1].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[1].DuTinhUocThangSau,
+                        Thang = thang,
+                        Nam = nam
+                    },
+                    new()
+                    {
+                        Name = "2. Khách do các cơ sở lưu trú phục vụ (1)",
+                        DVT = dataHoatDongKinhDoanh.Items[15].DVT,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[15].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[15].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[15].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[15].DuTinhUocThangSau,
+                        Thang = thang,
+                        Nam = nam
+                    },
+                    new()
+                    {
+                        Name = "Trong đó, Khách quốc tế",
+                        DVT = dataHoatDongKinhDoanh.Items[17].DVT,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[17].ChinhThucThangTruoc + dataHoatDongKinhDoanh.Items[20].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[17].UocThangHienTai + dataHoatDongKinhDoanh.Items[20].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[17].LuyKeTuDauNam + dataHoatDongKinhDoanh.Items[20].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[17].DuTinhUocThangSau + dataHoatDongKinhDoanh.Items[20].DuTinhUocThangSau,
+                        Thang = thang,
+                        Nam = nam
+                    },
+                    new()
+                    {
+                        Name = "3. Tổng thu từ du lịch",
+                        DVT = dataHoatDongKinhDoanh.Items[32].DVT,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[32].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[32].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[32].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[32].DuTinhUocThangSau,
+                        Thang = thang,
+                        Nam = nam
+                    },
+                };
 
                 var dataTongHop = await _tongHopService.GetPaging(new TongHopFormRequest
                 {
@@ -94,7 +128,9 @@ namespace TechLife.Api.Controllers
                     Search = ""
                 });
 
-                result.Top10 = dataTongHop.Items.Select(x => x.TenQuocTich).Take(10).ToList();
+                result.Top10 = dataTongHop.Items.LastOrDefault().SoLieu.Values.Sum() == 0m
+                    ? new()
+                    : dataTongHop.Items.Where(x => x.SoLieu.Values.Sum() > 0 && x.QuocTichId != 0).Select(x => x.TenQuocTich).Take(10).ToList();
 
                 return Ok(result);
             }

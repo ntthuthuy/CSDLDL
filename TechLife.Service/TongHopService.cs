@@ -140,7 +140,7 @@ namespace TechLife.Service
                     {
                         decimal soLieu = list.Where(x => x.Thang == request.Thang).Sum(x => (decimal?)x.SoLieu) ?? 0;
                         t.SoLieu.Add(request.Thang, soLieu);
-                        t.ThiPhan = Math.Truncate(Math.Round((soLieu / total.SoLieu.Values.Sum()), 4) * 100 * 100) / 100.0m;
+                        t.ThiPhan = total.SoLieu.Values.Sum() != 0 ? Math.Truncate(Math.Round((soLieu / total.SoLieu.Values.Sum()), 4) * 100 * 100) / 100.0m : 0;
                     }
                     else
                     {
@@ -149,7 +149,7 @@ namespace TechLife.Service
                             decimal soLieu = list.Where(x => x.Thang == month).Sum(x => (decimal?)x.SoLieu) ?? 0;
                             t.SoLieu.Add(month, soLieu);
                         }
-                        t.ThiPhan = Math.Truncate(Math.Round((t.SoLieu.Values.Sum() / total.SoLieu.Values.Sum()), 4) * 100 * 100) / 100.0m;
+                        t.ThiPhan = total.SoLieu.Values.Sum() != 0 ? Math.Truncate(Math.Round((t.SoLieu.Values.Sum() / total.SoLieu.Values.Sum()), 4) * 100 * 100) / 100.0m : 0;
                     }
 
                     result.Add(t);
