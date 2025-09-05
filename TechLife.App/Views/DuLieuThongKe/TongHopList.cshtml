@@ -95,7 +95,10 @@
                                                 bool flag = stt == Model.TotalRecords;
                                                 <tr>
                                                     <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@(flag ? "" : stt)</td>
-                                                    <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@item.TenQuocTich</td>
+                                                    <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@item.TenQuocTich 
+                                                        <br />
+                                                        <small>@item.MoTa</small>
+                                                    </td>
                                                     @foreach (var d in item.SoLieu)
                                                     {
                                                         <td class="text-center align-middle @(flag ? "font-weight-bold" : "")">@Functions.ConvertDecimalVND(d.Value)</td>

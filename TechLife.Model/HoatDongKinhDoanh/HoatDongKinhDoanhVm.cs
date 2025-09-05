@@ -6,10 +6,10 @@
         public string Code { get; set; }
         public string Name { get; set; }
         public string DVT { get; set; }
-        public decimal ChinhThucThangTruoc { get; set; }
-        public decimal UocThangHienTai { get; set; }
-        public decimal LuyKeTuDauNam { get; set; }
-        public decimal DuTinhUocThangSau { get; set; }
+        public decimal? ChinhThucThangTruoc { get; set; }
+        public decimal? UocThangHienTai { get; set; }
+        public decimal? LuyKeTuDauNam { get; set; }
+        public decimal? DuTinhUocThangSau { get; set; }
         public int? ParentId { get; set; }
         public bool IsParent { get; set; }
         public bool IsDelete { get; set; }
@@ -17,5 +17,6 @@
         public int Nam { get; set; }
         public int Level { get; set; }
         public int DanhMucId { get; set; }
+        public bool IsBool { get; set; }
     }
 }

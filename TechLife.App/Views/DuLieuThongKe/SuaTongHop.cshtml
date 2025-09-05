@@ -28,20 +28,6 @@
                         <span asp-validation-for="SoLieu" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label asp-for="CongDon" class="control-label"></label>
-                        <input asp-for="CongDon" class="form-control input-money" required />
-                        <span asp-validation-for="CongDon" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label asp-for="ThiPhan" class="control-label">Thị phần (%)</label>
-                        <input asp-for="ThiPhan" class="form-control" min="0" max="100" type="number" step="0.01" required/>
-                        @* <span asp-validation-for="ThiPhan" class="text-danger"></span> *@
-                    </div>
-                </div>
             </div>
         </div>
         <div class="modal-footer float-right">

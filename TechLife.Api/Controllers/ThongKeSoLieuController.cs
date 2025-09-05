@@ -71,7 +71,8 @@ namespace TechLife.Api.Controllers
                         LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[0].LuyKeTuDauNam,
                         DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[0].DuTinhUocThangSau,
                         Thang = thang,
-                        Nam = nam
+                        Nam = nam,
+                        IsBool =true
                     },
                     new()
                     {
@@ -82,7 +83,8 @@ namespace TechLife.Api.Controllers
                         LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam,
                         DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[1].DuTinhUocThangSau,
                         Thang = thang,
-                        Nam = nam
+                        Nam = nam,
+                        IsBool =false
                     },
                     new()
                     {
@@ -93,7 +95,8 @@ namespace TechLife.Api.Controllers
                         LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[15].LuyKeTuDauNam,
                         DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[15].DuTinhUocThangSau,
                         Thang = thang,
-                        Nam = nam
+                        Nam = nam,
+                        IsBool =true
                     },
                     new()
                     {
@@ -104,7 +107,8 @@ namespace TechLife.Api.Controllers
                         LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[17].LuyKeTuDauNam + dataHoatDongKinhDoanh.Items[20].LuyKeTuDauNam,
                         DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[17].DuTinhUocThangSau + dataHoatDongKinhDoanh.Items[20].DuTinhUocThangSau,
                         Thang = thang,
-                        Nam = nam
+                        Nam = nam,
+                        IsBool =false
                     },
                     new()
                     {
@@ -115,7 +119,8 @@ namespace TechLife.Api.Controllers
                         LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[32].LuyKeTuDauNam,
                         DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[32].DuTinhUocThangSau,
                         Thang = thang,
-                        Nam = nam
+                        Nam = nam,
+                        IsBool =true
                     },
                 };
 

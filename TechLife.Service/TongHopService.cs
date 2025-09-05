@@ -131,6 +131,7 @@ namespace TechLife.Service
                     {
                         QuocTichId = quocTich.Id,
                         TenQuocTich = quocTich.TenQuocTich,
+                        MoTa = quocTich.MoTa,
                         SoLieu = new()
                     };
 
@@ -263,9 +264,6 @@ namespace TechLife.Service
                 if (data == null || data.IsDelete) return new Result<bool>() { IsSuccessed = false, Message = "Dữ liệu không tồn tại" };
 
                 data.SoLieu = decimal.Parse(request.SoLieu);
-                data.CongDon = decimal.Parse(request.CongDon);
-                data.ThiPhan = request.ThiPhan;
-
                 _context.TongHop.Update(data);
                 await _context.SaveChangesAsync();
 

@@ -9,6 +9,7 @@ namespace TechLife.Model.TongHop
         public int QuocTichId { get; set; }
 
         public string TenQuocTich { get; set; }
+        public string MoTa { get; set; }
 
         public Dictionary<int, decimal> SoLieu { get; set; }
 

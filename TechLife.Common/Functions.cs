@@ -88,8 +88,9 @@ namespace TechLife.Common
 
             return Convert.ToDouble(value).ToString("#,### vnđ", cul.NumberFormat);
         }
-        public static string ConvertDecimalVND(decimal value)
+        public static string ConvertDecimalVND(decimal? value)
         {
+            if (value == null) return "-";
             if (value == 0) return "0";
             var cul = CultureInfo.GetCultureInfo("en-us");
 
