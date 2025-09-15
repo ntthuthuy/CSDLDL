@@ -63,6 +63,7 @@ namespace TechLife.Service
                 IsDelete = request.IsDelete,
                 IsStatus = request.IsStatus,
                 HoVaTen = request.HoVaTen,
+                NgaySinh = request.NgaySinh,
                 CMND = request.CMND,
                 DiaChi = request.DiaChi,
                 Email = request.Email,
@@ -344,6 +345,7 @@ namespace TechLife.Service
             var model = HuongDanVien.FirstOrDefault();
 
             model.HoVaTen = request.HoVaTen;
+            model.NgaySinh = request.NgaySinh;
             model.GioiTinh = request.GioiTinh;
             model.SoTheHDV = request.SoTheHDV;
             model.SoDienThoai = request.SoDienThoai;

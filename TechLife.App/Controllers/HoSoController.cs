@@ -3137,8 +3137,8 @@ namespace TechLife.App.Controllers
             ViewData["Title"] = "Chi tiết hướng dẫn viên du lịch";
             ViewData["Title_parent"] = "Hồ sơ";
 
-            var loaihinh = await _danhMucApiClient.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
-            var ngonngu = await _ngoaiNguApiClient.GetAll();
+            var loaihinh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiemDuLich);
+            var ngonngu = await _ngoaiNguService.GetAll();
 
 
             var data = await _huongDanVienService.GetById(Convert.ToInt32(HashUtil.DecodeID(id)));
