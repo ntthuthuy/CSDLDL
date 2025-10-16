@@ -256,15 +256,14 @@ namespace TechLife.Service.HueCIT
             var query = from m in _context.HoSo
                         join loaidiadiem in _context.LoaiDiaDiemAnUong.Where(v => v.IsDelete == false) on m.LoaiDiaDiemAnUong equals loaidiadiem.Id into ldd
                         from loaidiadiem in ldd.DefaultIfEmpty()
-                        join xa in _context.DiaPhuong on m.PhuongXaId equals xa.Id into dp
-                        from xa in dp.DefaultIfEmpty()
+                   
                         join huyen in _context.DiaPhuong on m.QuanHuyenId equals huyen.Id into dph
                         from huyen in dph.DefaultIfEmpty()
 
                         orderby m.Ten
                         where m.IsDelete == false && m.NgonNguId == langId
                         && (linhvucId == 0 || m.LinhVucKinhDoanhId == linhvucId)
-                        select new { m, loaidiadiem, xa, huyen };
+                        select new { m, loaidiadiem, huyen };
 
             var data = await query.Select(x => new DuLieuDuLichModel()
             {
@@ -273,9 +272,9 @@ namespace TechLife.Service.HueCIT
                 ToaDoX = x.m.ToaDoX,
                 ToaDoY = x.m.ToaDoY,
                 DiaChi = x.m.SoNha,
-                PhuongXa = x.xa.TenDiaPhuong,
                 QuanHuyen = x.huyen.TenDiaPhuong,
                 DuongPho = x.m.DuongPho,
+                TinhThanh = "thành phố Huế",
                 LinhVucKinhDoanhId = x.m.LinhVucKinhDoanhId,
                 LoaiHinhId = x.m.LoaiHinhId,
                 LoaiDiaDiem = x.loaidiadiem != null ? new Model.HueCIT.LoaiDiaDiemAnUong()
@@ -614,11 +613,11 @@ namespace TechLife.Service.HueCIT
                     LoaiHinhId = x.m.LoaiHinhId,
                     NgayQuyetDinh = x.m.NgayQuyetDinh,
                     PhongChayNo = x.m.PhongChayNo,
-                    PhuongXaId = x.m.PhuongXaId,
+                    PhuongXaId = x.m.QuanHuyenId,
                     //PhuongXa = x.xa.TenDiaPhuong,
                     QuanHuyenId = x.m.QuanHuyenId,
                     //QuanHuyen = x.huyen.TenDiaPhuong,
-                    TinhThanh = "Thừa Thiên Huế",
+                    TinhThanh = "Thành phố Huế",
 
                     SoDienThoai = x.m.SoDienThoai,
                     SoDienThoaiNguoiDaiDien = x.m.SoDienThoaiNguoiDaiDien,

@@ -45,6 +45,7 @@ namespace TechLife.App.Areas.HueCIT.Controllers
 
         private readonly IHoSoService _hoSoService;
         private readonly IHoSoScheduleRepository _hoSoScheduleRepository;
+        private readonly IDanhMucService _danhMucService;
         private readonly IDanhMucRepository _respository;
 
         private readonly IConfiguration _config;
@@ -83,6 +84,7 @@ namespace TechLife.App.Areas.HueCIT.Controllers
             , IHuongDanVienService huongDanVienService
             , IHoSoService hoSoService
             , IHoSoScheduleRepository hoSoScheduleRepository
+            , IDanhMucService danhMucService
             , IDanhMucRepository respository)
             : base(userService, diaPhuongApiClient
                   , donViTinhApiClient, loaiHinhApiClient
@@ -109,9 +111,22 @@ namespace TechLife.App.Areas.HueCIT.Controllers
             _hoSoService = hoSoService;
             _respository = respository;
             _hoSoScheduleRepository = hoSoScheduleRepository;
+            _danhMucService = danhMucService;
             _config = configuration;
-    }
+        }
+        private async Task OptionLoaiDiSan(int seletedId = 0)
+        {
+            var luhanh = await _danhMucService.GetAll((int)LinhVucKinhDoanh.DiSanVanHoa);
 
+            var list = luhanh.Select(x => new SelectListItem
+            {
+                Text = x.Ten.ToString(),
+                Value = x.Id.ToString(),
+                Selected = (int)x.Id == seletedId ? true : false
+            });
+
+            ViewBag.listLoaiDDL = list;
+        }
         public async Task<IActionResult> Index(int? trang)
         {
             ViewData["Title"] = "Danh sách di sản văn hóa";
@@ -129,7 +144,7 @@ namespace TechLife.App.Areas.HueCIT.Controllers
             ViewBag.Name = name;
             ViewBag.Nguon = nguon;
 
-            await OptionLoaiDiSan(loaihinh);
+            await this.OptionLoaiDiSan(loaihinh);
             await OptionHuyen(1, huyen);
             await OptionDiSanVanHoa(name);
             await OptionNguonDongBo(nguon);
@@ -179,7 +194,7 @@ namespace TechLife.App.Areas.HueCIT.Controllers
             await OptionHuyen();
             await OptionXa();
             await OptionDonViTinh(2);
-            await OptionLoaiDiSan();
+            await this.OptionLoaiDiSan();
             await OptionNhaCungCap();
 
             var model = new DuLieuDuLichCreateExtRequest()
@@ -211,9 +226,8 @@ namespace TechLife.App.Areas.HueCIT.Controllers
                 csltModel.DSTienNghi = await ListMucTienNghiHoSo((int)LinhVucKinhDoanh.DiemDuLich, csltModel.Id, csltModel.DSTienNghi);
 
                 await OptionHuyen();
-                await OptionXa(csltModel.QuanHuyenId);
                 await OptionDonViTinh(2);
-                await OptionLoaiDiSan();
+                await this.OptionLoaiDiSan();
                 await OptionNhaCungCap();
             }
 
@@ -429,7 +443,7 @@ namespace TechLife.App.Areas.HueCIT.Controllers
         {
             int Id = Convert.ToInt32(HashUtil.DecodeID(id));
 
-            var result = await _duLieuDuLichService.Delete(Id,Request.GetUser().Id.ToString());
+            var result = await _duLieuDuLichService.Delete(Id, Request.GetUser().Id.ToString());
 
             TempData.AddAlert(new Result<string>()
             {
