@@ -160,7 +160,7 @@ namespace TechLife.App.Component
                         model.Add(new MenuViewModel() { Id = 110, Name = "Dịch vụ di tích", Url = "/HueCIT/DichVuDiTich/Index/", Icon = "fa-circle", GroupId = 101 });
                     }
                     //Dữ liệu thống kê
-                    if (User.IsInRole("root"))
+                    if (User.IsInRole("root") || User.IsInRole("view_thongkedulich"))
                     {
                         model.Add(new MenuViewModel() { Id = 300, Name = "Dữ liệu thống kê", Url = "#", Icon = "fa-database" });
                         model.Add(new MenuViewModel() { Id = 301, Name = "Hoạt động kinh doanh", Url = "/DuLieuThongKe/HoatDongKinhDoanh/", Icon = "fa-circle", GroupId = 300 });
@@ -233,7 +233,7 @@ namespace TechLife.App.Component
                         //model.Add(new MenuViewModel() { Id = 44, Name = "Biểu đồ số liệu cơ sở mua sắm", Url = "/Thongke/Cosomuasam/", Icon = "fa-circle", GroupId = 40 });
                         ////model.Add(new MenuViewModel() { Id = 45, Name = "Tour du lịch", Url = "/Thongke/Tour/", Icon = "fa-circle", GroupId = 40 });
                         //model.Add(new MenuViewModel() { Id = 47, Name = "Hướng dẫn viên", Url = "/Thongke/Huongdanvien/", Icon = "fa-circle", GroupId = 40 });
-                       // model.Add(new MenuViewModel() { Id = 47, Name = "Tùy chọn báo cáo", Url = "/Thongke/Tuychon/", Icon = "fa-circle", GroupId = 40 });
+                        // model.Add(new MenuViewModel() { Id = 47, Name = "Tùy chọn báo cáo", Url = "/Thongke/Tuychon/", Icon = "fa-circle", GroupId = 40 });
                     }
 
                     if (User.IsInRole("root"))
