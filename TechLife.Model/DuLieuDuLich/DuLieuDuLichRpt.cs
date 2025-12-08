@@ -29,6 +29,8 @@ namespace TechLife.Model.DuLieuDuLich
         public string Email { get; set; }
         public string Website { get; set; }
         public string ViTriTrenBanDo { get; set; }
+        public double? ToaDoX { get; set; }
+        public double? ToaDoY { get; set; }
         public string GioiThieu { get; set; }
         public string MoTa { get; set; }
         public string LoiKhuyen { get; set; }

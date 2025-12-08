@@ -41,7 +41,7 @@ namespace TechLife.Service
 
         Task<DuLieuDuLichModel> GetById(int id);
 
-        Task<ApiResult<int>> Delete(int id,string userRqId);
+        Task<ApiResult<int>> Delete(int id, string userRqId);
 
         Task<ApiResult<int>> DeleteNhaHangLuuTru(int id);
 
@@ -2439,10 +2439,11 @@ namespace TechLife.Service
                          GioDongCua = x.m.GioDongCua,
                          GioMoCua = x.m.GioMoCua,
                          MoTa = x.m.GhiChu,
+                         ToaDoX = x.m.ToaDoX,
+                         ToaDoY = x.m.ToaDoY,
                          GioiThieu = x.m.GioiThieu,
                          SoGiayPhep = x.m.SoGiayPhep,
                          LoiKhuyen = "",
-                         ViTriTrenBanDo = x.m.ViTriTrenBanDo,
                          GiaThamKhao = "0",
                          IsDatChuan = x.m.IsDatChuan,
                          DiaChi = Functions.GetFullDiaPhuong(x.m.SoNha, x.m.DuongPho, x.xa.TenDiaPhuong, x.huyen.TenDiaPhuong, ""),
@@ -2637,9 +2638,10 @@ namespace TechLife.Service
                         GioiThieu = x.m.GioiThieu,
                         LoiKhuyen = "",
                         ViTriTrenBanDo = x.m.ViTriTrenBanDo,
+                        ToaDoX = x.m.ToaDoX,
+                        ToaDoY = x.m.ToaDoY,
                         GiaThamKhao = "0",
-                        DiaChi = Functions.GetFullDiaPhuong(x.m.SoNha, x.m.DuongPho, x.xa.TenDiaPhuong, x.huyen.TenDiaPhuong, "Thừa Thiên Huế"),
-                        Images = _fileUploadService.GetImageHoSo(x.m.Id).Result,
+                        DiaChi = Functions.GetFullDiaPhuong(x.m.SoNha, x.m.DuongPho, x.xa.TenDiaPhuong, x.huyen.TenDiaPhuong, ""),
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.IsStatus).Select(v =>
                                new ImageVm
                                {
@@ -2648,11 +2650,7 @@ namespace TechLife.Service
                                    Url = v.FileUrl
                                }).FirstOrDefault(),
                         IsDatChuan = x.m.IsDatChuan,
-                        TienNghi = _context.TienNghiHoSo.Where(v => v.HoSoId == x.m.Id && v.IsSuDung).Select(v => new TienNghiVm
-                        {
-                            Id = v.TienNghiId,
-                            Ten = v.TienNghi.Ten
-                        }).ToList(),
+
                         LoaiHinhId = x.m.LoaiHinhId,
                         ChucVuNguoiDaiDien = x.m.ChucVuNguoiDaiDien,
                         NguoiDaiDien = x.m.HoTenNguoiDaiDien,
@@ -2664,6 +2662,17 @@ namespace TechLife.Service
                                    : x.m.LinhVucKinhDoanhId == 4 ? x.loainhahang.TenDichVu
                                    : x.m.LinhVucKinhDoanhId == 12 ? x.loaivanchuyen.Ten : ""
                     }).FirstOrDefaultAsync();
+
+
+                    if (data != null)
+                    {
+                        data.Images = await _fileUploadService.GetImageHoSo(data.Id);
+                        data.TienNghi = await _context.TienNghiHoSo.Where(v => v.HoSoId == data.Id && v.IsSuDung).Select(v => new TienNghiVm
+                        {
+                            Id = v.TienNghiId,
+                            Ten = v.TienNghi.Ten
+                        }).ToListAsync();
+                    }
                     return data;
                 }
             }
