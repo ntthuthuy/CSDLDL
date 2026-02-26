@@ -242,6 +242,7 @@ namespace TechLife.Service
                     if (existData.Count > 0) _context.TongHop.UpdateRange(existData);
 
                     await _context.SaveChangesAsync();
+                    _context.ChangeTracker.Clear();
                 }
                 await transaction.CommitAsync();
 

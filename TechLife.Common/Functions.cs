@@ -29,18 +29,20 @@ namespace TechLife.Common
 
 
             }
-            if (!String.IsNullOrEmpty(huyen))
-            {
-                if (!String.IsNullOrWhiteSpace(str))
-                    str += ", " + huyen;
-                else str += huyen;
-            }
-            if (!String.IsNullOrEmpty(tinh))
-            {
-                if (!String.IsNullOrWhiteSpace(str))
-                    str += ", " + tinh;
-                else str += tinh;
-            }
+            //if (!String.IsNullOrEmpty(huyen))
+            //{
+            //    if (!String.IsNullOrWhiteSpace(str))
+            //        str += ", " + huyen;
+            //    else str += huyen;
+            //}
+            //if (!String.IsNullOrEmpty(tinh))
+            //{
+            //    if (!String.IsNullOrWhiteSpace(str))
+            //        str += ", " + tinh;
+            //    else str += tinh;
+            //}
+
+            str += ", Thành phố Huế";
             return str;
         }
 
