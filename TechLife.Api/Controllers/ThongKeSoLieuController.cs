@@ -89,11 +89,11 @@ namespace TechLife.Api.Controllers
                     new()
                     {
                         Name = "2. Khách do các cơ sở lưu trú phục vụ (1)",
-                        DVT = dataHoatDongKinhDoanh.Items[15].DVT,
-                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[15].ChinhThucThangTruoc,
-                        UocThangHienTai = dataHoatDongKinhDoanh.Items[15].UocThangHienTai,
-                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[15].LuyKeTuDauNam,
-                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[15].DuTinhUocThangSau,
+                        DVT = dataHoatDongKinhDoanh.Items[16].DVT,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[16].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[16].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[16].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[16].DuTinhUocThangSau,
                         Thang = thang,
                         Nam = nam,
                         IsBool =true
@@ -102,10 +102,10 @@ namespace TechLife.Api.Controllers
                     {
                         Name = "Trong đó, Khách quốc tế",
                         DVT = dataHoatDongKinhDoanh.Items[17].DVT,
-                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[17].ChinhThucThangTruoc + dataHoatDongKinhDoanh.Items[20].ChinhThucThangTruoc,
-                        UocThangHienTai = dataHoatDongKinhDoanh.Items[17].UocThangHienTai + dataHoatDongKinhDoanh.Items[20].UocThangHienTai,
-                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[17].LuyKeTuDauNam + dataHoatDongKinhDoanh.Items[20].LuyKeTuDauNam,
-                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[17].DuTinhUocThangSau + dataHoatDongKinhDoanh.Items[20].DuTinhUocThangSau,
+                        ChinhThucThangTruoc = dataHoatDongKinhDoanh.Items[17].ChinhThucThangTruoc,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[17].UocThangHienTai,
+                        LuyKeTuDauNam = dataHoatDongKinhDoanh.Items[17].LuyKeTuDauNam,
+                        DuTinhUocThangSau = dataHoatDongKinhDoanh.Items[17].DuTinhUocThangSau,
                         Thang = thang,
                         Nam = nam,
                         IsBool =false
@@ -138,6 +138,222 @@ namespace TechLife.Api.Controllers
                     : dataTongHop.Items.Where(x => x.SoLieu.Values.Sum() > 0 && x.QuocTichId != 0).Select(x => x.TenQuocTich).Take(10).ToList();
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem báo cáo {0}", Request.GetFullUrl());
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("GetThongKeDoanhThu")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetThongKeDoanhThu([FromQuery] int thang, int nam)
+        {
+            try
+            {
+                var danhmuc = await _danhMucDuLieuThongKeService.GetHierarchy();
+
+                var result = new ThongKeSoLieuVm() { ListHoatDongKinhDoanh = new(), Top10 = new() };
+
+                var request = new HoatDongKinhDoanhFormRequest
+                {
+                    Nam = nam,
+                    Thang = thang,
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Search = ""
+                };
+
+                var dataHoatDongKinhDoanh = await _hoatDongKinhDoanhService.GetPaging(request);
+
+                result.ListHoatDongKinhDoanh = new List<HoatDongKinhDoanhVm>
+                {
+                    new()
+                    {
+                        Name = "1. Khách du lịch",
+                        DVT = "Lượt",
+                        ChinhThucThangTruoc = thang!=1?  dataHoatDongKinhDoanh.Items[0].ChinhThucThangTruoc:null,
+                        UocThangHienTai =dataHoatDongKinhDoanh.Items[0].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[0].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau =thang==5? dataHoatDongKinhDoanh.Items[0].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =true
+                    },
+                    new()
+                    {
+                        Name = "Khách quốc tế",
+                        DVT = dataHoatDongKinhDoanh.Items[1].DVT,
+                        ChinhThucThangTruoc =thang!=1? dataHoatDongKinhDoanh.Items[1].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[1].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[1].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                    new()
+                    {
+                        Name = "Khách nội địa",
+                        DVT = dataHoatDongKinhDoanh.Items[3].DVT,
+                        ChinhThucThangTruoc =thang!=1? dataHoatDongKinhDoanh.Items[3].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[3].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[3].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                    new()
+                    {
+                        Name = "2. Khách do các cơ sở lưu trú phục vụ",
+                         DVT = "Lượt",
+                        ChinhThucThangTruoc =thang!=1?  dataHoatDongKinhDoanh.Items[16].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[16].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[16].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[16].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =true
+                    },
+                    new()
+                    {
+                        Name = "Khách quốc tế",
+                        DVT = dataHoatDongKinhDoanh.Items[17].DVT,
+                        ChinhThucThangTruoc = thang!=1? dataHoatDongKinhDoanh.Items[17].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[17].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[17].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[17].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                      new()
+                    {
+                        Name = "Khách nội địa",
+                        DVT = dataHoatDongKinhDoanh.Items[18].DVT,
+                        ChinhThucThangTruoc =thang!=1?  dataHoatDongKinhDoanh.Items[18].ChinhThucThangTruoc :null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[18].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[18].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[18].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                    new()
+                    {
+                        Name = "3. Ngày khách lưu trú",
+                        DVT = "Ngày",
+                        ChinhThucThangTruoc =thang!=1?  dataHoatDongKinhDoanh.Items[19].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[19].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[19].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[19].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =true
+                    },
+                    new()
+                    {
+                        Name = "Khách quốc tế",
+                        DVT = dataHoatDongKinhDoanh.Items[20].DVT,
+                        ChinhThucThangTruoc =thang!=1? dataHoatDongKinhDoanh.Items[20].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[20].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[20].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[20].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                      new()
+                    {
+                        Name = "Khách nội địa",
+                        DVT = dataHoatDongKinhDoanh.Items[21].DVT,
+                        ChinhThucThangTruoc =thang!=1?  dataHoatDongKinhDoanh.Items[21].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[21].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[21].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[21].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                    new()
+                    {
+                        Name = "4. Tổng thu từ du lịch",
+                        DVT = "Nghìn đồng",
+                        ChinhThucThangTruoc = thang!=1? dataHoatDongKinhDoanh.Items[32].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[32].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[32].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[32].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =true
+                    },
+                    new()
+                    {
+                        Name = "Doanh thu từ lữ hành",
+                        DVT = dataHoatDongKinhDoanh.Items[25].DVT,
+                        ChinhThucThangTruoc = thang!=1? dataHoatDongKinhDoanh.Items[25].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[25].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[25].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[25].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                     new()
+                    {
+                        Name = "Doanh thu từ cơ sở lưu trú",
+                        DVT = dataHoatDongKinhDoanh.Items[26].DVT,
+                        ChinhThucThangTruoc = thang!=1? dataHoatDongKinhDoanh.Items[26].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[26].UocThangHienTai,
+                        LuyKeTuDauNam = thang!=1?dataHoatDongKinhDoanh.Items[26].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[26].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =false
+                    },
+                    new()
+                    {
+                        Name = "5. Công suất sử dụng buồng",
+                        DVT = "%",
+                        ChinhThucThangTruoc = thang!=1? dataHoatDongKinhDoanh.Items[34].ChinhThucThangTruoc:null,
+                        UocThangHienTai = dataHoatDongKinhDoanh.Items[34].UocThangHienTai,
+                        LuyKeTuDauNam =thang!=1? dataHoatDongKinhDoanh.Items[34].LuyKeTuDauNam:null,
+                        DuTinhUocThangSau = thang==5?dataHoatDongKinhDoanh.Items[34].DuTinhUocThangSau:null,
+                        Thang = thang,
+                        Nam = nam,
+                        IsBool =true
+                    },
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem báo cáo {0}", Request.GetFullUrl());
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("GetThongKeThiTruong")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetThongKeThiTruong([FromQuery] int thang, int nam)
+        {
+            try
+            {
+
+                var dataTongHop = await _tongHopService.GetPaging(new TongHopFormRequest
+                {
+                    Nam = nam,
+                    Thang = thang,
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Search = ""
+                });
+
+
+                return Ok(dataTongHop);
             }
             catch (Exception ex)
             {

@@ -42,9 +42,15 @@
                                         <tr>
                                             <th class="text-center align-middle">PHẦN BÁO CÁO HÀNG THÁNG</th>
                                             <th class="text-center align-middle" width="7%">ĐVT</th>
-                                            <th class="text-center align-middle" width="15%">Chính thức tháng @(thang - 1 == 0 ? $"12 ({nam - 1})" : thang - 1)</th>
+                                            @if(thang != 1)
+                                            {
+                                                <th class="text-center align-middle" width="15%">Chính thức tháng @(thang - 1 == 0 ? $"12 ({nam - 1})" : thang - 1)</th>
+                                            }
                                             <th class="text-center align-middle" width="15%">Ước tháng @thang</th>
-                                            <th class="text-center align-middle" width="15%">Lũy kế từ đầu năm</th>
+                                            @if (thang != 1)
+                                            {
+                                                <th class="text-center align-middle" width="15%">Lũy kế từ đầu năm</th>
+                                            }
                                             @if(thang == 5)
                                             {
                                                 <th class="text-center align-middle" width="15%">Dự tính ước 6 tháng</th>
@@ -66,9 +72,15 @@
                                                         @($"{item.Code + (!string.IsNullOrEmpty(item.Code) ? ". " : "")}{item.Name}")
                                                     </th>
                                                     <td class="text-center">@item.DVT</td>
-                                                    <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.ChinhThucThangTruoc) : "")</td>
+                                                    @if (thang != 1)
+                                                    {
+                                                        <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.ChinhThucThangTruoc) : "")</td>
+                                                    }
                                                     <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.UocThangHienTai) : "")</td>
-                                                    <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.LuyKeTuDauNam) : "")</td>
+                                                    @if (thang != 1)
+                                                    {
+                                                        <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.LuyKeTuDauNam) : "")</td>
+                                                    }
                                                     @if(thang == 5)
                                                     {
                                                         <td class="text-right">@(item.Id != 0 ? Functions.ConvertDecimalVND(item.DuTinhUocThangSau) : "")</td>
