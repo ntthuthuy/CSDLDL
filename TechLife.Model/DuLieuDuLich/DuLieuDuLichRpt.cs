@@ -31,6 +31,8 @@ namespace TechLife.Model.DuLieuDuLich
         public string ViTriTrenBanDo { get; set; }
         public double? ToaDoX { get; set; }
         public double? ToaDoY { get; set; }
+        public int? SoPhong { get; set; }
+        public int? SoGiuong { get; set; }
         public string GioiThieu { get; set; }
         public string MoTa { get; set; }
         public string LoiKhuyen { get; set; }

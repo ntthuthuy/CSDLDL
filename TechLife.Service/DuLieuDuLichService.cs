@@ -2496,6 +2496,8 @@ namespace TechLife.Service
                          LoiKhuyen = "",
                          GiaThamKhao = "0",
                          IsDatChuan = x.m.IsDatChuan,
+                         SoPhong = x.m.TongSoPhong,
+                         SoGiuong = x.m.TongSoGiuong,
                          DiaChi = Functions.GetFullDiaPhuong(x.m.SoNha, x.m.DuongPho, x.xa.TenDiaPhuong, x.huyen.TenDiaPhuong, ""),
                          Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.IsStatus).Select(v =>
                          new ImageVm
