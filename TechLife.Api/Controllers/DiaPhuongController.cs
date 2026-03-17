@@ -29,12 +29,14 @@ namespace TechLife.Api.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var result = await _diaPhuongService.GetAll();
-            return Ok(result);
+
+            return Ok(result.Select(x => new { x.Id, x.TenDiaPhuong, x.ParentId }));
         }
-       
+
         [AllowAnonymous]
         [HttpGet("parent/{id}")]
         [EnableCors]
