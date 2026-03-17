@@ -101,6 +101,10 @@ namespace TechLife.Service
         Task<ApiResult<int>> UpdateDiaPhuong(int id, DuLieuDuLichModel request);
         //HueCIT
         Task<List<HoSoVanBanVm>> GetListVanBanByHoSo(int hosoId);
+        Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoPhongTheoLoaiHinh();
+        Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoPhongTheoDiaBan();
+        Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoGiuongTheoLoaiHinh();
+        Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoGiuongTheoDiaBan();
 
     }
 
@@ -1879,6 +1883,52 @@ namespace TechLife.Service
             return result;
         }
 
+        public async Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoPhongTheoLoaiHinh()
+        {
+            var query = await _context.HoSo.Where(x => !x.IsDelete && x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru)
+                .GroupBy(x => x.LoaiHinhId)
+                .Select(x => new DuLieuDuLichTheoLoaiHinhVrm()
+                {
+                    Ten = _context.LoaiHinh.Where(l => l.Id == x.Key).Select(l => l.TenLoai).FirstOrDefault(),
+                    SoLuong = x.Sum(s => s.TongSoPhong)
+                }).ToListAsync();
+            return query;
+        }
+
+        public async Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoPhongTheoDiaBan()
+        {
+            var query = await _context.HoSo.Where(x => !x.IsDelete && x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru)
+                .GroupBy(x => x.QuanHuyenId)
+                .Select(x => new DuLieuDuLichTheoLoaiHinhVrm()
+                {
+                    Ten = _context.DiaPhuong.Where(l => l.Id == x.Key).Select(l => l.TenDiaPhuong).FirstOrDefault(),
+                    SoLuong = x.Sum(s => s.TongSoPhong)
+                }).ToListAsync();
+            return query;
+        }
+        public async Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoGiuongTheoLoaiHinh()
+        {
+            var query = await _context.HoSo.Where(x => !x.IsDelete && x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru)
+                .GroupBy(x => x.LoaiHinhId)
+                .Select(x => new DuLieuDuLichTheoLoaiHinhVrm()
+                {
+                    Ten = _context.LoaiHinh.Where(l => l.Id == x.Key).Select(l => l.TenLoai).FirstOrDefault(),
+                    SoLuong = x.Sum(s => s.TongSoGiuong)
+                }).ToListAsync();
+            return query;
+        }
+
+        public async Task<List<DuLieuDuLichTheoLoaiHinhVrm>> SoGiuongTheoDiaBan()
+        {
+            var query = await _context.HoSo.Where(x => !x.IsDelete && x.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru)
+                .GroupBy(x => x.QuanHuyenId)
+                .Select(x => new DuLieuDuLichTheoLoaiHinhVrm()
+                {
+                    Ten = _context.DiaPhuong.Where(l => l.Id == x.Key).Select(l => l.TenDiaPhuong).FirstOrDefault(),
+                    SoLuong = x.Sum(s => s.TongSoGiuong)
+                }).ToListAsync();
+            return query;
+        }
         public async Task<PagedResult<TimKiemDuLieuVrm>> TimKiemDuLieu(GetPagingRequest request, int linhvucId = 0)
 
         {

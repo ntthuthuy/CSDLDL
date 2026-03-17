@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TechLife.Common;
+using TechLife.Data.Entities;
 using TechLife.Model.HoatDongKinhDoanh;
 using TechLife.Model.ThongKeSoLieu;
 using TechLife.Service;
+using TechLife.Service.HueCIT;
 
 namespace TechLife.Api.Controllers
 {
@@ -19,16 +21,22 @@ namespace TechLife.Api.Controllers
         private readonly IDanhMucDuLieuThongKeService _danhMucDuLieuThongKeService;
         private readonly IHoatDongKinhDoanhService _hoatDongKinhDoanhService;
         private readonly ITongHopService _tongHopService;
+        private readonly IThongKeService _thongKeService;
+        private readonly IDuLieuDuLichService _duLieuDuLichService;
         private readonly ILogger<ThongKeSoLieuController> _logger;
 
         public ThongKeSoLieuController(IDanhMucDuLieuThongKeService danhMucDuLieuThongKeService
             , IHoatDongKinhDoanhService hoatDongKinhDoanhService
             , ITongHopService tongHopService
+            , IThongKeService thongKeService
+            , IDuLieuDuLichService duLieuDuLichService
             , ILogger<ThongKeSoLieuController> logger)
         {
             _danhMucDuLieuThongKeService = danhMucDuLieuThongKeService;
             _hoatDongKinhDoanhService = hoatDongKinhDoanhService;
             _tongHopService = tongHopService;
+            _thongKeService = thongKeService;
+            _duLieuDuLichService = duLieuDuLichService;
             _logger = logger;
         }
 
@@ -354,6 +362,107 @@ namespace TechLife.Api.Controllers
 
 
                 return Ok(dataTongHop);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem báo cáo {0}", Request.GetFullUrl());
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("GetTongHopDuLieuDuLich")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTongHopDuLieuDuLich()
+        {
+            try
+            {
+                var result = new
+                {
+                    MoTa = "Tính đến tháng " + (DateTime.Now.Month - 1) + " năm " + DateTime.Now.Year,
+                    CoSoLuuTruTheoLoaiHinh = (await _duLieuDuLichService.LuuTruTheoLoaiHinh()),
+                    CoSoLuuTruTheoDiaBan = (await _duLieuDuLichService.LuuTruTheoDiaBan()),
+                    KhachSanTheoHangSao = (await _duLieuDuLichService.KhachSanTheoHangSao()),
+                    CongTyLuHanhTheoLoaiHinh = (await _duLieuDuLichService.LuuTruTheoLoaiHinh()),
+                    DiemDuLichTheoLoaiHinh = (await _duLieuDuLichService.DiemDuLichTheoLoaiHinh()),
+                    HuongDanVienTheoLoaiThe = (await _duLieuDuLichService.HDVTheoLoaiThe()),
+                    HuongDanVienTheoNgonNgu = (await _duLieuDuLichService.HDVTheoNgonNgu()),
+
+                    SoPhongTheoLoaiHinh = (await _duLieuDuLichService.SoPhongTheoLoaiHinh()),
+                    SoPhongTheoDiaBan = (await _duLieuDuLichService.SoPhongTheoDiaBan()),
+                    SoGiuongTheoLoaiHinh = (await _duLieuDuLichService.SoGiuongTheoLoaiHinh()),
+                    SoGiuongTheoDiaBan = (await _duLieuDuLichService.SoGiuongTheoDiaBan()),
+
+                    TongSoDiSanVanHoa = (await _thongKeService.DiSanVanHoa()),
+                    TongSoKhuVuiChoi = (await _thongKeService.KhuVuiChoi()),
+
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi xem báo cáo {0}", Request.GetFullUrl());
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("GetTongHopThongKeDoanhThu")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTongHopThongKeDoanhThu()
+        {
+            try
+            {
+                var danhmuc = await _danhMucDuLieuThongKeService.GetHierarchy();
+
+                var request = new HoatDongKinhDoanhFormRequest
+                {
+                    Nam = DateTime.Now.Year,
+                    Thang = DateTime.Now.Month - 1,
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Search = ""
+                };
+
+                var dataHoatDongKinhDoanh = await _hoatDongKinhDoanhService.GetPaging(request);
+
+                var dataTongHop = await _tongHopService.GetPaging(new TongHopFormRequest
+                {
+                    Nam = DateTime.Now.Year,
+                    Thang = DateTime.Now.Month - 1,
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Search = ""
+                });
+
+                var luongKhachTrongNam = await _tongHopService.GetPaging(new TongHopFormRequest
+                {
+                    Nam = DateTime.Now.Year,
+                    Thang = 0,
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Search = ""
+                });
+
+                var result = new
+                {
+                    MoTa = "Tính đến tháng " + (DateTime.Now.Month - 1) + " năm " + DateTime.Now.Year,
+                    TongLuotKhachQuocTe = dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam,
+                    TongLuotKhachNoiDia = dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam,
+                    TyLeKhachQuocTeTrenNoiDia = dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam == 0m ? 0 : Math.Round((decimal)(dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam / dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam) * 100, 2),
+                    Top10QuocGia = dataTongHop.Items.LastOrDefault().SoLieu.Values.Sum() == 0m
+                    ? new()
+                    : dataTongHop.Items.Where(x => x.SoLieu.Values.Sum() > 0 && x.QuocTichId != 0).Select(x => new { x.TenQuocTich, x.SoLieu, x.MoTa }).Take(10).ToList(),
+
+                    LuotKhachTheoThang = luongKhachTrongNam.Items.Select(x => new { x.TenQuocTich, x.SoLieu, x.MoTa }).ToList(),
+                    CongSuatPhongTrungBinh = dataHoatDongKinhDoanh.Items[34].LuyKeTuDauNam,
+
+                    TongDoanhThu = dataHoatDongKinhDoanh.Items[32].LuyKeTuDauNam,
+                    DoanhThuTuKhachQuocTe = dataHoatDongKinhDoanh.Items[23].LuyKeTuDauNam,
+                    DoanhThuTuKhachNoiDia = dataHoatDongKinhDoanh.Items[32].LuyKeTuDauNam - dataHoatDongKinhDoanh.Items[23].LuyKeTuDauNam,
+
+                };
+                return Ok(result);
+
             }
             catch (Exception ex)
             {

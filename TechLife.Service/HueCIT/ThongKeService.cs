@@ -20,6 +20,8 @@ namespace TechLife.Service.HueCIT
         Task<int> DiSanVanHoa();
         Task<int> VeSinhCongCong();
         Task<int> DiemGiaoDich();
+        Task<int> SoPhong();
+        Task<int> SoGiuong();
         Task<List<ThongKeVm>> CountModifiedByYear(int year);
     }
 
@@ -190,6 +192,16 @@ namespace TechLife.Service.HueCIT
             {
                 throw;
             }
+        }
+
+        public Task<int> SoPhong()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> SoGiuong()
+        {
+            throw new NotImplementedException();
         }
     }
 }

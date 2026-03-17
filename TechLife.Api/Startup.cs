@@ -90,6 +90,7 @@ namespace TechLife.Api
             services.AddTransient<IHoatDongKinhDoanhService, HoatDongKinhDoanhService>();
             services.AddTransient<IDanhMucDuLieuThongKeService, DanhMucDuLieuThongKeService>();
             services.AddTransient<ITongHopService, TongHopService>();
+            services.AddTransient<IThongKeService, ThongKeService>();
 
             //HueCIT
             services.AddTransient<IFileUploaderService, FileUploaderService>();
