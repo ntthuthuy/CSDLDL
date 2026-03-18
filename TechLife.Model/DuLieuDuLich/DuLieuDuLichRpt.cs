@@ -44,5 +44,6 @@ namespace TechLife.Model.DuLieuDuLich
 
         public List<ImageVm> Images { get; set; }
         public List<TienNghiVm> TienNghi { get; set; }
+        public List<NgonNguVm> NgonNgu { get; set; }
     }
 }

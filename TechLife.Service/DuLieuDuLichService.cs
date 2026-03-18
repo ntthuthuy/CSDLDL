@@ -2369,14 +2369,13 @@ namespace TechLife.Service
                         Ten = x.m.HoVaTen,
                         LoaiHinhId = x.m.LoaiTheId,
                         NguoiDaiDien = x.m.HoVaTen,
-                        
+
 
                         LoaiHinh = x.m.LoaiTheId == 1 ? "Thẻ nội địa" : "Thẻ quốc tế",
                         SoGiayPhep = x.m.SoTheHDV,
                         SoDienThoai = x.m.SoDienThoai,
                         DiaChi = x.m.DiaChi,
                         Email = x.m.Email,
-                        
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.Type == LoaiFile.hosohuongdanvien.ToString()).Select(v => new ImageVm()
                         {
                             Name = v.FileName,
@@ -2384,6 +2383,31 @@ namespace TechLife.Service
                             Url = v.FileUrl
                         }).FirstOrDefault()
                     }).ToListAsync();
+
+                var ids = data.Select(x => x.Id).ToList();
+
+                var ngonNguRaw = await (
+                       from hdn in _context.HuongDanVienNgonNgu
+                       join nn in _context.NgonNgu
+                           on hdn.NgonNguId.ToString() equals nn.Id
+                       where ids.Contains(hdn.HuongDanVienId)
+                       select new
+                       {
+                           hdn.HuongDanVienId,
+                           NgonNgu = new NgonNguVm
+                           {
+                               Id = nn.Id,
+                               Ten = nn.Ten
+                           }
+                       }
+                   ).ToListAsync();
+
+                var map = ngonNguRaw.GroupBy(x => x.HuongDanVienId).ToDictionary(g => g.Key, g => g.Select(x => x.NgonNgu).ToList());
+
+                foreach (var item in data)
+                {
+                    item.NgonNgu = map.GetValueOrDefault(item.Id) ?? new List<NgonNguVm>();
+                }
 
                 return new PagedResult<DuLieuDuLichRpt>()
                 {
