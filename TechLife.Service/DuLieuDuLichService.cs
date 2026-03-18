@@ -2367,12 +2367,16 @@ namespace TechLife.Service
                     {
                         Id = x.m.Id,
                         Ten = x.m.HoVaTen,
+                        LoaiHinhId = x.m.LoaiTheId,
+                        NguoiDaiDien = x.m.HoVaTen,
+                        
+
                         LoaiHinh = x.m.LoaiTheId == 1 ? "Thẻ nội địa" : "Thẻ quốc tế",
                         SoGiayPhep = x.m.SoTheHDV,
                         SoDienThoai = x.m.SoDienThoai,
                         DiaChi = x.m.DiaChi,
                         Email = x.m.Email,
-
+                        
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.Id == x.m.Id && v.Type == LoaiFile.hosohuongdanvien.ToString()).Select(v => new ImageVm()
                         {
                             Name = v.FileName,
