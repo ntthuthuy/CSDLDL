@@ -2388,16 +2388,16 @@ namespace TechLife.Service
 
                 var ngonNguRaw = await (
                        from hdn in _context.HuongDanVienNgonNgu
-                       join nn in _context.NgonNgu
-                           on hdn.NgonNguId.ToString() equals nn.Id
+                       join nn in _context.NgoaiNgu
+                           on hdn.NgonNguId equals nn.Id
                        where ids.Contains(hdn.HuongDanVienId)
                        select new
                        {
                            hdn.HuongDanVienId,
-                           NgonNgu = new NgonNguVm
+                           NgonNgu = new NgoaiNguModel
                            {
                                Id = nn.Id,
-                               Ten = nn.Ten
+                               TenNgoaiNgu = nn.TenNgoaiNgu
                            }
                        }
                    ).ToListAsync();
@@ -2406,7 +2406,7 @@ namespace TechLife.Service
 
                 foreach (var item in data)
                 {
-                    item.NgonNgu = map.GetValueOrDefault(item.Id) ?? new List<NgonNguVm>();
+                    item.NgoaiNgu = map.GetValueOrDefault(item.Id) ?? new List<NgoaiNguModel>();
                 }
 
                 return new PagedResult<DuLieuDuLichRpt>()

@@ -180,8 +180,8 @@ namespace TechLife.Service.HueCIT
                 var countHDV = new ThongKeVm
                 {
                     LinhVucKinhDoanhId = (int)LinhVucKinhDoanh.HuongDanVien,
-                    Create = await queryHDV.Where(x => x.CreateOnDate.Year == DateTime.Now.Year).CountAsync(),
-                    Update = await queryHDV.Where(x => x.LastModifiedOnDate.Year == DateTime.Now.Year).CountAsync()
+                    Create = await queryHDV.Where(x => x.CreateOnDate.HasValue && x.CreateOnDate.Value.Year == DateTime.Now.Year).CountAsync(),
+                    Update = await queryHDV.Where(x => x.CreateOnDate.HasValue && x.LastModifiedOnDate.Value.Year == DateTime.Now.Year).CountAsync()
                 };
 
                 result.Add(countHDV);

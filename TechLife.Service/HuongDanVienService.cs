@@ -77,8 +77,9 @@ namespace TechLife.Service
                 SoDienThoai = request.SoDienThoai,
                 SoTheHDV = request.SoTheHDV,
                 CongTyLuHanhId = request.CongTyLuHanhId,
-                NoiCapThe = request.NoiCapThe
-
+                NoiCapThe = request.NoiCapThe,
+                CreateOnDate = DateTime.Now,
+                LastModifiedOnDate = DateTime.Now,
             };
             _context.HuongDanVien.Add(huongDanVien);
             var result = await _context.SaveChangesAsync();
@@ -178,7 +179,7 @@ namespace TechLife.Service
                         {
                             Id = m.Id,
                             HoVaTen = m.HoVaTen,
-                            GioiTinh = m.GioiTinh,
+                            GioiTinh = m.GioiTinh ?? false,
                             SoTheHDV = m.SoTheHDV,
                             SoDienThoai = m.SoDienThoai,
                             CMND = m.CMND,
@@ -216,7 +217,7 @@ namespace TechLife.Service
                         {
                             Id = m.Id,
                             HoVaTen = m.HoVaTen,
-                            GioiTinh = m.GioiTinh,
+                            GioiTinh = m.GioiTinh ?? false,
                             NgaySinh = m.NgaySinh,
                             SoTheHDV = m.SoTheHDV,
                             SoDienThoai = m.SoDienThoai,
@@ -268,7 +269,7 @@ namespace TechLife.Service
             model.LoaiHinhId = _context.HuongDanVienLoaiHinh.Where(v => v.HuongDanVienId == model.Id).Select(v => v.LoaiHinhId).ToList();
             model.NgonNguId = _context.HuongDanVienNgonNgu.Where(v => v.HuongDanVienId == model.Id).Select(v => v.NgonNguId).ToList();
             model.Images = _fileUploadService.GetImageByHoSoId(model.Id, LoaiFile.hosohuongdanvien.ToString()).Result;
-           
+
             return model;
         }
 
@@ -304,7 +305,7 @@ namespace TechLife.Service
                 {
                     Id = x.m.Id,
                     HoVaTen = x.m.HoVaTen,
-                    GioiTinh = x.m.GioiTinh,
+                    GioiTinh = x.m.GioiTinh ?? false,
                     SoTheHDV = x.m.SoTheHDV,
                     SoDienThoai = x.m.SoDienThoai,
                     CMND = x.m.CMND,
@@ -336,131 +337,137 @@ namespace TechLife.Service
 
         public async Task<ApiResult<int>> Update(int id, HuongDanVienModel request)
         {
-            var HuongDanVien = await _context.HuongDanVien.Where(x => x.Id == id).ToListAsync();
-            if (HuongDanVien == null || HuongDanVien.Count() <= 0)
+            try
             {
-                return new ApiErrorResult<int>("Không tìm thấy dữ liệu!");
-            }
+                var HuongDanVien = await _context.HuongDanVien.Where(x => x.Id == id).ToListAsync();
+                if (HuongDanVien == null || HuongDanVien.Count() <= 0)
+                {
+                    return new ApiErrorResult<int>("Không tìm thấy dữ liệu!");
+                }
 
-            var model = HuongDanVien.FirstOrDefault();
+                var model = HuongDanVien.FirstOrDefault();
 
-            model.HoVaTen = request.HoVaTen;
-            model.NgaySinh = request.NgaySinh;
-            model.GioiTinh = request.GioiTinh;
-            model.SoTheHDV = request.SoTheHDV;
-            model.SoDienThoai = request.SoDienThoai;
-            model.CMND = request.CMND;
-            model.DiaChi = request.DiaChi;
-            model.NoiCapCMND = request.NoiCapCMND;
-            model.NgayHetHan = request.NgayHetHan;
-            model.Email = request.Email;
-            model.HoKhau = request.HoKhau;
-            model.LoaiTheId = request.LoaiTheId;
-            model.NgayCapCMND = request.NgayCapCMND;
-            model.NgayCapThe = request.NgayCapThe;
-
-            if (request.DSQuaTrinhHD != null & request.DSQuaTrinhHD.Count() > 0)
-            {
-                var qthd = _context.QuaTrinhHoatDong.Where(v => v.HDVId == model.Id);
-                foreach (var d in qthd)
+                model.HoVaTen = request.HoVaTen;
+                model.NgaySinh = request.NgaySinh;
+                model.GioiTinh = request.GioiTinh;
+                model.SoTheHDV = request.SoTheHDV;
+                model.SoDienThoai = request.SoDienThoai;
+                model.CMND = request.CMND;
+                model.DiaChi = request.DiaChi;
+                model.NoiCapCMND = request.NoiCapCMND;
+                model.NgayHetHan = request.NgayHetHan;
+                model.Email = request.Email;
+                model.HoKhau = request.HoKhau;
+                model.LoaiTheId = request.LoaiTheId;
+                model.NgayCapCMND = request.NgayCapCMND;
+                model.NgayCapThe = request.NgayCapThe;
+                model.LastModifiedOnDate = DateTime.Now;
+                if (request.DSQuaTrinhHD != null & request.DSQuaTrinhHD.Count() > 0)
                 {
-                    _context.QuaTrinhHoatDong.Remove(d);
-                }
-                foreach (var h in request.DSQuaTrinhHD)
-                {
-                    _context.QuaTrinhHoatDong.Add(new QuaTrinhHoatDong()
+                    var qthd = _context.QuaTrinhHoatDong.Where(v => v.HDVId == model.Id);
+                    foreach (var d in qthd)
                     {
-                        HDVId = request.Id,
-                        HoatDong = h.HoatDong,
-                        KetQua = h.KetQua,
-                        ThoiGian = h.ThoiGian
-                    });
-                }
-            }
-            if (request.LoaiHinhId != null && request.LoaiHinhId.Count > 0)
-            {
-                var loaihinh = _context.HuongDanVienLoaiHinh.Where(v => v.HuongDanVienId == model.Id);
-                foreach (var d in loaihinh)
-                {
-                    _context.HuongDanVienLoaiHinh.Remove(d);
-                }
-                foreach (var x in request.LoaiHinhId)
-                {
-                    _context.HuongDanVienLoaiHinh.Add(new HuongDanVienLoaiHinh()
-                    {
-                        HuongDanVienId = model.Id,
-                        LoaiHinhId = x
-                    });
-                }
-            }
-            if (request.NgonNguId != null && request.NgonNguId.Count > 0)
-            {
-                var ngongu = _context.HuongDanVienNgonNgu.Where(v => v.HuongDanVienId == model.Id);
-                foreach (var d in ngongu)
-                {
-                    _context.HuongDanVienNgonNgu.Remove(d);
-                }
-                foreach (var x in request.NgonNguId)
-                {
-                    _context.HuongDanVienNgonNgu.Add(new HuongDanVienNgonNgu()
-                    {
-                        HuongDanVienId = model.Id,
-                        NgonNguId = x
-                    });
-                }
-            }
-            if (request.DSVanBan != null && request.DSVanBan.Count() > 0)
-            {
-                var dichvu = _context.GiayPhep.Where(v => v.LinhVucId.Contains(Convert.ToInt32(LinhVucKinhDoanh.HDV).ToString())).ToList();
-
-                foreach (var d in dichvu)
-                {
-                    var lstVanBan = _context.HoSoVanBan.Where(v => v.HosoId == request.Id && v.GiayPhepId == d.Id && v.Loai == LoaiFile.hosohuongdanvien.ToString()).ToList();
-                    if (lstVanBan != null && lstVanBan.Count > 0)
-                    {
-                        var obj = lstVanBan.FirstOrDefault();
-                        var value = request.DSVanBan.Where(v => v.GiayPhepId == obj.GiayPhepId).ToList();
-                        var objRequest = value.FirstOrDefault();
-                        obj.FileName = objRequest.FileName;
-                        obj.FilePath = objRequest.FilePath;
-                        obj.NoiCap = objRequest.NoiCap;
-                        obj.TenGoi = objRequest.TenGoi;
-                        obj.IsStatus = objRequest.IsStatus;
-                        _context.HoSoVanBan.Update(obj);
+                        _context.QuaTrinhHoatDong.Remove(d);
                     }
-                    else
+                    foreach (var h in request.DSQuaTrinhHD)
                     {
-                        var objRequest = request.DSVanBan.Single(v => v.GiayPhepId.Equals(d.Id));
-
-                        var obj = new HoSoVanBan()
+                        _context.QuaTrinhHoatDong.Add(new QuaTrinhHoatDong()
                         {
-                            FileName = objRequest.FileName,
-                            FilePath = objRequest.FilePath,
-                            NoiCap = objRequest.NoiCap,
-                            TenGoi = objRequest.TenGoi,
-                            GiayPhepId = d.Id,
-                            NgayCap = DateTime.Now,
-                            NgayHetHan = DateTime.Now,
-                            HosoId = request.Id,
-                            IsDelete = false,
-                            IsStatus = objRequest.IsStatus,
-                            MaSo = "",
-                            Loai = LoaiFile.hosohuongdanvien.ToString()
-                        };
-                        _context.HoSoVanBan.Add(obj);
+                            HDVId = request.Id,
+                            HoatDong = h.HoatDong,
+                            KetQua = h.KetQua,
+                            ThoiGian = h.ThoiGian
+                        });
                     }
                 }
-            }
-            _context.HuongDanVien.Update(model);
+                if (request.LoaiHinhId != null && request.LoaiHinhId.Count > 0)
+                {
+                    var loaihinh = _context.HuongDanVienLoaiHinh.Where(v => v.HuongDanVienId == model.Id);
+                    foreach (var d in loaihinh)
+                    {
+                        _context.HuongDanVienLoaiHinh.Remove(d);
+                    }
+                    foreach (var x in request.LoaiHinhId)
+                    {
+                        _context.HuongDanVienLoaiHinh.Add(new HuongDanVienLoaiHinh()
+                        {
+                            HuongDanVienId = model.Id,
+                            LoaiHinhId = x
+                        });
+                    }
+                }
+                if (request.NgonNguId != null && request.NgonNguId.Count > 0)
+                {
+                    var ngongu = _context.HuongDanVienNgonNgu.Where(v => v.HuongDanVienId == model.Id);
+                    foreach (var d in ngongu)
+                    {
+                        _context.HuongDanVienNgonNgu.Remove(d);
+                    }
+                    foreach (var x in request.NgonNguId)
+                    {
+                        _context.HuongDanVienNgonNgu.Add(new HuongDanVienNgonNgu()
+                        {
+                            HuongDanVienId = model.Id,
+                            NgonNguId = x
+                        });
+                    }
+                }
+                if (request.DSVanBan != null && request.DSVanBan.Count() > 0)
+                {
+                    var dichvu = _context.GiayPhep.Where(v => v.LinhVucId.Contains(Convert.ToInt32(LinhVucKinhDoanh.HDV).ToString())).ToList();
 
-            var result = await _context.SaveChangesAsync();
-            if (result > 0)
+                    foreach (var d in dichvu)
+                    {
+                        var lstVanBan = _context.HoSoVanBan.Where(v => v.HosoId == request.Id && v.GiayPhepId == d.Id && v.Loai == LoaiFile.hosohuongdanvien.ToString()).ToList();
+                        if (lstVanBan != null && lstVanBan.Count > 0)
+                        {
+                            var obj = lstVanBan.FirstOrDefault();
+                            var value = request.DSVanBan.Where(v => v.GiayPhepId == obj.GiayPhepId).ToList();
+                            var objRequest = value.FirstOrDefault();
+                            obj.FileName = objRequest.FileName;
+                            obj.FilePath = objRequest.FilePath;
+                            obj.NoiCap = objRequest.NoiCap;
+                            obj.TenGoi = objRequest.TenGoi;
+                            obj.IsStatus = objRequest.IsStatus;
+                            _context.HoSoVanBan.Update(obj);
+                        }
+                        else
+                        {
+                            var objRequest = request.DSVanBan.Single(v => v.GiayPhepId.Equals(d.Id));
+
+                            var obj = new HoSoVanBan()
+                            {
+                                FileName = objRequest.FileName,
+                                FilePath = objRequest.FilePath,
+                                NoiCap = objRequest.NoiCap,
+                                TenGoi = objRequest.TenGoi,
+                                GiayPhepId = d.Id,
+                                NgayCap = DateTime.Now,
+                                NgayHetHan = DateTime.Now,
+                                HosoId = request.Id,
+                                IsDelete = false,
+                                IsStatus = objRequest.IsStatus,
+                                MaSo = "",
+                                Loai = LoaiFile.hosohuongdanvien.ToString()
+                            };
+                            _context.HoSoVanBan.Add(obj);
+                        }
+                    }
+                }
+                _context.HuongDanVien.Update(model);
+
+                var result = await _context.SaveChangesAsync();
+                if (result > 0)
+                {
+                    return new ApiSuccessResult<int>(id, "Cập nhật hướng dẫn viên thành công");
+                }
+                return new ApiErrorResult<int>("Sửa lỗi!");
+            }
+            catch (Exception ex)
             {
-                return new ApiSuccessResult<int>(id, "Cập nhật hướng dẫn viên thành công");
+                return new ApiErrorResult<int>(ex.Message);
             }
-            return new ApiErrorResult<int>("Sửa lỗi!");
         }
-
         public async Task<ApiResult<bool>> UploadImage(int id, ImageUploadRequest request)
         {
             try

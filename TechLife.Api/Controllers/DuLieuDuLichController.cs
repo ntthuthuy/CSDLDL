@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TechLife.Common;
+using TechLife.Common.Enums;
 using TechLife.Common.Extension;
 using TechLife.Model;
 using TechLife.Model.DuLieuDuLich;

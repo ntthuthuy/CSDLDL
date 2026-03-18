@@ -58,21 +58,21 @@
 
                                                         <div class="col-md-6">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Họ và tên</label>
+                                                                <label class="control-label">Họ và tên <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.HoVaTen" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.HoVaTen" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Ngày sinh</label>
+                                                                <label class="control-label">Ngày sinh  <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.NgaySinh" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.NgaySinh" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Ngoại ngữ</label>
+                                                                <label class="control-label">Ngoại ngữ  <span class="text-red">*</span></label>
                                                                 <select multiple class="form-control select2" asp-for="HuongDanVien.NgonNguId" asp-items="ViewBag.listNgoaiNgu">
                                                                 </select>
                                                                 <span asp-validation-for="HuongDanVien.NgonNguId" class="text-danger"></span>
@@ -80,7 +80,7 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Loại hình</label>
+                                                                <label class="control-label">Loại hình  <span class="text-red">*</span></label>
                                                                 <select multiple class="form-control select2" asp-for="HuongDanVien.LoaiHinhId" asp-items="ViewBag.listLoaiDDL">
                                                                 </select>
                                                                 <span asp-validation-for="HuongDanVien.LoaiHinhId" class="text-danger"></span>
@@ -88,8 +88,9 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Công ty lữ hành</label>
+                                                                <label class="control-label">Công ty lữ hành</label> 
                                                                 <select class="form-control select2" asp-for="HuongDanVien.CongTyLuHanhId" asp-items="ViewBag.listCongTyLuHanh">
+                                                                    <option value="0">-- Chưa xác định --</option>
                                                                 </select>
                                                                 <span asp-validation-for="HuongDanVien.CongTyLuHanhId" class="text-danger"></span>
                                                             </div>
@@ -105,7 +106,7 @@
                                                         <div class="col-md-3"></div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Số CMND, CCCD</label>
+                                                                <label class="control-label">Số CMND, CCCD <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.CMND" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.CMND" class="text-danger"></span>
                                                             </div>
@@ -113,7 +114,7 @@
 
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Ngày cấp</label>
+                                                                <label class="control-label">Ngày cấp  <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.NgayCapCMND" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.NgayCapCMND" class="text-danger"></span>
                                                             </div>
@@ -121,7 +122,7 @@
 
                                                         <div class="col-md-6">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Nơi cấp</label>
+                                                                <label class="control-label">Nơi cấp <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.NoiCapCMND" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.NoiCapCMND" class="text-danger"></span>
                                                             </div>
@@ -148,7 +149,7 @@
                                                     <div class="form-row">
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Số điện thoại</label>
+                                                                <label class="control-label">Số điện thoại</label> 
                                                                 <input asp-for="HuongDanVien.SoDienThoai" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.SoDienThoai" class="text-danger"></span>
                                                             </div>
@@ -166,7 +167,7 @@
                                                     <div class="form-row">
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Loại thẻ</label>
+                                                                <label class="control-label">Loại thẻ <span class="text-red">*</span></label>
                                                                 <select class="form-control select2" asp-for="HuongDanVien.LoaiTheId" asp-items="ViewBag.listLoaiThe">
                                                                 </select>
                                                                 <span asp-validation-for="HuongDanVien.LoaiTheId" class="text-danger"></span>
@@ -174,28 +175,28 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Mã số thẻ</label>
+                                                                <label class="control-label">Mã số thẻ <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.SoTheHDV" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.SoTheHDV" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Ngày cấp</label>
+                                                                <label class="control-label">Ngày cấp <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.NgayCapThe" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.NgayCapThe" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Nơi cấp</label>
+                                                                <label class="control-label">Nơi cấp <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.NoiCapThe" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.NoiCapThe" class="text-danger"></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="position-relative form-group">
-                                                                <label class="control-label">Ngày hết hạn</label>
+                                                                <label class="control-label">Ngày hết hạn <span class="text-red">*</span></label>
                                                                 <input asp-for="HuongDanVien.NgayHetHan" class="form-control" />
                                                                 <span asp-validation-for="HuongDanVien.NgayCapThe" class="text-danger"></span>
                                                             </div>

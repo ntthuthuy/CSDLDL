@@ -14,10 +14,10 @@ namespace TechLife.Model.HuongDanVien
         public string CMND { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime NgaySinh { get; set; }
+        public DateTime? NgaySinh { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime NgayCapCMND { get; set; }
+        public DateTime? NgayCapCMND { get; set; }
         public string NoiCapCMND { get; set; }
         public string NoiCapThe { get; set; }
         public string SoDienThoai { get; set; }
@@ -34,10 +34,10 @@ namespace TechLife.Model.HuongDanVien
         public List<string> LoaiHinh { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime NgayCapThe { get; set; }
+        public DateTime? NgayCapThe { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime NgayHetHan { get; set; }
+        public DateTime? NgayHetHan { get; set; }
         public List<QuaTrinhHoatDongModel> DSQuaTrinhHD { get; set; }
         public List<FileUploadModel> Images { get; set; }
         public List<HoSoVanBanVm> DSVanBan { get; set; }

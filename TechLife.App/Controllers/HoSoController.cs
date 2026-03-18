@@ -3110,8 +3110,9 @@ namespace TechLife.App.Controllers
                 var result = await _huongDanVienService.Update(request.HuongDanVien.Id, request.HuongDanVien);
                 if (!result.IsSuccessed)
                 {
-                    ModelState.AddModelError("", result.Message);
-                    return View(request);
+
+                    TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
+                    return RedirectToAction("Suahuongdanvien", new { id = HashUtil.EncodeID(request.HuongDanVien.Id.ToString()) });
                 }
 
                 if (request.Images != null)
@@ -3120,8 +3121,8 @@ namespace TechLife.App.Controllers
 
                     if (!upload.IsSuccessed)
                     {
-                        ModelState.AddModelError("", upload.Message);
-                        return View(request);
+                        TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
+                        return RedirectToAction("Suahuongdanvien", new { id = HashUtil.EncodeID(request.HuongDanVien.Id.ToString()) });
                     }
                 }
 
