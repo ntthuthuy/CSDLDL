@@ -3036,10 +3036,11 @@ namespace TechLife.App.Controllers
                     }
                 }
                 var result = await _huongDanVienService.Create(request.HuongDanVien);
+
                 if (!result.IsSuccessed)
                 {
-                    ModelState.AddModelError("", result.Message);
-                    return View(request);
+                    TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
+                    return RedirectToAction("Huongdanvien");
                 }
 
                 if (request.Images != null)
@@ -3048,13 +3049,14 @@ namespace TechLife.App.Controllers
 
                     if (!upload.IsSuccessed)
                     {
-                        ModelState.AddModelError("", upload.Message);
-                        return View(request);
+                        TempData.AddAlert(new Result<string>() { IsSuccessed =false, Message = upload.Message });
+                        return RedirectToAction("Huongdanvien");
                     }
                 }
                 await Tracking("Thêm hướng dẫn viên " + request.HuongDanVien.HoVaTen);
 
                 TempData.AddAlert(new Result<string>() { IsSuccessed = result.IsSuccessed, Message = result.Message });
+
                 return RedirectToAction("Huongdanvien");
             }
             catch (Exception ex)

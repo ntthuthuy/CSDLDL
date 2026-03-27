@@ -58,6 +58,18 @@ namespace TechLife.Service
 
         public async Task<ApiResult<HuongDanVienModel>> Create(HuongDanVienModel request)
         {
+            if (request.LoaiHinhId == null || request.LoaiHinhId.Count == 0)
+            {
+                return new ApiErrorResult<HuongDanVienModel>("Vui lòng chọn loại hình");
+            }
+            if (request.NgonNguId == null || request.NgonNguId.Count == 0)
+            {
+                return new ApiErrorResult<HuongDanVienModel>("Vui lòng chọn ngoại ngữ");
+            }
+            if (await _context.HuongDanVien.AnyAsync(x => x.SoTheHDV == request.SoTheHDV && x.IsDelete == false))
+            {
+                return new ApiErrorResult<HuongDanVienModel>("Số thẻ HDV đã tồn tại!");
+            }
             var huongDanVien = new HuongDanVien()
             {
                 IsDelete = request.IsDelete,
