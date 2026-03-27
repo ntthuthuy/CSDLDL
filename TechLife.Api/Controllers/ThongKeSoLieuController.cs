@@ -373,13 +373,24 @@ namespace TechLife.Api.Controllers
 
         [HttpGet("GetTongHopDuLieuDuLich")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetTongHopDuLieuDuLich()
+        public async Task<IActionResult> GetTongHopDuLieuDuLich(int thang, int nam)
         {
             try
             {
+                if (thang > 12)
+                {
+                    return StatusCode(500, "Tháng/năm không hợp lệ!");
+                }
+
+                thang = thang == 0 ? DateTime.Now.Month == 1 ? 12 : DateTime.Now.Month - 1 : thang;
+                nam = nam == 0 ? DateTime.Now.Year : nam;
+
+                if (DateTime.Now.Month == 1)
+                    nam = nam - 1;
+
                 var result = new
                 {
-                    MoTa = "Tính đến tháng " + (DateTime.Now.Month - 1) + " năm " + DateTime.Now.Year,
+                    MoTa = "Tính đến tháng " + (thang) + " năm " + nam,
                     CoSoLuuTruTheoLoaiHinh = (await _duLieuDuLichService.LuuTruTheoLoaiHinh()),
                     CoSoLuuTruTheoDiaBan = (await _duLieuDuLichService.LuuTruTheoDiaBan()),
                     KhachSanTheoHangSao = (await _duLieuDuLichService.KhachSanTheoHangSao()),
@@ -408,16 +419,27 @@ namespace TechLife.Api.Controllers
 
         [HttpGet("GetTongHopThongKeDoanhThu")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetTongHopThongKeDoanhThu()
+        public async Task<IActionResult> GetTongHopThongKeDoanhThu(int thang, int nam)
         {
             try
             {
+                if (thang > 12)
+                {
+                    return StatusCode(500, "Tháng/năm không hợp lệ!");
+                }
+
+                thang = thang == 0 ? DateTime.Now.Month == 1 ? 12 : DateTime.Now.Month - 1 : thang;
+                nam = nam == 0 ? DateTime.Now.Year : nam;
+
+                if (DateTime.Now.Month == 1)
+                    nam = nam - 1;
+
                 var danhmuc = await _danhMucDuLieuThongKeService.GetHierarchy();
 
                 var request = new HoatDongKinhDoanhFormRequest
                 {
-                    Nam = DateTime.Now.Year,
-                    Thang = DateTime.Now.Month - 1,
+                    Nam = nam,
+                    Thang = thang,
                     PageIndex = 1,
                     PageSize = int.MaxValue,
                     Search = ""
@@ -427,8 +449,8 @@ namespace TechLife.Api.Controllers
 
                 var dataTongHop = await _tongHopService.GetPaging(new TongHopFormRequest
                 {
-                    Nam = DateTime.Now.Year,
-                    Thang = DateTime.Now.Month - 1,
+                    Nam = nam,
+                    Thang = thang,
                     PageIndex = 1,
                     PageSize = int.MaxValue,
                     Search = ""
@@ -436,7 +458,7 @@ namespace TechLife.Api.Controllers
 
                 var luongKhachTrongNam = await _tongHopService.GetPaging(new TongHopFormRequest
                 {
-                    Nam = DateTime.Now.Year,
+                    Nam = nam,
                     Thang = 0,
                     PageIndex = 1,
                     PageSize = int.MaxValue,
@@ -445,7 +467,7 @@ namespace TechLife.Api.Controllers
 
                 var result = new
                 {
-                    MoTa = "Tính đến tháng " + (DateTime.Now.Month - 1) + " năm " + DateTime.Now.Year,
+                    MoTa = "Tính đến tháng " + (thang) + " năm " + nam,
                     TongLuotKhachQuocTe = dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam,
                     TongLuotKhachNoiDia = dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam,
                     TyLeKhachQuocTeTrenNoiDia = dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam == 0m ? 0 : Math.Round((decimal)(dataHoatDongKinhDoanh.Items[1].LuyKeTuDauNam / dataHoatDongKinhDoanh.Items[3].LuyKeTuDauNam) * 100, 2),
