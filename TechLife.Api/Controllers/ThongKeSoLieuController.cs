@@ -394,7 +394,7 @@ namespace TechLife.Api.Controllers
                     CoSoLuuTruTheoLoaiHinh = (await _duLieuDuLichService.LuuTruTheoLoaiHinh()),
                     CoSoLuuTruTheoDiaBan = (await _duLieuDuLichService.LuuTruTheoDiaBan()),
                     KhachSanTheoHangSao = (await _duLieuDuLichService.KhachSanTheoHangSao()),
-                    CongTyLuHanhTheoLoaiHinh = (await _duLieuDuLichService.LuuTruTheoLoaiHinh()),
+                    CongTyLuHanhTheoLoaiHinh = (await _duLieuDuLichService.LuHanhTheoLoaiHinh()),
                     DiemDuLichTheoLoaiHinh = (await _duLieuDuLichService.DiemDuLichTheoLoaiHinh()),
                     HuongDanVienTheoLoaiThe = (await _duLieuDuLichService.HDVTheoLoaiThe()),
                     HuongDanVienTheoNgonNgu = (await _duLieuDuLichService.HDVTheoNgonNgu()),

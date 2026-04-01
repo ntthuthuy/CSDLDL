@@ -2356,7 +2356,7 @@ namespace TechLife.Service
             else if (linhvucId == (int)LinhVucKinhDoanh.HuongDanVien)
             {
                 var query = from m in _context.HuongDanVien
-                            where m.NgayHetHan >= DateTime.Now
+                            where !m.IsDelete /*&& m.NgayHetHan >= DateTime.Now*/
                             select new { m };
 
                 int totalRow = await query.CountAsync();
