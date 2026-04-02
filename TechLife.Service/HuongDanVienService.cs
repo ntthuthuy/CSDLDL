@@ -316,6 +316,7 @@ namespace TechLife.Service
                 .Select(x => new HuongDanVienModel()
                 {
                     Id = x.m.Id,
+                    MaHDV = $"HDV.{x.m.Id}",
                     HoVaTen = x.m.HoVaTen,
                     GioiTinh = x.m.GioiTinh ?? false,
                     SoTheHDV = x.m.SoTheHDV,

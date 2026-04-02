@@ -8,6 +8,7 @@ namespace TechLife.Model.DuLieuDuLich
     public class DuLieuDuLichRpt
     {
         public int Id { get; set; }
+        public string MaDinhDanh { get; set; }
         public string Ten { get; set; }
         public string TenVietTat { get; set; }
         public int HangSao { get; set; }

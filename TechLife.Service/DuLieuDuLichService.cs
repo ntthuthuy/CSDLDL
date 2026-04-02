@@ -2311,6 +2311,7 @@ namespace TechLife.Service
                     .Select(x => new DuLieuDuLichRpt()
                     {
                         Id = x.m.Id,
+                        MaDinhDanh = $"VSCC.{x.m.Id}",
                         Ten = x.m.Ten,
                         ViTriTrenBanDo = x.m.ViTri
                     }).ToListAsync();
@@ -2336,6 +2337,7 @@ namespace TechLife.Service
                     .Select(x => new DuLieuDuLichRpt()
                     {
                         Id = x.m.Id,
+                        MaDinhDanh = $"TOUR.{x.m.Id}",
                         Ten = x.m.TenChuyenDi,
                         Avata = _context.FileUploads.Where(v => v.IsImage && v.IsStatus && v.Id == x.m.Id && v.Type == LoaiFile.tour.ToString()).Select(v => new ImageVm()
                         {
@@ -2366,11 +2368,10 @@ namespace TechLife.Service
                     .Select(x => new DuLieuDuLichRpt()
                     {
                         Id = x.m.Id,
+                        MaDinhDanh = $"HDV.{x.m.Id}",
                         Ten = x.m.HoVaTen,
                         LoaiHinhId = x.m.LoaiTheId,
                         NguoiDaiDien = x.m.HoVaTen,
-
-
                         LoaiHinh = x.m.LoaiTheId == 1 ? "Thẻ nội địa" : "Thẻ quốc tế",
                         SoGiayPhep = x.m.SoTheHDV,
                         SoDienThoai = x.m.SoDienThoai,
@@ -2494,6 +2495,18 @@ namespace TechLife.Service
                      .Select(x => new DuLieuDuLichRpt()
                      {
                          Id = x.m.Id,
+                         MaDinhDanh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? $"CSLT.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.NhaHang  ? $"NH.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiemDuLich ? $"DDL.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuDuLich ? $"KDL.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.KhuVuiChoi ? $"KVCGT.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.TheThao ? $"DVTT.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CSSK ? $"DVCSSK.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.LuHanh ? $"CTLH.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.VanChuyen ? $"CTVC.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.DiSanVanHoa ? $"DSVH.{x.m.Id}"
+                            : x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.MuaSam ? $"TTMS.{x.m.Id}"
+                            : $"CSDL.{x.m.Id}",
                          DuongPho = x.m.DuongPho,
                          LoaiHinhId = x.m.LoaiHinhId,
                          LoaiHinh = x.m.LinhVucKinhDoanhId == (int)LinhVucKinhDoanh.CoSoLuuTru ? x.loai.TenLoai
